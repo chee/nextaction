@@ -1,0 +1,33 @@
+.chrome {
+	height: 100%;
+	transition: background 0.4s;
+	&:has(.action--expanded) {
+		background: color-mix(
+			in oklab,
+			var(--page-fill),
+			var(--sidebar-fill) 10%
+		);
+	}
+}
+
+:root {
+	--sidebar-fill: var(--sunglow);
+	--sidebar-line: var(--text);
+}
+
+.chrome__sidebar {
+	background: var(--sidebar-fill);
+	color: var(--sidebar-line);
+	&[data-collapsed] > * {
+		display: none;
+	}
+}
+
+:root {
+	--sidebar-handle-fill: var(--sunglow-dark);
+}
+
+.chrome__handle {
+	border-left: 1px solid var(--sidebar-handle-fill);
+	background: transparent;
+}

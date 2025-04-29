@@ -1,0 +1,117 @@
+:root {
+	--action-fill: var(--page-fill);
+	--action-line: var(--page-line);
+	--action-fill--selected: color-mix(
+		in oklab,
+		var(--action-fill),
+		var(--primary-dark) 10%
+	);
+	--action-border-line: color-mix(
+		in oklab,
+		var(--action-fill),
+		var(--action-line) 5%
+	);
+}
+
+.action {
+	display: flex;
+	flex-direction: column;
+	padding: 0.5em 0.75em;
+	border-radius: 8px;
+	min-height: 1em;
+	max-height: 2.2em;
+	transition-property: background, min-height, max-height, height, margin,
+		padding;
+	transition-duration: 0.24s;
+	overflow: hidden;
+	color: var(--action-line);
+}
+
+.action[aria-current="true"]:not([aria-expanded="true"]) {
+	background: var(--action-fill--selected);
+}
+
+.action[aria-expanded="true"] {
+	min-height: 8em;
+	max-height: 20em;
+	background: var(--page-fill);
+	border: 1px solid var(--action-border-line);
+	box-shadow: 0 2px 2px var(--action-border-line);
+	margin-left: -0.25em;
+	margin-right: -0.25em;
+	padding: 1em;
+	margin-bottom: 2em;
+	margin-top: 1em;
+}
+
+.action:not([aria-expanded="true"]) {
+	-webkit-user-select: none;
+	user-select: none;
+	cursor: default;
+	overflow: hidden;
+}
+
+.action__editor {
+	/* transition: max-height 2.24s ease-in-out; */
+	overflow: hidden;
+}
+
+.action:not([aria-expanded="true"]) .action__editor {
+	/* max-height: 0; */
+	overflow: auto;
+	height: auto;
+}
+
+.action__header {
+	display: flex;
+	gap: 1ex;
+	align-items: center;
+}
+
+.action .item-title:empty:before {
+	content: "New action...";
+	color: var(--color-line-empty);
+}
+
+.action__title {
+	display: flex;
+	font-weight: 500;
+	display: inline-block;
+	margin: 0;
+	font-size: 1rem;
+	.action--expanded & {
+		width: 100%;
+	}
+}
+
+.action__input {
+	font-weight: 500;
+	display: inline-block;
+	width: 100%;
+	margin: 0;
+	font-size: 1rem;
+}
+
+.action__input:focus {
+	outline: 0;
+}
+
+.action--done {
+	color: var(--text-light);
+}
+
+.action-indicators {
+	display: flex;
+	color: var(--color-line-unobtrusive);
+	font-size: 0.8em;
+
+	gap: 0.5em;
+}
+
+.action__footer {
+	display: flex;
+}
+
+.action--dragged {
+	opacity: 0.5;
+}

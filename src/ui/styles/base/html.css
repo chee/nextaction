@@ -1,0 +1,17 @@
+html,
+body {
+	height: 100%;
+	font-size: 16px;
+}
+
+body {
+	font-family: var(--family-sans);
+	display: flex;
+	flex-direction: column;
+}
+
+#app {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+}

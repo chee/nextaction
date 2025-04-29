@@ -1,0 +1,19 @@
+:root {
+	--page-title-line: var(--text);
+}
+
+.page-title {
+	display: flex;
+	gap: 1ex;
+	align-items: center;
+	justify-content: flex-start;
+	padding: var(--space-2);
+	font-weight: 500;
+	font-size: var(--font-size-2);
+	color: var(--page-title-line);
+}
+
+.page-title__icon svg {
+	width: 1em;
+	height: 1em;
+}

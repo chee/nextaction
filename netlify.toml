@@ -1,0 +1,10 @@
+"$schema" = "https://schemastore.netlify.app/netlify-toml.json"
+
+[build]
+command = "deno upgrade && deno task mk"
+publish = "output"
+
+[dev]
+port = 1234
+targetPort = 1232
+command = "deno task dev"

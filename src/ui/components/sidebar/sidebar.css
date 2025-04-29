@@ -1,0 +1,64 @@
+.sidebar {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	height: 100vh;
+	padding: var(--space-2);
+	overflow: scroll;
+	gap: var(--space-3);
+	/* todo do i want this? */
+	min-width: 10ch;
+}
+
+:root {
+	--sidebar-section-fill: var(--page);
+	--sidebar-section-line: var(--text);
+}
+
+.sidebar__section {
+	background: var(--sidebar-section-fill);
+	color: var(--sidebar-section-line);
+	width: 100%;
+	border-radius: 4px;
+	display: flex;
+	flex-direction: column;
+	/* gap: var(--space-2); */
+	&:empty {
+		display: none;
+	}
+	&.sidebar__section--default {
+		font-weight: 500;
+	}
+}
+
+:root {
+	--sidebar-link-line: var(--sidebar-section-line);
+	--sidebar-link-fill: var(--sidebar-section-fill);
+	--sidebar-link-fill--current: color-mix(
+		in oklab,
+		var(--sidebar-link-fill),
+		var(--primary) 50%
+	);
+}
+
+.sidebar-link {
+	text-decoration: none;
+	color: var(--sidebar-link-line);
+	background: var(--sidebar-section-fill);
+	padding-block: var(--space-2);
+	padding-inline: var(--space-2);
+	display: flex;
+	gap: var(--space-2);
+	&[aria-current] {
+		background: var(--sidebar-link-fill--current);
+	}
+	&:first-child {
+		border-top-left-radius: 4px;
+		border-top-right-radius: 4px;
+	}
+	&:last-child {
+		border-bottom-left-radius: 4px;
+		border-bottom-right-radius: 4px;
+	}
+}

@@ -1,0 +1,16 @@
+:root {
+	--page-fill: var(--page);
+	--page-line: var(--text);
+	--page-max-width: 1024px;
+}
+
+.page {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-3);
+	padding-block: var(--space-1);
+	padding-inline: var(--space-4);
+	height: 100%;
+	max-width: var(--page-max-width);
+	margin: auto;
+}

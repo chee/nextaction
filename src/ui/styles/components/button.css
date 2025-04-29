@@ -1,0 +1,56 @@
+.button {
+	--fill: var(--page);
+	--border-color: var(--text);
+	background: var(--fill);
+	color: var(--text);
+	font-family: var(--family-sans);
+	font-size: 0.96rem;
+	text-decoration: none;
+	border: 1px solid var(--border-color);
+	padding-inline: 0.5rem;
+	padding-block: 0.25rem;
+	box-shadow: 1px 1px 0px var(--border-color);
+	position: relative;
+	user-select: none;
+	touch-action: manipulation;
+	border-radius: 2px;
+	&:hover {
+		box-shadow:
+			1px 1px 0px var(--border-color),
+			2px 2px 0px var(--border-color);
+		top: -1px;
+		left: -1px;
+	}
+	&:active {
+		box-shadow: 0px 0px 0px 0px;
+		top: 2px;
+		left: 2px;
+		border-left-width: 2px;
+		border-top-width: 2px;
+	}
+	&.primary {
+		--fill: var(--primary);
+		--border-color: var(--primary-dark);
+		color: black;
+	}
+	&.info {
+		--fill: var(--info);
+		--border-color: var(--info-dark);
+		color: black;
+	}
+	&.success {
+		--fill: var(--success);
+		--border-color: var(--success-dark);
+		color: black;
+	}
+	&.warning {
+		--fill: var(--warning);
+		--border-color: var(--warning-dark);
+		color: black;
+	}
+	&.danger {
+		--fill: var(--danger);
+		--border-color: var(--danger-dark);
+		color: black;
+	}
+}
