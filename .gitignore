@@ -1,6 +1,7 @@
-node_modules
-dev-dist
-.vite
+node_modules/
+dev-dist/
+.vite/
+/output/
 
 # Local Netlify folder
 .netlify
