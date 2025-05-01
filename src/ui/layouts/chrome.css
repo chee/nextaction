@@ -1,17 +1,22 @@
 .chrome {
-	height: 100%;
 	transition: background 0.4s;
 	&:has(.action--expanded) {
-		background: color-mix(
-			in oklab,
-			var(--page-fill),
-			var(--sidebar-fill) 10%
-		);
+		background: color-mix(in oklab, var(--page-fill), var(--sidebar-fill) 10%);
 	}
 }
 
 :root {
 	--sidebar-fill: var(--sunglow);
+	--sidebar-fill-dark: color-mix(
+		in oklab,
+		var(--sidebar-fill),
+		var(--page-fill) 10%
+	);
+	--sidebar-fill-light: color-mix(
+		in oklab,
+		var(--sidebar-fill),
+		var(--page-fill) 90%
+	);
 	--sidebar-line: var(--text);
 }
 
@@ -30,4 +35,9 @@
 .chrome__handle {
 	border-left: 1px solid var(--sidebar-handle-fill);
 	background: transparent;
+}
+
+.chrome__main,
+.chrome__content {
+	height: 100%;
 }

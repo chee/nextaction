@@ -1,6 +1,4 @@
 import {onCleanup} from "solid-js"
-import {useKeyDownEvent} from "@solid-primitives/keyboard"
-import {createEffect} from "solid-js"
 
 const keymap = {
 	cmd: "command",
@@ -37,7 +35,12 @@ enum mod {
 	command = 4,
 }
 
-function modshift(event: KeyboardEvent) {
+export function modshift(event: {
+	ctrlKey: boolean
+	shiftKey: boolean
+	altKey: boolean
+	metaKey: boolean
+}) {
 	let bits = 0
 	bits |= +event.shiftKey << mod.shift
 	bits |= +event.ctrlKey << mod.control
@@ -47,6 +50,16 @@ function modshift(event: KeyboardEvent) {
 }
 
 interface Options {
+	/**
+	 * trigger on keyup?
+	 * @default false
+	 */
+	keyup?(): boolean
+	/**
+	 * trigger on keydown?
+	 * @default true
+	 */
+	keydown?(): boolean
 	/**
 	 * prevent browser default?
 	 * @default true
@@ -66,23 +79,44 @@ export function useHotkeys(
 	action: (...args: unknown[]) => void,
 	options?: Options
 ) {
-	const eventSignal = useKeyDownEvent()
-	const shouldPreventDefault = () => options?.preventDefault?.() ?? true
+	const shouldTriggerOnKeyup = options?.keyup?.() ?? false
+	const shouldTriggerOnKeydown = options?.keydown ?? true
+	const shouldPreventDefault = options?.preventDefault ?? (() => true)
 	const binding = parse(keybinding)
 
-	createEffect(() => {
-		const event = eventSignal()
-		if (!event) return
+	function onkeydown(event: KeyboardEvent) {
+		if (shouldTriggerOnKeydown) {
+			const bits = modshift(event)
 
-		const bits = modshift(event)
-
-		if (bits == binding.mask && event.key.toLowerCase() == binding.key) {
-			if (shouldPreventDefault()) {
-				event.preventDefault()
+			if (bits == binding.mask && event.key.toLowerCase() == binding.key) {
+				if (shouldPreventDefault()) {
+					event.preventDefault()
+				}
+				action()
 			}
-			action()
 		}
-	})
+	}
+	function onkeyup(event: KeyboardEvent) {
+		if (shouldTriggerOnKeyup) {
+			const bits = modshift(event)
+
+			if (bits == binding.mask && event.key == binding.key) {
+				if (shouldPreventDefault()) {
+					event.preventDefault()
+				}
+				action()
+			}
+		}
+	}
+
+	self.addEventListener("keydown", onkeydown)
+	onCleanup(() => self.removeEventListener("keydown", onkeydown))
+	self.addEventListener("keyup", onkeyup)
+	onCleanup(() => self.removeEventListener("keyup", onkeyup))
+	return () => {
+		self.removeEventListener("keydown", onkeydown)
+		self.removeEventListener("keyup", onkeyup)
+	}
 }
 
 function parse(keybinding: string) {

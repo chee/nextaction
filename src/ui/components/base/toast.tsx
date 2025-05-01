@@ -1,22 +1,21 @@
 import "./toast.css"
-import { Toast, toaster } from "@kobalte/core/toast"
-import type { JSX } from "solid-js"
-import { Portal } from "solid-js/web"
+import {Toast, toaster} from "@kobalte/core/toast"
+import type {JSX} from "solid-js"
+import {Portal} from "solid-js/web"
 
 export function show(opts: {
 	title: JSX.Element
 	body: JSX.Element
 	modifier?: string
 }) {
-	const { title, body, modifier } = opts
-	return toaster.show((props) => (
+	const {title, body, modifier} = opts
+	return toaster.show(props => (
 		<Toast
 			toastId={props.toastId}
 			classList={{
 				toast: true,
 				[`toast--${modifier}`]: !!modifier,
-			}}
-		>
+			}}>
 			<div class="toast__content">
 				<div>
 					<Toast.Title class="toast__title">{title}</Toast.Title>
@@ -33,7 +32,7 @@ export function show(opts: {
 	))
 }
 
-export const toast = { show }
+export const toast = {show}
 
 export function ToastRegion() {
 	return (

@@ -1,13 +1,12 @@
-import { useHome } from "./home.ts"
-import { useActionList } from "./action-list.ts"
+import {useActionList} from "./generic/action-list.ts"
 import extend from "merge-descriptors"
+import type {InboxURL} from "@/domain/inbox.ts"
 
-export function useInbox() {
-	const home = useHome()
-	const inbox = useActionList(() => home.inboxURL)
+export function useInbox(url: () => InboxURL | undefined) {
+	const inbox = useActionList(url)
 	return extend(inbox, {
 		get url() {
-			return home.inboxURL
+			return url()
 		},
 	})
 }

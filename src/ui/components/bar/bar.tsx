@@ -1,8 +1,12 @@
-import type { JSX } from "solid-js"
 import "./bar.css"
-import { Button, type ButtonRootProps } from "@kobalte/core/button"
-import type { PolymorphicProps } from "@kobalte/core"
-export default function Bar(props: { children?: JSX.Element }) {
+import type {JSX} from "solid-js"
+import {Button, type ButtonRootProps} from "@kobalte/core/button"
+import type {PolymorphicProps} from "@kobalte/core"
+import {DropdownMenu} from "@kobalte/core/dropdown-menu"
+import {usePageContext} from "../../../viewmodel/generic/page.ts"
+import BigPlus from "../../icons/big-plus.tsx"
+
+export default function Bar(props: {children?: JSX.Element}) {
 	return <nav class="bar">{props.children}</nav>
 }
 
@@ -10,12 +14,58 @@ export function BarButton(
 	props: PolymorphicProps<"button", ButtonRootProps<HTMLButtonElement>> & {
 		icon?: JSX.Element
 		label: string
-	},
+	}
 ) {
 	return (
 		<Button class="bar-button" {...props}>
 			<span class="bar-button__icon">{props.icon}</span>
 			<span class="bar-button__label">{props.label}</span>
 		</Button>
+	)
+}
+
+export function BarMenu() {
+	return (
+		<DropdownMenu>
+			<DropdownMenu.Trigger class="bar-button">
+				<span class="bar-button__icon">
+					<svg>
+						<path
+							d="M3 8h18M3 14h18M3 20h18m"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+						/>
+					</svg>
+				</span>
+				<span class="bar-button__label">Menu</span>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Portal>
+				<DropdownMenu.Content class="popmenu">
+					<DropdownMenu.Item class="popmenu__item">
+						Commit <div class="dropdown-menu__item-right-slot">⌘+K</div>
+					</DropdownMenu.Item>
+					<DropdownMenu.Item class="dropdown-menu__item">
+						Push <div class="dropdown-menu__item-right-slot">⇧+⌘+K</div>
+					</DropdownMenu.Item>
+				</DropdownMenu.Content>
+			</DropdownMenu.Portal>
+		</DropdownMenu>
+	)
+}
+
+export function BarNewAction() {
+	const page = usePageContext()
+	return (
+		<BarButton
+			icon={<BigPlus />}
+			label="new action"
+			onClick={() => {
+				const index = page.selection.lastSelectedIndex()
+				const url = page.newAction(index == -1 ? undefined : index + 1)
+				page.expand(url)
+			}}
+		/>
 	)
 }

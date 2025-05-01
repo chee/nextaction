@@ -1,7 +1,7 @@
-import { defineConfig } from "vite"
+import {defineConfig} from "vite"
 import solid from "vite-plugin-solid"
 import wasm from "vite-plugin-wasm"
-import { VitePWA } from "vite-plugin-pwa"
+import {VitePWA} from "vite-plugin-pwa"
 import autoprefixer from "autoprefixer"
 import deno from "@deno/vite-plugin"
 
@@ -27,7 +27,7 @@ export default defineConfig({
 			},
 		}),
 	],
-	server: { port: 1232 },
+	server: {port: 1232},
 	build: {
 		target: ["esnext"],
 		outDir: "output",

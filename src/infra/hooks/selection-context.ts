@@ -1,31 +1,41 @@
 import type {Accessor} from "solid-js"
 import {createSignal} from "solid-js"
-import {createMemo} from "solid-js"
 
-export interface ListContext {
+export type SelectionDropTarget = {url: string; abovebelow?: "above" | "below"}
+
+export interface SelectionContext {
 	/** kept in the same order as the allItems */
 	selected(): string[]
 	select(target: string): void
-	add(target: string): void
+	addSelected(target: string): void
+	isSelected(target: string): boolean
 	/**
 	 * select between the closest currently selected index and the target,
 	 * in either direction */
-	addRange(target: string): void
-	remove(target: string): void
-	clear(): void
+	addSelectedRange(target: string): void
+	removeSelected(target: string): void
+	clearSelected(): void
 
 	startDrag(target: string): void
 	// performs the drag, mutating an array to match the new order
 	completeDrag(): string[]
-	cancelDrag(): void
+	endDrag(): void
 	dragged(): string[]
+	dragTarget(): string
+	setDropTarget(target: SelectionDropTarget | undefined): void
+	dropTarget(): SelectionDropTarget | undefined
 	lastSelectedIndex(): number
+	// todo add visual top and bottom selected index
 	displayed(): string[]
 }
 
-export function createListContext(
+// todo and .itemBeforeSelection and .itemAfterSelection
+// todo this should have .selectPrevious and .selectNext
+// todo and .moveSelectionUp and .moveSelectionDown
+// todo this is probably a viewmodel(mixin?)
+export function createSelectionContext(
 	allItems: Accessor<string[] | undefined>
-): ListContext {
+): SelectionContext {
 	const [dragging, setDragging] = createSignal(false)
 	const [selectedItems, setSelectedItems] = createSignal<string[]>([])
 	const dragged = () => (dragging() ? selectedItems() : [])
@@ -34,21 +44,27 @@ export function createListContext(
 		const selected = selectedItems()
 		if (!all) return []
 		if (!dragging()) return all
+
 		return all.filter(item => !selected.includes(item))
 	}
+	const [dragTarget, setDragTarget] = createSignal<string>("")
+	const [dropTarget, setDropTarget] = createSignal<SelectionDropTarget>()
 
 	return {
 		displayed,
 		select(id) {
 			setSelectedItems([id])
 		},
-		add(id) {
+		isSelected(id) {
+			return selectedItems().includes(id)
+		},
+		addSelected(id) {
 			setSelectedItems(prev => {
 				if (prev.includes(id)) return prev
 				return [...prev, id]
 			})
 		},
-		addRange(id) {
+		addSelectedRange(id) {
 			setSelectedItems(prev => {
 				if (prev.includes(id)) return prev
 				const all = allItems()
@@ -60,14 +76,14 @@ export function createListContext(
 				return all.slice(start, end + 1)
 			})
 		},
-		remove(id) {
+		removeSelected(id) {
 			setSelectedItems(prev => {
 				const index = prev.indexOf(id)
 				if (index === -1) return prev
 				return [...prev.slice(0, index), ...prev.slice(index + 1)]
 			})
 		},
-		clear() {
+		clearSelected() {
 			setSelectedItems([])
 		},
 		selected: selectedItems,
@@ -77,15 +93,21 @@ export function createListContext(
 				this.select(id)
 			}
 			setDragging(true)
+			setDragTarget(id)
 		},
+		dragTarget: dragTarget,
 		completeDrag() {
 			const dragged = [...this.dragged()]
-			setDragging(false)
+			this.endDrag()
 			return dragged
 		},
-		cancelDrag() {
+		endDrag() {
 			setDragging(false)
+			setDragTarget("")
 		},
+		setDropTarget,
+		dropTarget: () => dropTarget(),
+		// todo topSelectedIndex and bottomSelectedIndex
 		lastSelectedIndex() {
 			const all = allItems()
 			if (!all) return -1

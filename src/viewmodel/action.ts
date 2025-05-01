@@ -1,7 +1,7 @@
 import type {Accessor} from "solid-js"
-import {Action, type ActionURL} from "@/domain/action.ts"
+import {Action, parseWhen, type ActionURL} from "@/domain/action.ts"
 import {useDocument} from "solid-automerge"
-import {isComplete} from "@/domain/doable.ts"
+import {isDone, toggleCanceled, toggleCompleted} from "@/domain/doable.ts"
 import {useCodemirrorAutomerge} from "@/infra/editor/codemirror.ts"
 import type {NativeMediaType} from "@atlaskit/pragmatic-drag-and-drop/external/adapter"
 
@@ -36,30 +36,35 @@ export function useAction(url: Accessor<ActionURL>) {
 		get titleSyncExtension() {
 			return titleSyncExtension()
 		},
-
 		// todo move to useDoable
-		get done() {
-			return action()?.done
+		get state() {
+			return action()?.state ?? "open"
 		},
-		get complete() {
-			return action() && isComplete(action()!)
+		toggleCompleted(force?: boolean) {
+			handle()?.change(action => toggleCompleted(action, force))
 		},
-		toggle() {
-			handle()?.change(action => {
-				if (isComplete(action)) {
-					delete action.done
-				} else {
-					action.done = new Date()
-				}
-			})
+		toggleCanceled(force?: boolean) {
+			handle()?.change(action => toggleCanceled(action, force))
 		},
+		// todo move to dnd contract
 		get external(): {[Key in NativeMediaType]?: string} {
+			const done = action() && isDone(action()!)
 			return {
-				"text/plain": `- [${this.complete ? "x" : " "}] ${this.title}`,
-				"text/html": `<input type='checkbox' ${
-					this.complete ? "checked" : ""
-				} value="${this.title}" />`,
+				"text/plain": `- [${done ? "x" : " "}] ${this.title}`,
+				"text/html": `<input type='checkbox' ${done ? "checked" : ""} value="${
+					this.title
+				}" />`,
 			}
+		},
+		get when(): string | undefined {
+			return action()?.when
+		},
+		set when(date: string | undefined) {
+			date = parseWhen(date)
+			handle()?.change(action => {
+				if (date) action.when = date
+				else delete action.when
+			})
 		},
 	}
 }

@@ -17,23 +17,30 @@
 	display: flex;
 	flex-direction: column;
 	padding: 0.5em 0.75em;
-	border-radius: 8px;
 	min-height: 1em;
-	max-height: 2.2em;
+	border-radius: 8px;
 	transition-property: background, min-height, max-height, height, margin,
-		padding;
-	transition-duration: 0.24s;
-	overflow: hidden;
+		border-radius, padding;
+	transition-duration: 0.34s;
+
 	color: var(--action-line);
 }
 
 .action[aria-current="true"]:not([aria-expanded="true"]) {
 	background: var(--action-fill--selected);
+
+	&:has(+ .action[aria-current="true"]) {
+		border-bottom-left-radius: 0;
+		border-bottom-right-radius: 0;
+	}
+	+ .action[aria-current="true"] {
+		border-top-left-radius: 0;
+		border-top-right-radius: 0;
+	}
 }
 
 .action[aria-expanded="true"] {
 	min-height: 8em;
-	max-height: 20em;
 	background: var(--page-fill);
 	border: 1px solid var(--action-border-line);
 	box-shadow: 0 2px 2px var(--action-border-line);
@@ -48,7 +55,6 @@
 	-webkit-user-select: none;
 	user-select: none;
 	cursor: default;
-	overflow: hidden;
 }
 
 .action__editor {
@@ -57,7 +63,7 @@
 }
 
 .action:not([aria-expanded="true"]) .action__editor {
-	/* max-height: 0; */
+	max-height: 0;
 	overflow: auto;
 	height: auto;
 }
@@ -79,8 +85,18 @@
 	display: inline-block;
 	margin: 0;
 	font-size: 1rem;
+	.action--today &::before {
+		content: "✨";
+		margin-right: var(--space-1);
+	}
 	.action--expanded & {
 		width: 100%;
+		&::before {
+			display: none;
+		}
+	}
+	.today &::before {
+		display: none;
 	}
 }
 
@@ -96,10 +112,6 @@
 	outline: 0;
 }
 
-.action--done {
-	color: var(--text-light);
-}
-
 .action-indicators {
 	display: flex;
 	color: var(--color-line-unobtrusive);
@@ -112,6 +124,39 @@
 	display: flex;
 }
 
-.action--dragged {
+.action.action.action--dragged {
 	opacity: 0.5;
+}
+
+.action.action--droptarget {
+	position: relative;
+	&::before {
+		position: absolute;
+		content: "";
+		display: block;
+		left: 0;
+		right: 0;
+		background: var(--sky);
+		height: 2px;
+		width: 100vw;
+	}
+	&.action--droptarget-above {
+		&::before {
+			top: -2px;
+		}
+	}
+	&.action--droptarget-below {
+		&::before {
+			bottom: 0;
+		}
+	}
+}
+
+.action:not([aria-expanded="true"]) {
+	&.action--closed {
+		--action-line: color-mix(in oklab, var(--page-fill), var(--page-line));
+	}
+	&.action--canceled {
+		text-decoration: line-through;
+	}
 }

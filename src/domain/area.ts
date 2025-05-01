@@ -1,14 +1,17 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {Reference} from "@/domain/reference.ts"
+import type {ProjectRef} from "@/domain/project.ts"
+import type {ActionRef} from "@/domain/action.ts"
 
 export type AreaURL = AutomergeUrl & {type: "area"}
+export type AreaRef = Reference<"area">
 
-export interface Area {
+export type Area = {
 	type: "area"
 	title: string
 	icon?: string
 	notes: string
-	projects: AutomergeUrl[]
-	actions: AutomergeUrl[]
+	items: (ProjectRef | ActionRef)[]
 }
 
 export function newArea(area?: Partial<Area>): Area {
@@ -16,8 +19,15 @@ export function newArea(area?: Partial<Area>): Area {
 		type: "area",
 		title: "",
 		notes: "",
-		projects: [] as AutomergeUrl[],
-		actions: [] as AutomergeUrl[],
+		items: [],
 		...area,
 	}
+}
+
+export function isArea(area: unknown): area is Area {
+	return (area as Area).type === "area"
+}
+
+export function isAreaRef(ref: unknown): ref is AreaRef {
+	return (ref as AreaRef).ref && (ref as AreaRef).type === "area"
 }

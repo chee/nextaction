@@ -1,17 +1,18 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {InboxURL} from "./inbox.ts"
 import type {DropboxURL} from "./dropbox.ts"
-import type {ProjectURL} from "./project.ts"
-import type {AreaURL} from "./area.ts"
+import type {ProjectRef} from "./project.ts"
+import type {AreaRef} from "./area.ts"
+import type {ActionRef} from "@/domain/action.ts"
 
 export type HomeURL = AutomergeUrl & {type: "home"}
 
-export interface Home {
+export type Home = {
 	type: "home"
 	inbox: InboxURL
 	// drop-only inboxes
 	dropboxes: DropboxURL[]
-	items: (ProjectURL | AreaURL)[]
+	items: (ActionRef | ProjectRef | AreaRef)[]
 }
 
 export function newHome(home: Partial<Home> & {inbox: Home["inbox"]}): Home {

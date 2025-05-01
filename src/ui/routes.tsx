@@ -1,7 +1,7 @@
 /* @refresh reload */
-import { lazy } from "solid-js"
-import { render } from "solid-js/web"
-import { Route, Router } from "@solidjs/router"
+import {lazy} from "solid-js"
+import {render} from "solid-js/web"
+import {Route, Router} from "@solidjs/router"
 import App from "./layouts/app.tsx"
 
 render(
@@ -59,19 +59,19 @@ render(
 				/>
 
 				<Route
-					path="/tag/:tagId"
+					path="/tags/:tagId"
 					component={lazy(() => import("./pages/tag.tsx"))}
 				/>
 				<Route
-					path="/area/:areaId"
+					path="/areas/:areaId"
 					component={lazy(() => import("./pages/area.tsx"))}
 				/>
 				<Route
-					path="/project/:projectId"
+					path="/projects/:projectId"
 					component={lazy(() => import("./pages/404.tsx"))}
 				/>
 			</Route>
 		</Router>
 	),
-	document.getElementById("app")!,
+	document.getElementById("app")!
 )

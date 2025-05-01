@@ -1,82 +1,150 @@
-import Bar, {BarButton} from "../components/bar/bar.tsx"
+import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import ActionList from "@/ui/components/actions/action-list.tsx"
 import {useInboxPage} from "@/viewmodel/pages/inbox-page.ts"
-import BigPlus from "@/ui/icons/big-plus.tsx"
 import {useHotkeys} from "@/infra/lib/hotkeys.ts"
 import type {ActionURL} from "@/domain/action.ts"
-import {createShortcut} from "@solid-primitives/keyboard"
+import {useAction} from "@/viewmodel/action.ts"
+
+import {runWithOwner, getOwner} from "solid-js"
+import {PageContext} from "../../viewmodel/generic/page.ts"
 
 export default function Inbox() {
 	const page = useInboxPage()
+	const top = () =>
+		Math.max(
+			Math.min(
+				...page.selection
+					.selected()
+					.map(url => page.inbox.actionURLs.indexOf(url))
+			),
+			0
+		)
 
 	function createNewAction() {
-		const url = page.inbox.newAction({}, page.list.lastSelectedIndex() + 1)
-		page.list.select(url)
+		const url = page.inbox.newAction({}, page.selection.lastSelectedIndex() + 1)
+		page.selection.select(url)
 		setTimeout(() => {
 			page.expand(url)
 		})
 		return url
 	}
 
-	createShortcut(["ArrowUp"], () => {
-		const index = page.list.lastSelectedIndex()
+	useHotkeys("up", () => {
+		const index = page.selection.lastSelectedIndex()
 		if (index > 0) {
-			page.list.select(page.inbox.actions[index - 1].url)
+			page.selection.select(page.inbox.actions[index - 1].url)
 		} else {
-			page.list.select(page.inbox.actions[0].url)
+			page.selection.select(page.inbox.actions[0].url)
 		}
 	})
 
-	createShortcut(["ArrowDown"], () => {
-		const index = page.list.lastSelectedIndex()
-		console.log({index})
+	useHotkeys("cmd+up", () => {
+		page.inbox.moveAction(page.selection.selected() as ActionURL[], top() - 1)
+	})
+	useHotkeys("shift+up", () => {
+		const action = page.inbox.actions[top() - 1]
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		action && page.selection.addSelected(action.url)
+	})
+
+	useHotkeys("down", () => {
+		const index = page.selection.lastSelectedIndex()
 		const len = page.inbox.actions.length
 		if (index < len - 1) {
-			page.list.select(page.inbox.actions[index + 1].url)
+			page.selection.select(page.inbox.actions[index + 1].url)
 		}
 	})
 
-	createShortcut(["Backspace"], () => {
-		page.inbox.removeAction(...(page.list.selected() as ActionURL[]))
+	useHotkeys("cmd+down", () => {
+		page.inbox.moveAction(page.selection.selected() as ActionURL[], top() + 1)
 	})
-	createShortcut([" "], () => createNewAction())
-	createShortcut(["Enter"], () =>
-		page.expand(page.list.selected()[0] as ActionURL)
+
+	useHotkeys("shift+down", () => {
+		const action = page.inbox.actions[top() + 1]
+		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+		action && page.selection.addSelected(action.url)
+	})
+
+	useHotkeys("backspace", () => {
+		const index = page.selection.lastSelectedIndex()
+		page.inbox.removeAction(page.selection.selected() as ActionURL[])
+		page.selection.select(page.inbox.actions[index]?.url)
+	})
+
+	useHotkeys("space", () => createNewAction())
+	useHotkeys("enter", () =>
+		page.expand(page.selection.selected()[0] as ActionURL)
 	)
+
+	const owner = getOwner()
 	useHotkeys(
 		"cmd+k",
-		() => page.inbox.actions[page.list.lastSelectedIndex()]?.toggle(),
-		{
-			preventDefault: () => true,
-		}
+		() => {
+			runWithOwner(owner, () => {
+				const actions = page.selection
+					.selected()
+					.map(url => useAction(() => url as ActionURL))
+				const completed = actions.filter(action => action?.state == "completed")
+				const anyComplete = completed.length > 0
+				const allComplete = completed.length === actions.length
+				let force: boolean | undefined = undefined
+				if (anyComplete && !allComplete) {
+					force = true
+				}
+
+				for (const url of page.selection.selected()) {
+					useAction(() => url as ActionURL).toggleCompleted(force)
+				}
+			})
+		},
+		{preventDefault: () => true}
+	)
+	useHotkeys(
+		"cmd+alt+k",
+		() => {
+			runWithOwner(owner, () => {
+				const actions = page.selection
+					.selected()
+					.map(url => useAction(() => url as ActionURL))
+				const canceled = actions.filter(action => action?.state == "canceled")
+				const anyCanceled = canceled.length > 0
+				const allCanceled = canceled.length === actions.length
+				let force: boolean | undefined = undefined
+				if (anyCanceled && !allCanceled) {
+					force = true
+				}
+
+				for (const url of page.selection.selected()) {
+					useAction(() => url as ActionURL).toggleCanceled(force)
+				}
+			})
+		},
+		{preventDefault: () => true}
 	)
 
 	return (
-		<div class="inbox">
-			<Bar>
-				<BarButton
-					icon={<BigPlus />}
-					label="new action"
-					onClick={() => {
-						const url = page.inbox.newAction()
-						page.list.select(url)
-					}}
-				/>
-			</Bar>
-			<div class="page">
-				<h1 class="page-title">
-					<div class="page-title__icon">📥</div>
-					<span class="page-title__title">Inbox</span>
-				</h1>
-				<ActionList
-					list={page.list}
-					expand={page.expand}
-					collapse={page.collapse}
-					isSelected={url => page.list.selected().includes(url)}
-					isExpanded={url => !!page.expanded()?.includes(url)}
-					{...page.inbox}
-				/>
+		<PageContext.Provider value={page}>
+			<div class="inbox page-container">
+				<Bar>
+					<BarNewAction />
+					<BarMenu />
+				</Bar>
+
+				<div class="page">
+					<h1 class="page-title">
+						<div class="page-title__icon">📥</div>
+						<span class="page-title__title">Inbox</span>
+					</h1>
+					<ActionList
+						selection={page.selection}
+						expand={page.expand}
+						collapse={page.collapse}
+						isSelected={page.selection.isSelected}
+						isExpanded={page.isExpanded}
+						{...page.inbox}
+					/>
+				</div>
 			</div>
-		</div>
+		</PageContext.Provider>
 	)
 }

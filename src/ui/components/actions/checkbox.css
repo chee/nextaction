@@ -1,0 +1,29 @@
+:root {
+	--checkbox-closed-fill: var(--primary-dark);
+	--checkbox-closed-line: var(--white);
+}
+
+.checkbox {
+	border-radius: 7px;
+	border: 1px solid var(--page-dark);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 20px;
+	height: 20px;
+
+	svg {
+		width: 90%;
+		height: 90%;
+	}
+}
+
+.checkbox--someday {
+	border-style: dashed;
+}
+
+.checkbox--closed {
+	border-color: var(--checkbox-closed-fill);
+	background-color: var(--checkbox-closed-fill);
+	color: var(--checkbox-closed-line);
+}

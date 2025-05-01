@@ -4,6 +4,13 @@
 	--page-max-width: 1024px;
 }
 
+.page-container {
+	display: flex;
+	flex-direction: column;
+	height: 100%;
+	width: 100%;
+}
+
 .page {
 	display: flex;
 	flex-direction: column;
@@ -13,4 +20,5 @@
 	height: 100%;
 	max-width: var(--page-max-width);
 	margin: auto;
+	width: 100%;
 }
