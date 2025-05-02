@@ -10,18 +10,19 @@ import {PageContext} from "../../viewmodel/generic/page.ts"
 
 export default function Inbox() {
 	const page = useInboxPage()
-	const top = () =>
+	const topSelectedItemIndex = () =>
 		Math.max(
 			Math.min(
 				...page.selection
 					.selected()
-					.map(url => page.inbox.actionURLs.indexOf(url))
+					// todo visible items only
+					.map(url => page.visibleItemURLs.indexOf(url as ActionURL))
 			),
 			0
 		)
 
 	function createNewAction() {
-		const url = page.inbox.newAction({}, page.selection.lastSelectedIndex() + 1)
+		const url = page.newAction(page.selection.lastSelectedIndex() + 1)
 		page.selection.select(url)
 		setTimeout(() => {
 			page.expand(url)
@@ -32,17 +33,20 @@ export default function Inbox() {
 	useHotkeys("up", () => {
 		const index = page.selection.lastSelectedIndex()
 		if (index > 0) {
-			page.selection.select(page.inbox.actions[index - 1].url)
+			page.selection.select(page.visibleItems[index - 1].url)
 		} else {
-			page.selection.select(page.inbox.actions[0].url)
+			page.selection.select(page.visibleItems[0].url)
 		}
 	})
 
 	useHotkeys("cmd+up", () => {
-		page.inbox.moveAction(page.selection.selected() as ActionURL[], top() - 1)
+		page.inbox.moveAction(
+			page.selection.selected() as ActionURL[],
+			topSelectedItemIndex() - 1
+		)
 	})
 	useHotkeys("shift+up", () => {
-		const action = page.inbox.actions[top() - 1]
+		const action = page.visibleItems[topSelectedItemIndex() - 1]
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		action && page.selection.addSelected(action.url)
 	})
@@ -56,11 +60,14 @@ export default function Inbox() {
 	})
 
 	useHotkeys("cmd+down", () => {
-		page.inbox.moveAction(page.selection.selected() as ActionURL[], top() + 1)
+		page.inbox.moveAction(
+			page.selection.selected() as ActionURL[],
+			topSelectedItemIndex() + 1
+		)
 	})
 
 	useHotkeys("shift+down", () => {
-		const action = page.inbox.actions[top() + 1]
+		const action = page.visibleItems[topSelectedItemIndex() + 1]
 		// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 		action && page.selection.addSelected(action.url)
 	})
@@ -68,7 +75,7 @@ export default function Inbox() {
 	useHotkeys("backspace", () => {
 		const index = page.selection.lastSelectedIndex()
 		page.inbox.removeAction(page.selection.selected() as ActionURL[])
-		page.selection.select(page.inbox.actions[index]?.url)
+		page.selection.select(page.visibleItems[index]?.url)
 	})
 
 	useHotkeys("space", () => createNewAction())
@@ -135,14 +142,16 @@ export default function Inbox() {
 						<div class="page-title__icon">📥</div>
 						<span class="page-title__title">Inbox</span>
 					</h1>
-					<ActionList
-						selection={page.selection}
-						expand={page.expand}
-						collapse={page.collapse}
-						isSelected={page.selection.isSelected}
-						isExpanded={page.isExpanded}
-						{...page.inbox}
-					/>
+					<main class="page-content">
+						<ActionList
+							selection={page.selection}
+							expand={page.expand}
+							collapse={page.collapse}
+							isSelected={page.selection.isSelected}
+							isExpanded={page.isExpanded}
+							actions={page.visibleItems}
+						/>
+					</main>
 				</div>
 			</div>
 		</PageContext.Provider>

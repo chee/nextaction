@@ -5,11 +5,7 @@
 		var(--page-fill),
 		var(--page-line) 10%
 	);
-	--bar-fill--active: color-mix(
-		in oklab,
-		var(--bar-fill),
-		var(--bar-line) 20%
-	);
+	--bar-fill--active: color-mix(in oklab, var(--bar-fill), var(--bar-line) 20%);
 }
 
 .bar {
@@ -19,6 +15,9 @@
 	gap: var(--space-2);
 	align-items: center;
 	justify-content: flex-end;
+	position: absolute;
+	top: var(--space-2);
+	right: var(--space-1);
 }
 
 .bar-button {

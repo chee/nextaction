@@ -22,18 +22,10 @@
 	--mosque-light: oklch(from var(--mosque) calc(l * 1.2) c h);
 	--carribean-current: oklch(0.47 0.07 196.43 / 1);
 	--carribean-current-dark: oklch(
-		from
-		var(--carribean-current)
-		calc(l * 0.8)
-		c
-		h
+		from var(--carribean-current) calc(l * 0.8) c h
 	);
 	--carribean-current-light: oklch(
-		from
-		var(--carribean-current)
-		calc(l * 1.2)
-		c
-		h
+		from var(--carribean-current) calc(l * 1.2) c h
 	);
 
 	--white: oklch(1 0 0 / 1);
@@ -72,6 +64,8 @@
 	--text-light: oklch(from var(--text) calc(l * 1.2) c h);
 
 	--page: var(--white);
-	--page-dark: oklch(from var(--page) calc(l * 0.8) c h);
+	--page-dark: oklch(from var(--page) calc(l * 0.7) c h);
 	--page-light: oklch(from var(--page) calc(l * 1.2) c h);
+
+	--caret-color: #5cdbce;
 }

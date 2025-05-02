@@ -68,8 +68,10 @@ render(
 				/>
 				<Route
 					path="/projects/:projectId"
-					component={lazy(() => import("./pages/404.tsx"))}
+					component={lazy(() => import("./pages/project.tsx"))}
 				/>
+
+				<Route path="/*" component={lazy(() => import("./pages/404.tsx"))} />
 			</Route>
 		</Router>
 	),

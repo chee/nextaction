@@ -1,8 +1,7 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import type {Doable} from "./doable.ts"
-import type {ActionRef} from "@/domain/action.ts"
-import type {HeadingRef} from "@/domain/heading.ts"
+import type {Doable} from "./generic/doable.ts"
 import type {Reference} from "@/domain/reference.ts"
+import type {AreaRef} from "./area.ts"
 
 export type ProjectURL = AutomergeUrl & {type: "project"}
 export type ProjectRef = Reference<"project">
@@ -12,18 +11,15 @@ export type Project = Doable & {
 	title: string
 	notes: string
 	icon: string
-	tags: AutomergeUrl[]
-	items: (ActionRef | HeadingRef)[]
+	parent?: AreaRef
 }
 
 export function newProject(project?: Partial<Project>): Project {
 	return {
+		icon: "📁",
 		type: "project",
 		title: "",
 		notes: "",
-		items: [],
-		icon: "📁",
-		tags: [],
 		state: "open",
 		...project,
 	}

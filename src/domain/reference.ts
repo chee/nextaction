@@ -1,6 +1,8 @@
 import type {ActionRef} from "@/domain/action.ts"
 import type {ProjectRef} from "@/domain/project.ts"
 import type {AreaRef} from "@/domain/area.ts"
+import type {HeadingRef} from "./heading.ts"
+import type {AutomergeUrl} from "@automerge/automerge-repo"
 
 export type Reference<Type extends string = string> = {
 	type: Type
@@ -8,7 +10,7 @@ export type Reference<Type extends string = string> = {
 	ref: true
 }
 
-export type AnyRef = ActionRef | ProjectRef | AreaRef
+export type AnyRef = ActionRef | ProjectRef | AreaRef | HeadingRef
 export type AnyList = {items: AnyRef[]}
 
 export function includesReference<T extends Reference>(list: T[], ref: T) {
@@ -19,7 +21,7 @@ export function indexOfReference<T extends Reference>(list: T[], ref: T) {
 	return list.findIndex(item => item.url === ref.url && item.type === ref.type)
 }
 
-function refer(type: string, url: string) {
+export function refer<T extends string, U extends string>(type: T, url: U) {
 	return {type, url, ref: true} as const
 }
 
@@ -37,6 +39,7 @@ export function addReference(
 	urls = array(urls)
 	for (const url of urls) {
 		const ref = refer(type, url)
+		if (includesReference(list, ref)) continue
 		if (index != null && index >= 0 && index < list.length) {
 			list.splice(index, 0, ref)
 		} else if (index && index < 0) {
@@ -55,6 +58,7 @@ export function removeReference(
 	urls = array(urls)
 	for (const url of urls) {
 		const ref = refer(type, url)
+		if (!includesReference(list, ref)) continue
 		const i = indexOfReference(list, ref)
 		if (i != -1) {
 			list.splice(i, 1)

@@ -1,31 +1,27 @@
 import type {Accessor} from "solid-js"
-import {Action, parseWhen, type ActionURL} from "@/domain/action.ts"
+import {Action, type ActionURL} from "@/domain/action.ts"
 import {useDocument} from "solid-automerge"
-import {isDone, toggleCanceled, toggleCompleted} from "@/domain/doable.ts"
 import {useCodemirrorAutomerge} from "@/infra/editor/codemirror.ts"
-import type {NativeMediaType} from "@atlaskit/pragmatic-drag-and-drop/external/adapter"
+import {useDoable, type DoableViewModel} from "./generic/doable.ts"
+import mergeDescriptors from "merge-descriptors"
+import type {Extension} from "@codemirror/state"
+import type {HeadingURL} from "../domain/heading.ts"
+import type {AreaURL} from "../domain/area.ts"
 
 export function useAction(url: Accessor<ActionURL>) {
 	const [action, handle] = useDocument<Action>(url)
 	const titleSyncExtension = useCodemirrorAutomerge(handle, ["title"])
 	const notesSyncExtension = useCodemirrorAutomerge(handle, ["notes"])
+	const doable = useDoable(url)
 
-	return {
-		type: "action",
+	return mergeDescriptors(doable, {
+		type: "action" as const,
 		get url() {
 			return handle()?.url as ActionURL
 		},
 		get title() {
 			return action()?.title ?? ""
 		},
-		set title(title: string) {
-			handle()?.change(action => {
-				action.title = title
-			})
-		},
-		// todo checklist
-		// todo tags
-
 		// todo move to a useNoteable
 		get notes() {
 			return action()?.notes ?? ""
@@ -36,37 +32,38 @@ export function useAction(url: Accessor<ActionURL>) {
 		get titleSyncExtension() {
 			return titleSyncExtension()
 		},
-		// todo move to useDoable
-		get state() {
-			return action()?.state ?? "open"
+		get deleted() {
+			return action()?.deleted ?? false
 		},
-		toggleCompleted(force?: boolean) {
-			handle()?.change(action => toggleCompleted(action, force))
+		get checklist() {
+			return action()?.checklist ?? []
 		},
-		toggleCanceled(force?: boolean) {
-			handle()?.change(action => toggleCanceled(action, force))
+		get parentURL() {
+			return action()?.parent?.url
 		},
-		// todo move to dnd contract
-		get external(): {[Key in NativeMediaType]?: string} {
-			const done = action() && isDone(action()!)
-			return {
-				"text/plain": `- [${done ? "x" : " "}] ${this.title}`,
-				"text/html": `<input type='checkbox' ${done ? "checked" : ""} value="${
-					this.title
-				}" />`,
-			}
+		orphan() {
+			// todo move to Parentable
+			handle()?.change(action => delete action.parent)
 		},
-		get when(): string | undefined {
-			return action()?.when
-		},
-		set when(date: string | undefined) {
-			date = parseWhen(date)
+		setParent(
+			type: "project" | "area" | "heading",
+			url: ActionURL | HeadingURL | AreaURL
+		) {
 			handle()?.change(action => {
-				if (date) action.when = date
-				else delete action.when
+				action.parent = {type, url, ref: true}
 			})
 		},
-	}
+		// todo use in dnd contract
+		// get external(): {[Key in NativeMediaType]?: string} {
+		// 	const done = action() && isDone(action()!)
+		// 	return {
+		// 		"text/plain": `- [${done ? "x" : " "}] ${this.title}`,
+		// 		"text/html": `<input type='checkbox' ${done ? "checked" : ""} value="${
+		// 			this.title
+		// 		}" />`,
+		// 	}
+		// },
+	})
 }
 
 export type ActionViewModel = ReturnType<typeof useAction>

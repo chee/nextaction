@@ -1,8 +1,8 @@
 import {clsx} from "@nberlette/clsx"
 import type {ClassValue} from "@nberlette/clsx"
 
-export type BembyModifer = string | boolean | Record<string, boolean>
-export type BembyModifiers = BembyModifer[]
+export type BembyModifier = string | boolean | Record<string, boolean>
+export type BembyModifiers = BembyModifier[]
 
 /**
  * BEM helper function to generate class names based on the BEM methodology.
@@ -17,10 +17,9 @@ export type BembyModifiers = BembyModifer[]
  * // returns "button button--primary button--disabled"
  * ```
  */
-
 export default function bemby(
 	block: string,
-	first?: BembyModifer | BembyModifiers,
+	first?: BembyModifier | BembyModifiers,
 	...modifiers: BembyModifiers
 ): string {
 	return clsx(

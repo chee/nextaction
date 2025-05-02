@@ -4,25 +4,25 @@ import {useExpandedAction, type PageContext} from "@/viewmodel/generic/page.ts"
 import {createDraggable, createListDropTarget} from "@/infra/dnd/contract.ts"
 import {createSelectionContext} from "@/infra/hooks/selection-context.ts"
 import {curl} from "@/infra/sync/automerge-repo.ts"
-import {isToday, parseIncomingWhen} from "@/domain/generic/doable.ts"
-import {useDoableListContext} from "@/viewmodel/generic/doable-list.ts"
+import {useDoableListContext} from "../generic/doable-list.ts"
 import mergeDescriptors from "merge-descriptors"
-import type {AnyDoableViewModel} from "@/viewmodel/generic/doable.ts"
+import type {AnyDoableViewModel} from "../generic/doable.ts"
+import {isSomeday} from "../../domain/generic/doable.ts"
 
-export function useTodayPage() {
+export function useSomedayPage() {
 	const home = useHome()
-	const doable = useDoableListContext(() => home.doables.filter(isToday))
 
-	const selection = createSelectionContext(() => doable.visibleItemURLs)
+	const doable = useDoableListContext(() => home.doables.filter(isSomeday))
+	const selection = createSelectionContext(() => doable.itemURLs)
+	const expanded = useExpandedAction(selection)
 
 	return mergeDescriptors(doable, {
 		selection,
-		...useExpandedAction(selection),
+		...expanded,
 		newAction(index?: number) {
-			const url = curl<ActionURL>(
-				newAction({when: parseIncomingWhen(new Date())})
-			)
+			const url = curl<ActionURL>(newAction({when: "someday"}))
 			home.list.addItem("action", url, index)
+			expanded.expand(url)
 			return url
 		},
 		createDraggable(element: HTMLElement, itemViewModel: AnyDoableViewModel) {
@@ -32,18 +32,18 @@ export function useTodayPage() {
 			return createListDropTarget(element, itemViewModel, selection, () => {
 				return {
 					accepts: ["action"],
-					drop(opts) {
-						if (opts.type !== "action") return
-						if (opts.abovebelow == "below") {
+					drop(dragged) {
+						if (dragged.type !== "action") return
+						if (dragged.abovebelow == "below") {
 							home.list.moveItemAfter(
 								"action",
-								opts.items as ActionURL[],
+								dragged.items as ActionURL[],
 								itemViewModel.url as ActionURL
 							)
 						} else {
 							home.list.moveItemBefore(
 								"action",
-								opts.items as ActionURL[],
+								dragged.items as ActionURL[],
 								itemViewModel.url as ActionURL
 							)
 						}

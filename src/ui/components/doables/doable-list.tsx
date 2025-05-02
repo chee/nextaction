@@ -2,15 +2,15 @@ import "./action-list.css"
 import bemby, {type BembyModifiers} from "bemby"
 import {Suspense} from "solid-js"
 import {For} from "solid-js"
-import {type ActionViewModel} from "@/viewmodel/action.ts"
 import Action from "@/ui/components/actions/action.tsx"
 import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
 import {usePageContext} from "@/viewmodel/generic/page.ts"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import type {AnyDoableViewModel} from "../../../viewmodel/generic/doable.ts"
 
-export default function ActionList(props: {
+export default function DoableList(props: {
 	modifiers?: BembyModifiers
-	actions: ActionViewModel[]
+	items: AnyDoableViewModel[]
 	selection: SelectionContext
 	isSelected(url: string): boolean
 	isExpanded(url: string): boolean

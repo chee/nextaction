@@ -1,8 +1,8 @@
-import Bar, {BarButton, BarMenu} from "../components/bar/bar.tsx"
+import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import ActionList from "@/ui/components/actions/action-list.tsx"
-import BigPlus from "@/ui/icons/big-plus.tsx"
 import {useTodayPage} from "../../viewmodel/pages/today-page.ts"
 import {PageContext} from "../../viewmodel/generic/page.ts"
+import type {ActionViewModel} from "../../viewmodel/action.ts"
 
 // todo maybe the page context should be passed to the bar
 // or maybe the page context should be at the chrome level
@@ -11,30 +11,12 @@ export default function Today() {
 	// todo add typical hotkeys to a hook
 	// it can be passed `selection` and `newAction` and expand`
 	// specific to the page
-	// todo newAction on this page, for instance, force-adds when
-	// to be today
 
 	return (
 		<PageContext.Provider value={page}>
-			<div class="today">
+			<div class="today page-container">
 				<Bar>
-					<BarButton
-						icon={<BigPlus />}
-						label="new action"
-						onClick={() => {
-							// todo the BigPlus button should be a component
-							// it can be passed `selection` and `newAction` and expand`
-							// specific to the page
-							// todo newAction on this page, for instance, force-adds when
-							// to be today
-							// const index = page.selection.lastSelectedIndex()
-							// const url = page.inbox.newAction(
-							// 	{},
-							// 	index == -1 ? undefined : index + 1
-							// )
-							// page.expand(url)
-						}}
-					/>
+					<BarNewAction />
 					<BarMenu />
 				</Bar>
 				<div class="page">
@@ -42,14 +24,17 @@ export default function Today() {
 						<div class="page-title__icon">✨</div>
 						<span class="page-title__title">Today</span>
 					</h1>
-					<ActionList
-						actions={page.today}
-						selection={page.selection}
-						isSelected={page.selection.isSelected}
-						isExpanded={page.isExpanded}
-						expand={page.expand}
-						collapse={page.collapse}
-					/>
+					{/* todo handle projects in today */}
+					<main class="page-content">
+						<ActionList
+							actions={page.visibleItems}
+							selection={page.selection}
+							isSelected={page.selection.isSelected}
+							isExpanded={page.isExpanded}
+							expand={page.expand}
+							collapse={page.collapse}
+						/>
+					</main>
 				</div>
 			</div>
 		</PageContext.Provider>

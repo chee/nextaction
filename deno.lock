@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@nick/clsx@~0.3.1": "0.3.1",
+    "jsr:@yurkimus/curry@^0.0.4": "0.0.4",
     "npm:@atlaskit/pragmatic-drag-and-drop-flourish@^2.0.2": "2.0.2",
     "npm:@atlaskit/pragmatic-drag-and-drop-hitbox@^1.0.3": "1.0.3",
     "npm:@atlaskit/pragmatic-drag-and-drop@^1.5.3": "1.6.0",
@@ -25,12 +26,15 @@
     "npm:@types/node@*": "22.12.0",
     "npm:autoprefixer@^10.4.21": "10.4.21_postcss@8.5.3",
     "npm:debug@^4.4.0": "4.4.0",
+    "npm:emoji-picker-element@^1.26.3": "1.26.3",
     "npm:eslint-plugin-solid@~0.14.5": "0.14.5_eslint@9.25.1_typescript@5.8.3",
     "npm:eslint@^9.25.1": "9.25.1",
     "npm:globals@16": "16.0.0",
     "npm:jsdom@^26.1.0": "26.1.0",
     "npm:merge-descriptors@2": "2.0.0",
+    "npm:radash@^12.1.0": "12.1.0",
     "npm:solid-automerge@^1.0.0-beta.6": "1.0.0-beta.6_@automerge+automerge-repo@2.0.0-alpha.26_solid-js@1.9.5__seroval@1.2.1",
+    "npm:solid-click-outside@^0.0.1": "0.0.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:solid-dismissible@~0.1.1": "0.1.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:solid-js@^1.9.5": "1.9.5_seroval@1.2.1",
     "npm:solid-transition-group@0.3": "0.3.0_solid-js@1.9.5__seroval@1.2.1",
@@ -48,6 +52,9 @@
   "jsr": {
     "@nick/clsx@0.3.1": {
       "integrity": "6c7bfc9217a7e5fbf7b0c283fab25336e428f74baf9c011e5c46aa8121eb6713"
+    },
+    "@yurkimus/curry@0.0.4": {
+      "integrity": "fdcd2219c0da9bd1351eaccd22e90e5ea45a1b684ab623291d367f000a354dc6"
     }
   },
   "npm": {
@@ -2451,6 +2458,9 @@
     "electron-to-chromium@1.5.144": {
       "integrity": "sha512-eJIaMRKeAzxfBSxtjYnoIAw/tdD6VIH6tHBZepZnAbE3Gyqqs5mGN87DvcldPUbVkIljTK8pY0CMcUljP64lfQ=="
     },
+    "emoji-picker-element@1.26.3": {
+      "integrity": "sha512-fOMG44d/3OqTe1pPqlu5H4ZtWg7gK4Le6Bt24JTKtDyce5+EO3Mo8WA95cKHbPSsSsg7ehM12M1x3Y6U6fgvTQ=="
+    },
     "entities@6.0.0": {
       "integrity": "sha512-aKstq2TDOndCn4diEyp9Uq/Flu2i1GlLkc6XIDQSDMuaFE3OPW5OphLCyQ5SpSJZTb4reN+kTcYru5yIfXoRPw=="
     },
@@ -3526,6 +3536,9 @@
     "queue-microtask@1.2.3": {
       "integrity": "sha512-NuaNSa6flKT5JaSYQzJok04JzTL1CA6aGhv5rfLW3PgqA+M2ChpZQnAC8h8i4ZFkBS8X5RqkDBHA7r4hej3K9A=="
     },
+    "radash@12.1.0": {
+      "integrity": "sha512-b0Zcf09AhqKS83btmUeYBS8tFK7XL2e3RvLmZcm0sTdF1/UUlHSsjXdCcWNxe7yfmAlPve5ym0DmKGtTzP6kVQ=="
+    },
     "raf-schd@4.0.3": {
       "integrity": "sha512-tQkJl2GRWh83ui2DiPTJz9wEiMN20syf+5oKfB03yYP7ioZcJwsIK8FjrtLwH1m7C7e+Tt2yYBlrOpdT+dyeIQ=="
     },
@@ -3820,6 +3833,12 @@
         "@automerge/automerge-repo",
         "@solid-primitives/utils",
         "cabbages",
+        "solid-js"
+      ]
+    },
+    "solid-click-outside@0.0.1_solid-js@1.9.5__seroval@1.2.1": {
+      "integrity": "sha512-+larR66shuAt4XARz4VY5T9NE6O3ljU0I07IRGe5fUMyajoOZ+vcY1hx9/Z3d/vxwYtCGKp3SwTGQ8oA80JLqg==",
+      "dependencies": [
         "solid-js"
       ]
     },
@@ -4730,6 +4749,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@nick/clsx@~0.3.1",
+      "jsr:@yurkimus/curry@^0.0.4",
       "npm:@atlaskit/pragmatic-drag-and-drop-flourish@^2.0.2",
       "npm:@atlaskit/pragmatic-drag-and-drop-hitbox@^1.0.3",
       "npm:@atlaskit/pragmatic-drag-and-drop@^1.5.3",
@@ -4752,12 +4772,15 @@
       "npm:@types/debug@^4.1.12",
       "npm:autoprefixer@^10.4.21",
       "npm:debug@^4.4.0",
+      "npm:emoji-picker-element@^1.26.3",
       "npm:eslint-plugin-solid@~0.14.5",
       "npm:eslint@^9.25.1",
       "npm:globals@16",
       "npm:jsdom@^26.1.0",
       "npm:merge-descriptors@2",
+      "npm:radash@^12.1.0",
       "npm:solid-automerge@^1.0.0-beta.6",
+      "npm:solid-click-outside@^0.0.1",
       "npm:solid-dismissible@~0.1.1",
       "npm:solid-js@^1.9.5",
       "npm:solid-transition-group@0.3",

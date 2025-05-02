@@ -15,15 +15,29 @@
 	svg {
 		width: 90%;
 		height: 90%;
+		display: none;
+		--checkbox-closed-fill: transparent;
 	}
+
+	transition: background-color 0.14s linear, border-color 0.1s linear,
+		scale 0.1s ease;
 }
 
 .checkbox--someday {
 	border-style: dashed;
 }
 
+.checkbox--mousing {
+	scale: 1.1;
+}
+
 .checkbox--closed {
+	transition: none;
 	border-color: var(--checkbox-closed-fill);
 	background-color: var(--checkbox-closed-fill);
 	color: var(--checkbox-closed-line);
+	svg {
+		--checkbox-closed-fill: var(--primary-dark);
+		display: block;
+	}
 }

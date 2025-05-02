@@ -1,7 +1,5 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {Reference} from "@/domain/reference.ts"
-import type {ProjectRef} from "@/domain/project.ts"
-import type {ActionRef} from "@/domain/action.ts"
 
 export type AreaURL = AutomergeUrl & {type: "area"}
 export type AreaRef = Reference<"area">
@@ -11,15 +9,14 @@ export type Area = {
 	title: string
 	icon?: string
 	notes: string
-	items: (ProjectRef | ActionRef)[]
 }
 
 export function newArea(area?: Partial<Area>): Area {
 	return {
+		icon: "🗃️",
 		type: "area",
 		title: "",
 		notes: "",
-		items: [],
 		...area,
 	}
 }

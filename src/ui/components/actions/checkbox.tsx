@@ -5,11 +5,12 @@ import {modshift} from "@/infra/lib/hotkeys.ts"
 import {Show, Switch} from "solid-js"
 import {Match} from "solid-js"
 import {ContextMenu} from "@kobalte/core/context-menu"
+import {createSignal} from "solid-js"
 
 function Tick() {
 	return (
 		<svg
-			class="checkbox__indicator"
+			class="checkbox__indicator checkbox__indicator--tick"
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 24 24"
 			fill="none"
@@ -18,6 +19,22 @@ function Tick() {
 			stroke-linecap="round"
 			stroke-linejoin="round">
 			<path d="M20 6L9 17l-5-5" />
+			<rect
+				x="0"
+				y="0"
+				width="22"
+				height="22"
+				stroke="none"
+				fill="var(--checkbox-closed-fill)">
+				<animate
+					attributeName="x"
+					values="0;24;24"
+					dur=".24s"
+					begin=".1s"
+					fill="freeze"
+					repeatCount={0}
+				/>
+			</rect>
 		</svg>
 	)
 }
@@ -40,6 +57,7 @@ function Cross() {
 
 export default function Checkbox(props: ActionViewModel) {
 	const closed = () => ["canceled", "completed"].includes(props.state)
+	const [mousing, setMousing] = createSignal(false)
 	return (
 		<ContextMenu>
 			<ContextMenu.Trigger>
@@ -47,8 +65,23 @@ export default function Checkbox(props: ActionViewModel) {
 					class={bemby("checkbox", props.state, {
 						closed: closed(),
 						someday: props.when == "someday",
+						// todo bemby should call functions with .length == 0
+						mousing: mousing(),
 					})}
 					role="radiogroup"
+					onMouseDown={event => {
+						event.stopPropagation()
+						event.stopImmediatePropagation()
+						event.preventDefault()
+						setMousing(true)
+						globalThis.addEventListener(
+							"mouseup",
+							() => {
+								setMousing(false)
+							},
+							{once: true}
+						)
+					}}
 					onClick={event => {
 						if (event.altKey) {
 							props.toggleCanceled(!closed())
@@ -70,7 +103,7 @@ export default function Checkbox(props: ActionViewModel) {
 						</Match>
 						<Match when={props.state == "doing"}>
 							<svg
-								class="checkbox__indicator"
+								class="checkbox__indicator "
 								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="none"

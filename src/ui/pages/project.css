@@ -1,0 +1,4 @@
+.text-editor--notes.text-editor--project {
+	min-height: 5em;
+	padding-bottom: var(--space-2);
+}

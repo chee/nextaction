@@ -7,6 +7,19 @@
 
 :root {
 	--sidebar-fill: var(--sunglow);
+}
+
+.chrome__sidebar {
+	background: var(--sidebar-fill);
+	color: var(--sidebar-line);
+	min-width: 0;
+	&[data-collapsed] > * {
+		display: none;
+	}
+}
+
+:root {
+	--sidebar-handle-fill: var(--sidebar-fill-dark);
 	--sidebar-fill-dark: color-mix(
 		in oklab,
 		var(--sidebar-fill),
@@ -20,18 +33,6 @@
 	--sidebar-line: var(--text);
 }
 
-.chrome__sidebar {
-	background: var(--sidebar-fill);
-	color: var(--sidebar-line);
-	&[data-collapsed] > * {
-		display: none;
-	}
-}
-
-:root {
-	--sidebar-handle-fill: var(--sunglow-dark);
-}
-
 .chrome__handle {
 	border-left: 1px solid var(--sidebar-handle-fill);
 	background: transparent;
@@ -39,5 +40,5 @@
 
 .chrome__main,
 .chrome__content {
-	height: 100%;
+	height: 100vh;
 }
