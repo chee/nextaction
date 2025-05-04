@@ -243,6 +243,7 @@ export default function Sidebar() {
 			</div>
 			<DevelopmentNote
 				problems={[
+					"Keyboard shortcuts have been disabled",
 					"Upcoming does not exist",
 					"Logbook does not exist",
 					"Trash does not exist",
