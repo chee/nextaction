@@ -2,22 +2,33 @@ import "./sidebar.css"
 import {A, type AnchorProps} from "@solidjs/router"
 import {For, splitProps, Suspense} from "solid-js"
 import type {JSX} from "solid-js"
-import {useAction} from "@/viewmodel/action.ts"
 import {getOwner} from "solid-js"
-import {runWithOwner} from "solid-js"
 import {useHome} from "@/viewmodel/home.ts"
-import {DropdownMenu} from "@kobalte/core/dropdown-menu"
-import {createDropTarget, type DropTargetPayload} from "@/infra/dnd/contract.ts"
-import {Action, type ActionURL} from "@/domain/action.ts"
-import {Button} from "@kobalte/core/button"
-import type {AreaViewModel} from "@/viewmodel/area.ts"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
+import {
+	createDropTarget,
+	type DropTargetContract,
+} from "@/infra/dnd/contract.ts"
+import {isAreaViewModel, type AreaViewModel} from "@/viewmodel/area.ts"
+import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
 import bemby from "bemby"
+import {refer} from "@/domain/reference.ts"
+import SidebarFooter from "./sidebar-footer.tsx"
+import {ContextMenu} from "@kobalte/core/context-menu"
+import {encode} from "@/infra/lib/compress.ts"
 import {toast} from "../base/toast.tsx"
-import Project from "../../pages/project.tsx"
-import repo from "../../../infra/sync/automerge-repo.ts"
-import {refer} from "../../../domain/reference.ts"
-import type {ProjectURL} from "../../../domain/project.ts"
+import {isDoable} from "../../../domain/generic/doable.ts"
+import {
+	useDoableMixin,
+	type AnyDoableViewModel,
+} from "../../../viewmodel/mixins/doable.ts"
+import {getParentURL} from "../../../infra/parent-registry.ts"
+import {getType} from "../../../infra/type-registry.ts"
+import type {ActionRef} from "../../../domain/action.ts"
+import {createDragAndDropContext} from "../../../infra/dnd/dnd-context.ts"
+import {useViewModel} from "../../../viewmodel/useviewmodel.ts"
+import type {ActionViewModel} from "../../../viewmodel/action.ts"
+import type {HeadingViewModel} from "../../../viewmodel/heading.ts"
+import DevelopmentNote from "../development-note.tsx"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
@@ -29,54 +40,54 @@ export default function Sidebar() {
 		<div class="sidebar">
 			<div class="sidebar__links">
 				<nav class="sidebar__section sidebar__section--default sidebar__section--inboxes">
-					<Sidelink
-						href="/inbox"
-						icon="📥"
-						droptarget={{
-							accepts: ["action"],
-							drop(payload) {
-								for (const url of payload.items as ActionURL[]) {
-									runWithOwner(owner, () => {
-										const action = useAction(() => url)
-										action.clearWhen()
-										home.giveActionToInbox(url)
-									})
-								}
-							},
-						}}>
+					<Sidelink href="/inbox" icon="📥">
 						Inbox
 					</Sidelink>
 				</nav>
 				<nav class="sidebar__section sidebar__section--default sidebar__section--views">
 					<Sidelink
+						href="/today"
+						icon="✨"
 						droptarget={{
-							accepts: ["action"],
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item => item.type === "action" || item.type == "project"
+								)
+							},
 							drop(payload) {
-								for (const url of payload.items as ActionURL[]) {
-									runWithOwner(owner, () => {
-										const action = useAction(() => url)
-										action.setWhen("today")
-										home.adoptActionFromInbox(url)
-									})
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useDoableMixin(() => item.url)
+									vm.setWhen("today")
 								}
 							},
-						}}
-						href="/today"
-						icon="✨">
+						}}>
 						Today
 					</Sidelink>
 					<Sidelink
 						href="/upcoming"
 						icon="📅"
 						droptarget={{
-							accepts: ["action"],
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item => item.type === "action" || item.type == "project"
+								)
+							},
 							drop(payload) {
-								for (const url of payload.items as ActionURL[]) {
-									runWithOwner(owner, () => {
-										home.adoptActionFromInbox(url)
-										const action = useAction(() => url)
-										action.setWhen("tomorrow")
-									})
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useDoableMixin(() => item.url)
+									vm.setWhen("tomorrow")
 								}
 							},
 						}}>
@@ -86,14 +97,21 @@ export default function Sidebar() {
 						href="/anytime"
 						icon="🌻"
 						droptarget={{
-							accepts: ["action"],
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item => item.type === "action" || item.type == "project"
+								)
+							},
 							drop(payload) {
-								for (const url of payload.items as ActionURL[]) {
-									runWithOwner(owner, () => {
-										home.adoptActionFromInbox(url)
-										const action = useAction(() => url)
-										action.clearWhen()
-									})
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useDoableMixin(() => item.url)
+									vm.setWhen(undefined)
 								}
 							},
 						}}>
@@ -103,14 +121,21 @@ export default function Sidebar() {
 						href="/someday"
 						icon="🎁"
 						droptarget={{
-							accepts: ["action"],
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item => item.type === "action" || item.type == "project"
+								)
+							},
 							drop(payload) {
-								for (const url of payload.items as ActionURL[]) {
-									runWithOwner(owner, () => {
-										const action = useAction(() => url)
-										action.setWhen("someday")
-										home.adoptActionFromInbox(url)
-									})
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useDoableMixin(() => item.url)
+									vm.setWhen("someday")
 								}
 							},
 						}}>
@@ -118,24 +143,78 @@ export default function Sidebar() {
 					</Sidelink>
 				</nav>
 				<nav class="sidebar__section sidebar__section--default sidebar__section--archive">
-					<Sidelink href="/logbook" icon="✅">
+					<Sidelink
+						href="/logbook"
+						icon="✅"
+						droptarget={{
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item => item.type === "action" || item.type == "project"
+								)
+							},
+							drop(payload) {
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useDoableMixin(() => item.url)
+									vm.toggleCompleted(true)
+								}
+							},
+						}}>
 						Logbook
 					</Sidelink>
 					<Sidelink
 						href="/trash"
 						icon="🚮"
 						droptarget={{
-							accepts: ["action"],
-							drop() {
-								/* todo */
+							accepts(source) {
+								if (!source?.items) return false
+								return source.items.every(
+									item =>
+										item.type === "action" ||
+										item.type == "project" ||
+										item.type == "area" ||
+										item.type == "heading"
+								)
+							},
+							drop(payload) {
+								for (const item of payload.items) {
+									const parent = getParentURL(item.url)
+									const parentType = getType(parent)
+									if (parentType === "inbox") {
+										home.adoptActionFromInbox(item as ActionRef)
+									}
+									const vm = useViewModel(() => ({
+										type: item.type as
+											| "action"
+											| "area"
+											| "project"
+											| "heading",
+										url: item.url,
+									})) as
+										| ActionViewModel
+										| AreaViewModel
+										| ProjectViewModel
+										| HeadingViewModel
+									vm.delete()
+								}
 							},
 						}}>
 						Trash
 					</Sidelink>
 				</nav>
-				<nav class="sidebar__section sidebar__section--projects">
-					<Suspense>
-						<For each={home.projects}>
+				<Suspense>
+					<nav class="sidebar__section sidebar__section--projects">
+						<For
+							each={
+								home.list.items.filter(
+									project => isProjectViewModel(project) && !project.deleted
+								) as ProjectViewModel[]
+							}>
 							{project => {
 								return (
 									<Suspense>
@@ -144,112 +223,42 @@ export default function Sidebar() {
 								)
 							}}
 						</For>
-					</Suspense>
-				</nav>
+					</nav>
 
-				<For each={home.areas}>
-					{area => {
-						return (
-							<Suspense>
-								<nav class={bemby("sidebar__section", "area")}>
-									<SidebarArea area={area} />
-								</nav>
-							</Suspense>
-						)
-					}}
-				</For>
+					<For
+						each={home.list.items.filter(
+							area => isAreaViewModel(area) /*&& !area.deleted*/
+						)}>
+						{area => {
+							return (
+								<Suspense>
+									<nav class={bemby("sidebar__section", "area")}>
+										<SidebarArea area={area} />
+									</nav>
+								</Suspense>
+							)
+						}}
+					</For>
+				</Suspense>
 			</div>
-			{/* todo move to its own component */}
-			<footer class="sidebar-footer">
-				<DropdownMenu>
-					<DropdownMenu.Trigger
-						class="sidebar-footer__button"
-						title="Add project or area">
-						➕ <span class="sidebar-footer__optional-text">Add List</span>
-					</DropdownMenu.Trigger>
-					<DropdownMenu.Portal>
-						<DropdownMenu.Content class="popmenu popmenu--new-list">
-							<DropdownMenu.Item
-								class="popmenu__item"
-								onClick={() => {
-									home.newProject()
-								}}>
-								<div class="sidebar-footer-new-list-choice">
-									<span class="sidebar-footer-new-list-choice__title">
-										<span class="sidebar-footer-new-list-choice__icon">🗂️</span>
-										New Project
-									</span>
-									<p class="sidebar-footer-new-list-choice__description">
-										A set of actions that will lead to a goal
-									</p>
-								</div>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								class="popmenu__item"
-								onClick={() => {
-									home.newArea()
-								}}>
-								<div class="sidebar-footer-new-list-choice">
-									<span class="sidebar-footer-new-list-choice__title">
-										<span class="sidebar-footer-new-list-choice__icon">🗃️</span>{" "}
-										New Area
-									</span>
-									<p class="sidebar-footer-new-list-choice__description">
-										A group of projects and actions for an area of your life
-									</p>
-								</div>
-							</DropdownMenu.Item>
-							<DropdownMenu.Item
-								class="popmenu__item"
-								onClick={() => {
-									// const ref = window.prompt("")
-									// home.newArea()
-								}}>
-								<div class="sidebar-footer-new-list-choice">
-									<span class="sidebar-footer-new-list-choice__title">
-										<span class="sidebar-footer-new-list-choice__icon">👯</span>{" "}
-										Import from friend
-									</span>
-									<p class="sidebar-footer-new-list-choice__description">
-										Import a project or area from a friend
-									</p>
-								</div>
-							</DropdownMenu.Item>
-						</DropdownMenu.Content>
-					</DropdownMenu.Portal>
-				</DropdownMenu>
+			<DevelopmentNote
+				problems={[
+					"Upcoming does not exist",
+					"Logbook does not exist",
+					"Trash does not exist",
+					"Areas do not work",
+					"There are no settings",
+				]}
+			/>
 
-				<Button
-					class="sidebar-footer__button"
-					title="Open settings"
-					onClick={() => {
-						toast.show({
-							title: "Settings?",
-							body: "lol! what settings?",
-						})
-					}}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						viewBox="0 0 24 24"
-						style={{height: "1em"}}>
-						<path
-							fill="none"
-							stroke="currentColor"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							stroke-width="2"
-							d="M4 10a2 2 0 1 0 4 0a2 2 0 0 0-4 0m2-6v4m0 4v8m4-4a2 2 0 1 0 4 0a2 2 0 0 0-4 0m2-12v10m0 4v2m4-13a2 2 0 1 0 4 0a2 2 0 0 0-4 0m2-3v1m0 4v11"
-						/>
-					</svg>
-				</Button>
-			</footer>
+			<SidebarFooter />
 		</div>
 	)
 }
 
 interface SidebarLinkProps extends AnchorProps {
 	icon?: JSX.Element
-	droptarget?: DropTargetPayload
+	droptarget?: DropTargetContract
 }
 
 function Sidelink(props: SidebarLinkProps) {
@@ -261,7 +270,7 @@ function Sidelink(props: SidebarLinkProps) {
 			{...anchorProps}
 			ref={element => {
 				if (sidebarProps.droptarget) {
-					createDropTarget(element, () => sidebarProps.droptarget!)
+					createDropTarget(element, sidebarProps.droptarget!)
 				}
 			}}>
 			<span class="sidebar-link__icon">{sidebarProps.icon}</span>
@@ -270,62 +279,49 @@ function Sidelink(props: SidebarLinkProps) {
 	)
 }
 
+// todo move to own file
 function SidebarProject(props: {project: ProjectViewModel}) {
-	const home = useHome()
 	return (
-		<Sidelink
-			href={`/projects/${props.project.url}`}
-			icon={props.project.icon}
-			droptarget={{
-				accepts: ["action"],
-				drop(payload) {
-					// todo payload.items should be refs, silly.
-					// todo refactor dnd to use refs
-					// todo refactor accepts to be a func?
-					// todo move this to sidebar viewmodel
-					for (const url of payload.items as ActionURL[]) {
-						console.log("dropping", url)
-						repo.find<Action>(url).then(action => {
-							action.change(action => {
-								action.parent = refer(
-									"project",
-									props.project.url as ProjectURL
-								)
+		<ContextMenu>
+			<ContextMenu.Trigger>
+				<Sidelink
+					href={`/projects/${props.project.url}`}
+					icon={props.project.icon}>
+					{props.project.title}
+				</Sidelink>
+			</ContextMenu.Trigger>
+			<ContextMenu.Portal>
+				<ContextMenu.Content class="popmenu popmenu--sidebar">
+					<ContextMenu.Item
+						class="popmenu__item"
+						onSelect={() => {
+							encode(
+								JSON.stringify(refer(props.project.type, props.project.url))
+							).then(url => {
+								navigator.clipboard.writeText(url)
 							})
-						})
-						home.adoptActionFromInbox(url)
-					}
-				},
-			}}>
-			{props.project.title}
-		</Sidelink>
+							toast.show({
+								title: "Copied share link to clipboard",
+								body: "Send it to your friend to give them access to this project.",
+								modifiers: "copied-to-clipboard",
+							})
+						}}>
+						Copy Share Link
+					</ContextMenu.Item>
+					<ContextMenu.Item
+						class="popmenu__item popmenu__item--danger"
+						onSelect={() => props.project.delete()}>
+						Delete project
+					</ContextMenu.Item>
+				</ContextMenu.Content>
+			</ContextMenu.Portal>
+		</ContextMenu>
 	)
 }
 
 function SidebarArea(props: {area: AreaViewModel}) {
-	const home = useHome()
 	return (
-		<Sidelink
-			href={`/areas/${props.area.url}`}
-			icon={props.area.icon}
-			droptarget={{
-				accepts: ["action"],
-				drop(payload) {
-					// todo payload.items should be refs, silly.
-					// todo refactor dnd to use refs
-					// todo refactor accepts to be a func?
-					// todo move this to sidebar viewmodel
-					for (const url of payload.items as ActionURL[]) {
-						console.log("dropping", url)
-						repo.find<Action>(url).then(action => {
-							action.change(action => {
-								action.parent = refer("area", props.area.url)
-							})
-						})
-						home.adoptActionFromInbox(url)
-					}
-				},
-			}}>
+		<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
 			{props.area.title}
 		</Sidelink>
 	)

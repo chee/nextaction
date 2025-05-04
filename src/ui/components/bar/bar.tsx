@@ -3,8 +3,9 @@ import type {JSX} from "solid-js"
 import {Button, type ButtonRootProps} from "@kobalte/core/button"
 import type {PolymorphicProps} from "@kobalte/core"
 import {DropdownMenu} from "@kobalte/core/dropdown-menu"
-import {usePageContext} from "../../../viewmodel/generic/page.ts"
-import BigPlus from "../../icons/big-plus.tsx"
+import BigPlus from "@/ui/icons/big-plus.tsx"
+import type {SelectionContext} from "../../../infra/hooks/selection-context.ts"
+import type {ActionURL} from "../../../domain/action.ts"
 
 export default function Bar(props: {children?: JSX.Element}) {
 	return <nav class="bar">{props.children}</nav>
@@ -55,17 +56,12 @@ export function BarMenu() {
 	)
 }
 
-export function BarNewAction() {
-	const page = usePageContext()
+export function BarNewAction(props: {newAction: () => void}) {
 	return (
 		<BarButton
 			icon={<BigPlus />}
 			label="new action"
-			onClick={() => {
-				const index = page.selection.lastSelectedIndex()
-				const url = page.newAction(index == -1 ? undefined : index + 1)
-				page.expand(url)
-			}}
+			onClick={props.newAction}
 		/>
 	)
 }

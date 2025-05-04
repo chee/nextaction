@@ -1,15 +1,12 @@
-import type {Reference} from "../reference.ts"
-
 // todo maybe a doable should have a state of "doing" or "awaiting"
 export type Doable = {
 	priority?: "!" | "!!" | "!!!"
-	when?: Date | "someday"
-	due?: Date
+	when?: Date | "someday" | null
+	due?: Date | null
 	period?: "morning" | "afternoon" | "evening"
 	state: "open" | "doing" | "awaiting" | "completed" | "canceled"
 	stateChanged?: Date
 	deleted?: boolean
-	parent?: Reference
 	// zoozoo says you don't need reminders because you should always be
 	// opening the app, and if something should happen on a certain day then
 	// you should put it in your calendar
@@ -122,6 +119,21 @@ function setState(thing: Doable, state: Doable["state"]) {
 	}
 }
 
+export function toggleState(
+	doable: Doable,
+	state: Doable["state"],
+	force?: boolean
+) {
+	if (force == null) {
+		force = doable.state != state
+	}
+	if (force) {
+		setState(doable, state)
+	} else {
+		setState(doable, "open")
+	}
+}
+
 export function toggleCompleted(thing: Doable, force?: boolean) {
 	if (force == null) {
 		force = !isCompleted(thing)
@@ -143,9 +155,9 @@ function morningify(date: Date): Date {
 }
 
 export function parseIncomingWhen(
-	date: string | undefined | Date
+	date: string | undefined | Date | null
 ): Doable["when"] {
-	if (!date) return undefined
+	if (!date) return null
 
 	if (date instanceof Date) {
 		return morningify(date)
@@ -183,4 +195,13 @@ export function setWhenFromFancy(
 		return
 	}
 	thing.when = parseIncomingWhen(date)
+}
+
+export function isDoable(thing: unknown): thing is Doable {
+	return (
+		typeof (thing as Doable).state === "string" &&
+		["open", "doing", "awaiting", "completed", "canceled"].includes(
+			(thing as Doable).state
+		)
+	)
 }

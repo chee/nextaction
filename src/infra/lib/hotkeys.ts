@@ -1,4 +1,6 @@
+import {runWithOwner} from "solid-js"
 import {onCleanup} from "solid-js"
+import {getOwner} from "solid-js"
 
 const keymap = {
 	cmd: "command",
@@ -21,6 +23,7 @@ const keymap = {
 	equals: "=",
 	equal: "=",
 	return: "enter",
+	"˚": "k",
 
 	up: "arrowup",
 	down: "arrowdown",
@@ -46,6 +49,7 @@ export function modshift(event: {
 	bits |= +event.ctrlKey << mod.control
 	bits |= +event.altKey << mod.option
 	bits |= +event.metaKey << mod.command
+
 	return bits
 }
 
@@ -67,7 +71,7 @@ interface Options {
 	preventDefault?(): boolean
 }
 
-// todo delegate to context?
+// todo delegate to a single event handler
 /**
  * @param keybinding the hotkey to bind e.g. command+backslash
  * @param action
@@ -83,6 +87,7 @@ export function useHotkeys(
 	const shouldTriggerOnKeydown = options?.keydown ?? true
 	const shouldPreventDefault = options?.preventDefault ?? (() => true)
 	const binding = parse(keybinding)
+	const owner = getOwner()
 
 	function onkeydown(event: KeyboardEvent) {
 		if (shouldTriggerOnKeydown) {
@@ -92,7 +97,7 @@ export function useHotkeys(
 				if (shouldPreventDefault()) {
 					event.preventDefault()
 				}
-				action()
+				runWithOwner(owner, action)
 			}
 		}
 	}
@@ -104,7 +109,7 @@ export function useHotkeys(
 				if (shouldPreventDefault()) {
 					event.preventDefault()
 				}
-				action()
+				runWithOwner(owner, action)
 			}
 		}
 	}

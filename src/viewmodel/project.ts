@@ -1,28 +1,72 @@
 import type {Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
-import {useCodemirrorAutomerge} from "@/infra/editor/codemirror.ts"
 import type {Project, ProjectURL} from "../domain/project.ts"
-import mergeDescriptors from "merge-descriptors"
-import {useDoable} from "./generic/doable.ts"
-import type {AreaURL} from "../domain/area.ts"
-import {refer} from "../domain/reference.ts"
+import {useDoableMixin} from "./mixins/doable.ts"
 import {isHeadingViewModel, type HeadingViewModel} from "./heading.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
+import {useListViewModel} from "./mixins/list.ts"
+import type {HeadingRef, HeadingURL} from "@/domain/heading.ts"
+import type {ActionRef, ActionURL} from "@/domain/action.ts"
+import mix from "@/infra/lib/mix.ts"
+import {useNotableMixin} from "./mixins/notable.ts"
+import {useTitleableMixin} from "./mixins/titleable.ts"
+import {dedent} from "@qnighy/dedent"
+import repo from "../infra/sync/automerge-repo.ts"
+import {
+	addReference,
+	indexOfReference,
+	type Reference,
+	type ReferencePointer,
+} from "../domain/reference.ts"
+import {addWithOptionsMethod} from "@solid-primitives/storage"
 
 export function useProject(url: Accessor<ProjectURL>) {
-	const [project, handle] = useDocument<Project>(url)
-	const titleSyncExtension = useCodemirrorAutomerge(handle, ["title"])
-	const notesSyncExtension = useCodemirrorAutomerge(handle, ["notes"])
+	const [project, handle] = useDocument<Project>(url, {repo: repo})
+	const notable = useNotableMixin(project, handle)
+	const titleable = useTitleableMixin(project, handle)
 
-	const doable = useDoable(url)
+	const doable = useDoableMixin(url)
+	const list = useListViewModel<
+		ActionViewModel | HeadingViewModel,
+		ActionRef | HeadingRef
+	>(url, "project")
 
-	return mergeDescriptors(doable, {
+	return mix(doable, list, notable, titleable, {
 		type: "project" as const,
 		get url() {
 			return url()
 		},
 		get icon() {
 			return project()?.icon ?? "🗂️"
+		},
+		delete() {
+			handle()?.change(project => {
+				project.deleted = true
+			})
+		},
+		addItem(
+			type: "heading" | "action",
+			urls: typeof type extends "heading" ? HeadingURL[] : ActionURL[],
+			index?: number | ReferencePointer<typeof type>
+		) {
+			if (type == "action") {
+				const firstHeadingIndex = list.items.findIndex(r => r.type == "heading")
+				let idx = 0
+				if (typeof index == "number") {
+					idx = index
+				} else if (index) {
+					idx =
+						indexOfReference(project()!.items, {
+							type: "action",
+							url: index.url as ActionURL,
+						}) + (index?.above ? 1 : 0)
+				}
+				idx = firstHeadingIndex == -1 ? idx : Math.min(idx, firstHeadingIndex)
+
+				handle()?.change(doc => addReference(doc.items, type, urls, idx))
+				return
+			}
+			handle()?.change(doc => addReference(doc.items, type, urls, index))
 		},
 		// todo move to domain
 		set icon(icon: string) {
@@ -31,30 +75,27 @@ export function useProject(url: Accessor<ProjectURL>) {
 				project.icon = single ?? "🗂️"
 			})
 		},
-		get title() {
-			return project()?.title ?? ""
+		toString() {
+			return dedent`\
+				## ${project()?.icon} ${titleable.title}
+
+				${notable.notes?.trim() ?? ""}
+
+				${list.items.map(item => item.toString()).join("\n")}
+			`.trim()
 		},
-		// todo move to a useNoteable
-		get notes() {
-			return project()?.notes ?? ""
+		asReference(): Reference<"project"> {
+			return {
+				type: "project" as const,
+				url: handle()?.url as ProjectURL,
+			}
 		},
-		get notesSyncExtension() {
-			return notesSyncExtension()
-		},
-		get titleSyncExtension() {
-			return titleSyncExtension()
-		},
-		get parentURL() {
-			return project()?.parent
-		},
-		// todo move to domain
-		setParent(parent: AreaURL) {
-			handle()?.change(project => {
-				project.parent = refer("area", parent)
-			})
-		},
-		orphan() {
-			handle()?.change(project => delete project.parent)
+		asPointer(above?: boolean): ReferencePointer<"project"> {
+			return {
+				type: "project" as const,
+				url: handle()?.url as ProjectURL,
+				above,
+			}
 		},
 	})
 }

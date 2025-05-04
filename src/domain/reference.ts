@@ -2,26 +2,53 @@ import type {ActionRef} from "@/domain/action.ts"
 import type {ProjectRef} from "@/domain/project.ts"
 import type {AreaRef} from "@/domain/area.ts"
 import type {HeadingRef} from "./heading.ts"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
 
+// todo make url based on type, we know what things can be referenced
 export type Reference<Type extends string = string> = {
 	type: Type
 	url: string
-	ref: true
+}
+
+export type ReferencePointer<Type extends string = string> = {
+	type: Type
+	url: string
+	above?: boolean
 }
 
 export type AnyRef = ActionRef | ProjectRef | AreaRef | HeadingRef
+export type RefMap = {
+	action: ActionRef
+	project: ProjectRef
+	area: AreaRef
+	heading: HeadingRef
+}
+
 export type AnyList = {items: AnyRef[]}
 
 export function includesReference<T extends Reference>(list: T[], ref: T) {
-	return list.some(item => item.url === ref.url && item.type === ref.type)
+	return list.some(
+		item => item == ref || (item.url === ref.url && item.type === ref.type)
+	)
 }
 
 export function indexOfReference<T extends Reference>(list: T[], ref: T) {
-	return list.findIndex(item => item.url === ref.url && item.type === ref.type)
+	return list.findIndex(
+		item => item == ref || (item.url === ref.url && item.type === ref.type)
+	)
 }
 
-export function refer<T extends string, U extends string>(type: T, url: U) {
+export function includesURL<T extends Reference>(list: T[], url: T["url"]) {
+	return list.some(item => item.url === url)
+}
+
+export function indexOfURL<T extends Reference>(list: T[], url: T["url"]) {
+	return list.findIndex(item => item.url === url)
+}
+
+export function refer<T extends AnyRef["url"], U extends AnyRef["url"]>(
+	type: T,
+	url: U
+) {
 	return {type, url, ref: true} as const
 }
 
@@ -34,16 +61,37 @@ export function addReference(
 	list: Reference[],
 	type: string,
 	urls: string | string[],
-	index?: number
+	index?: number | ReferencePointer
 ) {
 	urls = array(urls)
 	for (const url of urls) {
 		const ref = refer(type, url)
+		addReferenceByRef(list, ref, index)
+	}
+}
+
+export function addReferenceByRef(
+	list: Reference[],
+	refs: Reference | Reference[],
+	index?: number | ReferencePointer
+) {
+	refs = array(refs)
+	for (const ref of refs) {
 		if (includesReference(list, ref)) continue
-		if (index != null && index >= 0 && index < list.length) {
-			list.splice(index, 0, ref)
-		} else if (index && index < 0) {
-			list.unshift(ref)
+		if (typeof index == "number") {
+			if (index >= 0 && index < list.length + 1) {
+				list.splice(index, 0, ref)
+			} else if (index < 0) {
+				list.unshift(ref)
+			}
+		} else if (typeof index == "object") {
+			const refpoint = index
+			const i = indexOfReference(list, refer(refpoint.type, refpoint.url))
+			if (i != -1) {
+				list.splice(i + (index.above ? 0 : 1), 0, ref)
+			} else {
+				list.unshift(ref)
+			}
 		} else {
 			list.push(ref)
 		}
@@ -58,6 +106,16 @@ export function removeReference(
 	urls = array(urls)
 	for (const url of urls) {
 		const ref = refer(type, url)
+		removeReferenceByRef(list, ref)
+	}
+}
+
+export function removeReferenceByRef(
+	list: Reference[],
+	refs: Reference | Reference[]
+) {
+	refs = array(refs)
+	for (const ref of refs) {
 		if (!includesReference(list, ref)) continue
 		const i = indexOfReference(list, ref)
 		if (i != -1) {

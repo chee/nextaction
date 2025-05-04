@@ -1,0 +1,22 @@
+:root {
+	--text-editor-text-color: var(--text);
+	--text-editor-placeholder-color: var(--page-dark);
+}
+
+.text-editor--readonly {
+	cursor: default !important;
+	user-select: none !important;
+	&,
+	* {
+		cursor: default !important;
+		user-select: none !important;
+	}
+	.cm-cursorLayer {
+		display: none !important;
+	}
+	.cm-selectionLayer {
+		background: transparent;
+		display: none;
+		user-select: none;
+	}
+}

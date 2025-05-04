@@ -2,20 +2,17 @@ import "./toast.css"
 import {Toast, toaster} from "@kobalte/core/toast"
 import type {JSX} from "solid-js"
 import {Portal} from "solid-js/web"
+import type {BembyModifier, BembyModifiers} from "bemby"
+import bemby from "bemby"
 
 export function show(opts: {
 	title: JSX.Element
 	body: JSX.Element
-	modifier?: string
+	modifiers?: BembyModifier | BembyModifiers
 }) {
-	const {title, body, modifier} = opts
+	const {title, body, modifiers: modifier} = opts
 	return toaster.show(props => (
-		<Toast
-			toastId={props.toastId}
-			classList={{
-				toast: true,
-				[`toast--${modifier}`]: !!modifier,
-			}}>
+		<Toast toastId={props.toastId} class={bemby("toast", opts.modifiers)}>
 			<div class="toast__content">
 				<div>
 					<Toast.Title class="toast__title">{title}</Toast.Title>

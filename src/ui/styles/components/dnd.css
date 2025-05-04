@@ -1,1 +1,16 @@
+:root {
+	--drop-target-indicator-fill: var(--sky);
+	--drop-target-indicator-height: 2px;
+	--drop-target-indicator-width: 100cqw;
+}
 
+.page-content,
+.dnd-list {
+	container-name: "dnd-list";
+	container-type: inline-size;
+}
+
+[data-dragged] {
+	opacity: 0.5;
+	transition: opacity 0.2s ease-in-out;
+}

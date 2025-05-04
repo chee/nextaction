@@ -1,3 +1,4 @@
+// todo consider cbor
 export async function compressString(
 	string: string,
 	format: CompressionFormat = "deflate-raw"
@@ -38,6 +39,14 @@ export async function encode(string: string) {
 	return uint8arraytobase64(await compressString(string, "deflate-raw"))
 }
 
+export async function encodeJSON(object: unknown) {
+	return await encode(JSON.stringify(object as object))
+}
+
 export async function decode(base64: string) {
 	return await decompressString(base64touint8array(base64), "deflate-raw")
+}
+
+export async function decodeJSON<T>(base64: string) {
+	return JSON.parse(await decode(base64)) as T
 }

@@ -1,14 +1,14 @@
-import { useDocument } from "solid-automerge"
-import { newUser, type User, type UserURL } from "@/domain/user.ts"
-import { useUserId } from "@/infra/storage/user-id.ts"
-import { type HomeURL, newHome } from "@/domain/home.ts"
-import { curl } from "@/infra/sync/automerge-repo.ts"
-import { newInbox } from "@/domain/inbox.ts"
-import { useHome } from "@/viewmodel/home.ts"
+import {useDocument} from "solid-automerge"
+import {newUser, type User, type UserURL} from "@/domain/user.ts"
+import {useUserId} from "@/infra/storage/user-id.ts"
+import {type HomeURL, newHome} from "@/domain/home.ts"
+import repo, {curl} from "@/infra/sync/automerge-repo.ts"
+import {newInbox} from "@/domain/inbox.ts"
+import {useHome} from "@/viewmodel/home.ts"
 
 export function useUser() {
 	const [userId] = useUserId()
-	const [user, handle] = useDocument<User>(userId)
+	const [user, handle] = useDocument<User>(userId, {repo})
 	return {
 		get home() {
 			return useHome()
@@ -20,7 +20,7 @@ export function useUser() {
 			return user()?.image
 		},
 		set image(image: Uint8Array | undefined) {
-			handle()?.change((user) => {
+			handle()?.change(user => {
 				user.image = image
 			})
 		},
@@ -28,7 +28,7 @@ export function useUser() {
 			return user()?.name ?? ""
 		},
 		set name(name: string) {
-			handle()?.change((user) => {
+			handle()?.change(user => {
 				user.name = name
 			})
 		},
@@ -45,9 +45,9 @@ export function createFirstTimeUser(name: string) {
 			home: curl<HomeURL>(
 				newHome({
 					inbox: curl(newInbox()),
-				}),
+				})
 			),
-		}),
+		})
 	)
 	setUserId(url)
 }

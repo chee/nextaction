@@ -27,6 +27,9 @@
 	--carribean-current-light: oklch(
 		from var(--carribean-current) calc(l * 1.2) c h
 	);
+	--brown: oklch(from #5e3023);
+	--brown-dark: oklch(from var(--brown) calc(l * 0.8) c h);
+	--brown-light: oklch(from var(--brown) calc(l * 1.2) c h);
 
 	--white: oklch(1 0 0 / 1);
 	--white-dark: oklch(from var(--white) calc(l * 0.8) c h);
@@ -35,8 +38,8 @@
 	--black-dark: oklch(from var(--black) calc(l * 0.8) c h);
 	--black-light: oklch(from var(--black) calc(l * 1.2) c h);
 
-	--primary: var(--mynt);
-	--primary-dark: oklch(from var(--primary) calc(l * 0.8) c h);
+	--primary: #c0f5fa;
+	--primary-dark: oklch(from var(--primary) calc(l * 0.6) calc(c * 7) h);
 	--primary-light: oklch(from var(--primary) calc(l * 1.2) c h);
 
 	--link: var(--blue-crayola);
@@ -55,7 +58,7 @@
 	--warning-dark: oklch(from var(--warning) calc(l * 0.8) c h);
 	--warning-light: oklch(from var(--warning) calc(l * 1.2) c h);
 
-	--danger: var(--red);
+	--danger: #ad2e24;
 	--danger-dark: oklch(from var(--danger) calc(l * 0.8) c h);
 	--danger-light: oklch(from var(--danger) calc(l * 1.2) c h);
 
@@ -65,7 +68,10 @@
 
 	--page: var(--white);
 	--page-dark: oklch(from var(--page) calc(l * 0.7) c h);
+	--page-dirk-gently: oklch(from var(--page) calc(l * 0.9) c h);
 	--page-light: oklch(from var(--page) calc(l * 1.2) c h);
 
 	--caret-color: #5cdbce;
+
+	--selected-fill: var(--primary);
 }

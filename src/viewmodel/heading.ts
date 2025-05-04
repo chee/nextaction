@@ -1,31 +1,26 @@
 import type {Accessor} from "solid-js"
-import {type ActionURL} from "@/domain/action.ts"
 import {useDocument} from "solid-automerge"
-import {useCodemirrorAutomerge} from "@/infra/editor/codemirror.ts"
 import {
 	toggleArchived,
 	type Heading,
 	type HeadingURL,
 } from "@/domain/heading.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
-import type {ProjectURL} from "../domain/project.ts"
-import {refer} from "../domain/reference.ts"
+import {useTitleableMixin} from "./mixins/titleable.ts"
+import mix from "@/infra/lib/mix.ts"
+import {useListViewModel} from "./mixins/list.ts"
+import repo from "../infra/sync/automerge-repo.ts"
+import type {Reference, ReferencePointer} from "../domain/reference.ts"
 
 export function useHeading(url: Accessor<HeadingURL>) {
-	const [heading, handle] = useDocument<Heading>(url)
-	const titleSyncExtension = useCodemirrorAutomerge(handle, ["title"])
+	const [heading, handle] = useDocument<Heading>(url, {repo: repo})
+	const titleable = useTitleableMixin(heading, handle)
+	const list = useListViewModel<ActionViewModel>(url, "heading")
 
-	return {
+	return mix(titleable, list, {
 		type: "heading" as const,
 		get url() {
-			return handle()?.url as ActionURL
-		},
-		get title() {
-			return heading()?.title ?? ""
-		},
-
-		get titleSyncExtension() {
-			return titleSyncExtension()
+			return handle()?.url as HeadingURL
 		},
 		get archived() {
 			return heading()?.archived ?? false
@@ -35,26 +30,26 @@ export function useHeading(url: Accessor<HeadingURL>) {
 				toggleArchived(heading, force)
 			})
 		},
-		get parentURL() {
-			return heading()?.parent
+		toString() {
+			return `### ${titleable.title}\n\n`
 		},
-		// todo move to domain
-		setParent(parent: ProjectURL) {
-			handle()?.change(heading => {
-				heading.parent = refer("project", parent)
-			})
+		asReference(): Reference<"heading"> {
+			return {
+				type: "heading" as const,
+				url: handle()?.url as HeadingURL,
+			}
 		},
-		// todo use in dnd contract
-		// get external(): {[Key in NativeMediaType]?: string} {
-		// 	const done = action() && isDone(action()!)
-		// 	return {
-		// 		"text/plain": `- [${done ? "x" : " "}] ${this.title}`,
-		// 		"text/html": `<input type='checkbox' ${done ? "checked" : ""} value="${
-		// 			this.title
-		// 		}" />`,
-		// 	}
-		// },
-	}
+		delete() {
+			this.toggleArchived(true)
+		},
+		asPointer(above?: boolean): ReferencePointer<"heading"> {
+			return {
+				type: "heading" as const,
+				url: handle()?.url as HeadingURL,
+				above,
+			}
+		},
+	})
 }
 
 export type HeadingViewModel = ReturnType<typeof useHeading>

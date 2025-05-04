@@ -26,6 +26,9 @@ export default function bemby(
 		block,
 		[first, ...modifiers].map(function handle(modifier): ClassValue {
 			if (typeof modifier === "string") {
+				if (modifier.match(/\s+/)) {
+					return modifier.split(/\s+/).map(handle)
+				}
 				return `${block}--${modifier}`
 			} else if (Array.isArray(modifier)) {
 				return modifier.map(handle)

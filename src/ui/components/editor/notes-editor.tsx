@@ -12,17 +12,20 @@ export default function NotesEditor(props: {
 	placeholder?: string
 	withView?(view: EditorView): void
 	syncExtension?: Extension
+	extensions?: Extension[]
 	keymap?: KeyBinding[]
 	modifiers?: BembyModifier | BembyModifiers
+	readonly?(): boolean
 }) {
 	return (
 		<Show when={props.syncExtension}>
 			<Editor
 				modifiers={[props.modifiers, "notes"].flat() as BembyModifiers}
 				doc={props.doc}
+				syncExtension={props.syncExtension!}
 				extensions={[
-					props.syncExtension!,
 					markdown({base: markdownLanguage, addKeymap: true}),
+					...(props.extensions || []),
 				]}
 				keymap={[
 					{

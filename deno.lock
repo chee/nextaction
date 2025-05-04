@@ -2,6 +2,7 @@
   "version": "5",
   "specifiers": {
     "jsr:@nick/clsx@~0.3.1": "0.3.1",
+    "jsr:@qnighy/dedent@~0.1.2": "0.1.2",
     "jsr:@yurkimus/curry@^0.0.4": "0.0.4",
     "npm:@atlaskit/pragmatic-drag-and-drop-flourish@^2.0.2": "2.0.2",
     "npm:@atlaskit/pragmatic-drag-and-drop-hitbox@^1.0.3": "1.0.3",
@@ -24,7 +25,9 @@
     "npm:@solidjs/router@~0.15.3": "0.15.3_solid-js@1.9.5__seroval@1.2.1",
     "npm:@types/debug@^4.1.12": "4.1.12",
     "npm:@types/node@*": "22.12.0",
+    "npm:@yaireo/console-colors@^1.2.0": "1.2.0",
     "npm:autoprefixer@^10.4.21": "10.4.21_postcss@8.5.3",
+    "npm:chalk@^5.4.1": "5.4.1",
     "npm:debug@^4.4.0": "4.4.0",
     "npm:emoji-picker-element@^1.26.3": "1.26.3",
     "npm:eslint-plugin-solid@~0.14.5": "0.14.5_eslint@9.25.1_typescript@5.8.3",
@@ -46,12 +49,16 @@
     "npm:vite-plugin-wasm@^3.4.1": "3.4.1_vite@6.3.3__picomatch@4.0.2_@types+node@22.12.0",
     "npm:vite@6.3.3": "6.3.3_picomatch@4.0.2_@types+node@22.12.0",
     "npm:vite@^6.3.3": "6.3.3_picomatch@4.0.2_@types+node@22.12.0",
+    "npm:vitest@*": "3.1.2_jsdom@26.1.0_vite@6.3.3__picomatch@4.0.2_@types+node@22.12.0_@types+debug@4.1.12",
     "npm:vitest@^3.1.2": "3.1.2_jsdom@26.1.0_vite@6.3.3__picomatch@4.0.2_@types+node@22.12.0_@types+debug@4.1.12",
     "npm:workbox-window@^7.3.0": "7.3.0"
   },
   "jsr": {
     "@nick/clsx@0.3.1": {
       "integrity": "6c7bfc9217a7e5fbf7b0c283fab25336e428f74baf9c011e5c46aa8121eb6713"
+    },
+    "@qnighy/dedent@0.1.2": {
+      "integrity": "9e420cff5b0082dba168385c9dfc56f25ef9a07999605e5fc9bc2058529998ee"
     },
     "@yurkimus/curry@0.0.4": {
       "integrity": "fdcd2219c0da9bd1351eaccd22e90e5ea45a1b684ab623291d367f000a354dc6"
@@ -2042,6 +2049,9 @@
         "tinyrainbow"
       ]
     },
+    "@yaireo/console-colors@1.2.0": {
+      "integrity": "sha512-XnilF8cKJUht/+j/retnG1v84/g0cHAHQyfdNgeUSmNLmd9rozr9j8TWvuUQ13uaQx4YF1znPSsNGTy1597++g=="
+    },
     "acorn-jsx@5.3.2_acorn@8.14.1": {
       "integrity": "sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==",
       "dependencies": [
@@ -2305,6 +2315,9 @@
         "ansi-styles",
         "supports-color"
       ]
+    },
+    "chalk@5.4.1": {
+      "integrity": "sha512-zgVZuo2WcZgfUEmsn6eO3kINexW8RAE4maiQ8QNs8CtpPCSyMiYsULR3HQYkm3w8FIA3SberyMJMSldGsW+U3w=="
     },
     "check-error@2.1.1": {
       "integrity": "sha512-OAlb+T7V4Op9OwdkjmguYRqncdlx5JiofwOAUkmTF+jNdHwzTaTs4sRAGpzLF3oOz5xAyDGrPgeIDFQmDOTiJw=="
@@ -2633,7 +2646,7 @@
         "@types/estree@1.0.7",
         "@types/json-schema",
         "ajv@6.12.6",
-        "chalk",
+        "chalk@4.1.2",
         "cross-spawn",
         "debug",
         "escape-string-regexp",
@@ -3197,7 +3210,7 @@
       "integrity": "sha512-2P4SQ0HrLQ+fw6llpLnOaGAvN2Zu6778SJMrCUwns4fOoG9ayrTiZk3VV8sCPkVZF8ab0zksVpS8FDY5pRCNBA==",
       "dependencies": [
         "async",
-        "chalk",
+        "chalk@4.1.2",
         "filelist",
         "minimatch@3.1.2"
       ],
@@ -4749,6 +4762,7 @@
   "workspace": {
     "dependencies": [
       "jsr:@nick/clsx@~0.3.1",
+      "jsr:@qnighy/dedent@~0.1.2",
       "jsr:@yurkimus/curry@^0.0.4",
       "npm:@atlaskit/pragmatic-drag-and-drop-flourish@^2.0.2",
       "npm:@atlaskit/pragmatic-drag-and-drop-hitbox@^1.0.3",
@@ -4770,7 +4784,9 @@
       "npm:@solid-primitives/storage@^4.3.2",
       "npm:@solidjs/router@~0.15.3",
       "npm:@types/debug@^4.1.12",
+      "npm:@yaireo/console-colors@^1.2.0",
       "npm:autoprefixer@^10.4.21",
+      "npm:chalk@^5.4.1",
       "npm:debug@^4.4.0",
       "npm:emoji-picker-element@^1.26.3",
       "npm:eslint-plugin-solid@~0.14.5",

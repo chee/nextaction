@@ -11,21 +11,31 @@ export default function TitleEditor(props: {
 	placeholder?: string
 	withView?(view: EditorView): void
 	syncExtension?: Extension
+	extensions?: Extension[]
 	keymap?: KeyBinding[]
 	modifiers?: BembyModifier | BembyModifiers
+	readonly?(): boolean
 }) {
 	return (
 		<Show when={props.syncExtension}>
 			<Editor
-				modifiers={[props.modifiers, "title"].flat() as BembyModifiers}
+				readonly={props.readonly}
+				modifiers={
+					[
+						props.modifiers,
+						"title",
+						props.readonly?.() && "readonly",
+					].flat() as BembyModifiers
+				}
 				withView={props.withView}
 				doc={props.doc}
 				extensions={[
 					EditorState.transactionFilter.of(tr =>
 						tr.newDoc.lines > 1 ? [] : tr
 					),
-					props.syncExtension!,
+					...(props.extensions || []),
 				]}
+				syncExtension={props.syncExtension!}
 				keymap={[
 					{
 						key: "Escape",
@@ -41,7 +51,6 @@ export default function TitleEditor(props: {
 							view.contentDOM.blur()
 							props.blur()
 							props.submit()
-							console.log("submit")
 							return true
 						},
 					},

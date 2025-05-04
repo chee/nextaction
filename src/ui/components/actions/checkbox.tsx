@@ -13,19 +13,12 @@ function Tick() {
 			class="checkbox__indicator checkbox__indicator--tick"
 			xmlns="http://www.w3.org/2000/svg"
 			viewBox="0 0 24 24"
-			fill="none"
 			stroke="currentColor"
 			stroke-width="2"
 			stroke-linecap="round"
 			stroke-linejoin="round">
 			<path d="M20 6L9 17l-5-5" />
-			<rect
-				x="0"
-				y="0"
-				width="22"
-				height="22"
-				stroke="none"
-				fill="var(--checkbox-closed-fill)">
+			<rect x="0" y="0" width="22" height="22" stroke="none">
 				<animate
 					attributeName="x"
 					values="0;24;24"
@@ -104,7 +97,6 @@ export default function Checkbox(props: ActionViewModel) {
 						<Match when={props.state == "doing"}>
 							<svg
 								class="checkbox__indicator "
-								xmlns="http://www.w3.org/2000/svg"
 								viewBox="0 0 24 24"
 								fill="none"
 								stroke="currentColor"

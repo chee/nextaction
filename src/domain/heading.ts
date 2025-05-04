@@ -1,6 +1,6 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {Reference} from "@/domain/reference.ts"
-import type {ProjectRef} from "./project.ts"
+import type {ActionRef} from "./action.ts"
 
 export type HeadingURL = AutomergeUrl & {type: "heading"}
 export type HeadingRef = Reference<"heading">
@@ -8,16 +8,15 @@ export type HeadingRef = Reference<"heading">
 export type Heading = {
 	type: "heading"
 	title: string
-	parent: ProjectRef
 	archived?: boolean
+	items: ActionRef[]
 }
 
-export function newHeading(
-	heading: Partial<Heading> & {parent: ProjectRef}
-): Heading {
+export function newHeading(heading?: Partial<Heading>): Heading {
 	return {
 		type: "heading",
 		title: "",
+		items: [],
 		...heading,
 	}
 }

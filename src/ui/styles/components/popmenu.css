@@ -40,6 +40,10 @@
 	}
 }
 
+.popmenu__item--danger:hover {
+	background: var(--danger);
+}
+
 @keyframes contentShow {
 	from {
 		opacity: 0;

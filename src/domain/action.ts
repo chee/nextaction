@@ -1,9 +1,6 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import type {Doable} from "./generic/doable.ts"
-import type {Reference} from "@/domain/reference.ts"
-import type {ProjectRef} from "./project.ts"
-import type {AreaRef} from "./area.ts"
-import type {HeadingRef} from "./heading.ts"
+import {parseIncomingWhen, type Doable} from "./generic/doable.ts"
+import {type Reference} from "@/domain/reference.ts"
 
 export type ActionURL = AutomergeUrl & {type: "action"}
 export type ActionRef = Reference<"action">
@@ -13,10 +10,17 @@ export type Action = Doable & {
 	title: string
 	notes: string
 	checklist: string[]
-	parent?: ProjectRef | AreaRef | HeadingRef
 }
 
-export function newAction(action?: Partial<Action>): Action {
+export function newAction(
+	action?: Partial<Action> & {when?: Parameters<typeof parseIncomingWhen>[0]}
+): Action {
+	if (action?.when) {
+		action.when = parseIncomingWhen(action.when)
+		if (!action.when) {
+			delete action.when
+		}
+	}
 	return {
 		type: "action",
 		title: "",

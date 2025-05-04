@@ -4,13 +4,15 @@ import tseslint from "typescript-eslint"
 import solid from "eslint-plugin-solid"
 
 export default [
-	{ files: ["**/*.{js,mjs,cjs,ts}"] },
-	{ languageOptions: { globals: globals.browser } },
+	{files: ["**/*.{js,mjs,cjs,ts}"]},
+	{languageOptions: {globals: globals.browser}},
 	pluginJs.configs.recommended,
 	...tseslint.configs.recommended,
 	solid.configs["flat/typescript"],
+
 	{
 		rules: {
+			// "no-function-length": "error",
 			"@typescript-eslint/no-unused-vars": [
 				"warn", // or "error"
 				{

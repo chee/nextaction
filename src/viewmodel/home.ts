@@ -1,31 +1,22 @@
 import {useDocument} from "solid-automerge"
 import {useUser} from "./user.ts"
 import type {Home, HomeURL} from "@/domain/home.ts"
-import {mapArray} from "solid-js"
-import {isAction, type Action, type ActionURL} from "@/domain/action.ts"
+import {type ActionRef, type ActionURL} from "@/domain/action.ts"
 import {
-	isProject,
+	isProjectRef,
 	newProject,
+	ProjectURL,
 	type Project,
-	type ProjectURL,
 } from "@/domain/project.ts"
-import {isArea, newArea, type AreaURL} from "@/domain/area.ts"
-import {useViewModel} from "@/viewmodel/generic/useviewmodel.ts"
-import {useInbox} from "@/viewmodel/inbox.ts"
-import {isAnytime, isSomeday, isToday} from "../domain/generic/doable.ts"
-import {useListViewModel} from "./generic/list.ts"
-import {curl} from "../infra/sync/automerge-repo.ts"
-import {
-	isProjectChildViewModel,
-	isProjectViewModel,
-	type ProjectViewModel,
-} from "./project.ts"
-import {isActionViewModel, type ActionViewModel} from "./action.ts"
-import {isAreaChildViewModel, type AreaViewModel} from "./area.ts"
-import type {AnyDoableViewModel} from "./generic/doable.ts"
-import type {DocHandle} from "@automerge/automerge-repo"
-import {isHeading, type HeadingURL} from "../domain/heading.ts"
-import type {HeadingViewModel} from "./heading.ts"
+import {useListViewModel} from "./mixins/list.ts"
+import type {AutomergeUrl, DocHandle} from "@automerge/automerge-repo"
+import {decodeJSON} from "../infra/lib/compress.ts"
+import type {ActionViewModel} from "./action.ts"
+import repo, {curl} from "@/infra/sync/automerge-repo.ts"
+import {type Reference} from "@/domain/reference.ts"
+import {toast} from "@/ui/components/base/toast.tsx"
+import type {AreaViewModel} from "./area.ts"
+import type {ProjectViewModel} from "./project.ts"
 
 declare global {
 	interface Window {
@@ -33,120 +24,151 @@ declare global {
 	}
 }
 
+type MoveBetweenParentArgs = {
+	sourceListURL: AutomergeUrl
+	targetListURL: AutomergeUrl
+	movingItemItem: string
+	movingItemURL: AutomergeUrl
+	pointerURL?: AutomergeUrl
+	pointerType?: string
+	above?: boolean
+	index?: number
+}
+
+export async function moveBetweenParents({
+	sourceListURL: sourceParentURL,
+	targetListURL: targetParentURL,
+	movingItemItem: itemType,
+	movingItemURL: itemURL,
+	pointerType,
+	pointerURL,
+	index,
+	above: before,
+}: MoveBetweenParentArgs) {
+	if (pointerURL && pointerType && typeof index == "number") {
+		throw new Error("Cannot specify both pointer and index")
+	}
+	if (typeof index == "number" && typeof before == "boolean") {
+		throw new Error("Cannot specify both index and before")
+	}
+	if ((pointerURL && !pointerType) || (!pointerURL && pointerType)) {
+		throw new Error("Pointer and type must be specified together")
+	}
+	const sameItem = itemURL == pointerURL
+	if (sameItem) {
+		return
+	}
+	const sameParent = sourceParentURL == targetParentURL
+
+	const sourceParent = await repo.find<{items: Reference[]}>(sourceParentURL)
+	const targetParent = sameParent
+		? undefined
+		: await repo.find<{items: Reference[]}>(targetParentURL)
+	sourceParent.change(doc => {
+		if (!doc.items) {
+			console.error("No items in source parent", doc)
+			return
+		}
+		const idx = doc.items.findIndex(item => item.url == itemURL)
+		const item = doc.items[idx]
+
+		if (idx > -1) {
+			doc.items.splice(idx, 1)
+		}
+		if (sameParent) {
+			if (pointerURL && pointerType) {
+				index = doc.items.findIndex(item => item.url == pointerURL) ?? 0
+				if (!before) {
+					index += 1
+				}
+			} else if (typeof index != "number") {
+				index = doc.items.length
+			}
+			doc.items.splice(index == -1 ? doc.items.length : index, 0, {...item})
+		}
+	})
+	if (sameParent) return
+	targetParent?.change(doc => {
+		if (!doc.items) {
+			console.error("No items in target parent", doc)
+			return
+		}
+		if (pointerURL && pointerType) {
+			index = doc.items.findIndex(item => item.url == pointerURL) ?? 0
+			if (!before) {
+				index += index + 1
+			}
+		} else if (typeof index != "number") {
+			index = doc.items.length
+		}
+		doc.items.splice(index, 0, {
+			ref: true,
+			type: itemType,
+			url: itemURL,
+		})
+	})
+}
+
 export function useHome() {
 	const user = useUser()
-	const [home, handle] = useDocument<Home>(() => user.homeURL)
+	const [home, handle] = useDocument<Home>(() => user.homeURL, {repo})
 	self.home = handle
-	const itemURLs = mapArray(
-		() => home()?.items,
-		ref => ref.url
-	)
-	const items = mapArray(
-		() => home()?.items,
-		url => useViewModel(() => url)
-	)
 
-	const list = useListViewModel(() => user.homeURL)
+	const list = useListViewModel<
+		ActionViewModel | AreaViewModel | ProjectViewModel
+	>(() => user.homeURL, "home")
 
-	const inbox = useInbox(() => home()?.inbox)
+	const inbox = useListViewModel<ActionViewModel, ActionRef>(
+		() => home()?.inbox,
+		"inbox"
+	)
 
 	return {
 		type: "home",
 		list,
-		get items() {
-			return items()
-		},
-		get itemURLs() {
-			return itemURLs()
-		},
-		get today() {
-			return this.items.filter(isToday)
-		},
-		get anytime() {
-			return this.items.filter(isAnytime)
-		},
-		get someday() {
-			return this.items.filter(isSomeday)
-		},
-		get actions() {
-			return this.items.filter(isAction) as ActionViewModel[]
-		},
-		get projects() {
-			return this.items.filter(isProject) as ProjectViewModel[]
-		},
-		get areas() {
-			return this.items.filter(isArea) as AreaViewModel[]
-		},
-		get doables() {
-			return this.items.filter(
-				item => isProject(item) || isAction(item)
-			) as AnyDoableViewModel[]
-		},
-		get projectsAndAreas() {
-			return this.items.filter(item => isProject(item) || isArea(item)) as (
-				| ProjectViewModel
-				| AreaViewModel
-			)[]
-		},
-		get areaChildren() {
-			return this.items.filter(isAreaChildViewModel) as (
-				| ActionViewModel
-				| ProjectViewModel
-			)[]
-		},
-		get projectChildren() {
-			return this.items.filter(isProjectChildViewModel) as (
-				| ActionViewModel
-				| HeadingViewModel
-			)[]
-		},
 		get url() {
 			return handle()?.url as HomeURL
 		},
 		get dropboxes() {
 			return home()?.dropboxes ?? []
 		},
-		get inboxURL() {
-			return home()?.inbox
-		},
 		get inbox() {
 			return inbox
 		},
-		forArea(url: AreaURL) {
-			return this.items.filter(
-				item => isAreaChildViewModel(item) && item.parentURL == url
-			)
+		createProject(project?: Project) {
+			const url = curl<ProjectURL>(newProject(project))
+			list.addItem("project", url)
+			return url
 		},
-		forProject(url: ProjectURL) {
-			return this.projectChildren.filter(item => item.parentURL == url)
+		importProject(string: string) {
+			decodeJSON(string).then(json => {
+				if (isProjectRef(json)) {
+					list.addItem("project", json.url)
+				} else {
+					// todo this is probably UI layer
+					toast.show({
+						title: "Invalid project",
+						body: "maybe ask your friend to send it again??",
+						modifiers: ["error"],
+					})
+				}
+			})
 		},
-		forHeading(url: HeadingURL) {
-			return this.actions.filter(item => item.parentURL == url)
-		},
-		adoptActionFromInbox(url: ActionURL) {
-			if (inbox.actionURLs.includes(url)) {
-				inbox.removeAction(url)
-				list.addItem("action", url)
+		adoptActionFromInbox(ref: ActionRef) {
+			if (inbox.hasItemByRef(ref)) {
+				inbox.removeItemByRef(ref)
+			}
+			if (!list.hasItemByRef(ref)) {
+				list.addItemByRef(ref, list.items.length)
 			}
 		},
-		giveActionToInbox(url: ActionURL) {
-			list.removeItem("action", url)
-			inbox.addAction(url)
-		},
-		removeAction(url: ActionURL) {
-			list.removeItem("action", url)
-		},
-		newProject() {
-			const project = newProject()
-			const url = curl(project)
-			list.addItem("project", url as ProjectURL)
-			return url
-		},
-		newArea() {
-			const area = newArea()
-			const url = curl(area)
-			list.addItem("area", url as AreaURL)
-			return url
+		giveActionToInbox(ref: ActionRef) {
+			if (list.hasItemByRef(ref)) {
+				list.removeItemByRef(ref)
+			}
+			if (!inbox.hasItemByRef(ref)) {
+				inbox.addItemByRef(ref, inbox.items.length)
+			}
 		},
 	}
 }

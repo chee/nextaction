@@ -6,7 +6,11 @@ import {BrowserWebSocketClientAdapter} from "@automerge/automerge-repo-network-w
 
 const repo = new Repo({
 	storage: new IndexedDBStorageAdapter(),
-	network: [new BrowserWebSocketClientAdapter("wss://galaxy.observer")],
+	network: [
+		// new BrowserWebSocketClientAdapter("wss://sync.automerge.org"),
+
+		new BrowserWebSocketClientAdapter("wss://galaxy.observer"),
+	],
 	enableRemoteHeadsGossiping: true,
 })
 

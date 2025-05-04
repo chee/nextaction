@@ -1,26 +1,29 @@
 :root {
-	--checkbox-closed-fill: var(--primary-dark);
-	--checkbox-closed-line: var(--white);
+	--checkbox-fill: var(--page-fill);
+	--checkbox-line: color-mix(in oklab, var(--page-line), transparent 70%);
+	--checkbox-fill--closed: var(--primary-dark);
+	--checkbox-line--closed: var(--white);
+	--checkbox-size: 18px;
+	--checkbox-radius: 6px;
 }
-
 .checkbox {
-	border-radius: 7px;
-	border: 1px solid var(--page-dark);
+	border-radius: var(--checkbox-radius);
+	border: 1px solid var(--checkbox-line);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	width: 20px;
-	height: 20px;
+	width: var(--checkbox-size);
+	height: var(--checkbox-size);
 
 	svg {
-		width: 90%;
-		height: 90%;
+		width: 95%;
+		height: 95%;
 		display: none;
-		--checkbox-closed-fill: transparent;
+		fill: var(--checkbox-fill);
 	}
 
 	transition: background-color 0.14s linear, border-color 0.1s linear,
-		scale 0.1s ease;
+		scale 0.1s ease, fill 0.14s linear, stroke 0.14s linear;
 }
 
 .checkbox--someday {
@@ -33,11 +36,14 @@
 
 .checkbox--closed {
 	transition: none;
-	border-color: var(--checkbox-closed-fill);
-	background-color: var(--checkbox-closed-fill);
-	color: var(--checkbox-closed-line);
+	border-color: transparent;
+	background-color: var(--checkbox-fill--closed);
+	fill: var(--checkbox-fill--closed);
+	stroke: var(--checkbox-fill--closed);
+	color: var(--checkbox-line--closed);
 	svg {
-		--checkbox-closed-fill: var(--primary-dark);
+		--checkbox-fill--closed: var(--primary-dark);
 		display: block;
+		fill: var(--checkbox-fill--closed);
 	}
 }

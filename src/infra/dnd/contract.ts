@@ -2,29 +2,34 @@ import type {
 	BaseEventPayload,
 	ElementDragType,
 	DropTargetRecord,
+	Input,
 } from "@atlaskit/pragmatic-drag-and-drop/types"
-import {onCleanup} from "solid-js"
-import {
-	draggable,
-	dropTargetForElements,
-} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import type {SelectionContext} from "../hooks/selection-context.ts"
+import {onCleanup, type Accessor} from "solid-js"
+import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import type {AutomergeUrl} from "@automerge/automerge-repo"
+import {getType, type ItemType} from "../type-registry.ts"
 
-export type DraggedPayload = {
-	type: string
-	items: string[]
-	abovebelow?: "above" | "below"
+export type DragAndDropItem = {
+	type: ItemType
+	url: AutomergeUrl
 }
 
-export type DropTargetPayload = {
-	accepts: string[]
-	drop(payload: DraggedPayload): void
+export type DraggableContract = {items: DragAndDropItem[]}
+
+export type DropTargetContract = {
+	accepts(source?: DraggableContract): boolean
+	drop(payload: DraggableContract, input: Input): void
+}
+
+export type DropTargetListContract = DropTargetContract & {
+	items(): AutomergeUrl[]
+	childAccepts(item: DragAndDropItem, source: DraggableContract): boolean
 }
 
 export function getDraggedPayload(payload: {
 	source: BaseEventPayload<ElementDragType>["source"]
-}): DraggedPayload | undefined {
-	return payload.source.data as DraggedPayload
+}): DraggableContract | undefined {
+	return payload.source.data as DraggableContract
 }
 
 export function getDropTarget(
@@ -35,17 +40,18 @@ export function getDropTarget(
 
 export function getDropTargetPayload(
 	payload: BaseEventPayload<ElementDragType>
-): DropTargetPayload | undefined {
-	return getDropTarget(payload)?.data as DropTargetPayload
+): DropTargetContract | undefined {
+	return getDropTarget(payload)?.data as DropTargetContract
 }
 
-export function manageDrop(payload: BaseEventPayload<ElementDragType>) {
+export function manageDrop(
+	payload: BaseEventPayload<ElementDragType>,
+	contract: DropTargetContract
+) {
 	const dragged = getDraggedPayload(payload)
-	const dropTarget = getDropTargetPayload(payload)
-	if (!dragged || !dropTarget) return
-	if (dropTarget.accepts.includes(dragged.type)) {
-		dropTarget.drop(dragged)
-	}
+	const input = getInput(payload)
+	if (!dragged) return
+	contract.drop(dragged, input)
 }
 
 export function getInput(payload: BaseEventPayload<ElementDragType>) {
@@ -59,103 +65,155 @@ export function updateData(
 	Object.assign(payload.source.data, data)
 }
 
-export function calculateAboveBelowOnDrag(
-	element: Element,
-	payload: BaseEventPayload<ElementDragType>
+export function updateDraggedItems(
+	payload: BaseEventPayload<ElementDragType>,
+	items: DragAndDropItem[]
 ) {
-	const dropTarget = getDropTarget(payload)
-	if (!dropTarget) return
-
-	if (element == dropTarget.element) {
-		const rect = element.getBoundingClientRect()
-		const offset = payload.location.current.input.clientY - rect.top
-		const abovebelow = offset < rect.height / 2 ? "above" : "below"
-		updateData(payload, {abovebelow})
-		return abovebelow
-	}
+	Object.assign(payload.source.data, {items} as DraggableContract)
 }
 
-export function createDraggable(
-	element: HTMLElement,
-	itemViewModel: {type: string; url: string},
-	selection: SelectionContext
-) {
-	return onCleanup(
-		draggable({
-			element,
-			getInitialData: () => ({type: itemViewModel.type, items: []}),
-			onDragStart: () => selection.startDrag(itemViewModel.url),
-			onDrop: payload => updateData(payload, {items: selection.completeDrag()}),
-		})
-	)
+export function calculateAboveBelow(element: Element, clientY: number) {
+	const rect = element.getBoundingClientRect()
+	const offset = clientY - rect.top
+	const abovebelow = offset < rect.height / 2 ? "above" : "below"
+	return abovebelow
 }
 
 export function createDropTarget(
 	element: HTMLElement,
-	getData: () => DropTargetPayload,
-	canDrop?: Parameters<typeof dropTargetForElements>[0]["canDrop"]
+	contract: DropTargetContract
 ) {
 	return onCleanup(
 		dropTargetForElements({
 			canDrop(payload) {
-				const data = getData()
 				const dragged = getDraggedPayload(payload)
-				if (dragged && data.accepts.includes(dragged.type)) {
-					return true
-				}
-
-				return canDrop?.(payload) ?? true
+				return !!dragged && contract.accepts(dragged)
 			},
 			element,
-			onDragEnter() {
-				element.setAttribute("droptarget", "true")
+			onDragEnter(payload) {
+				if (contract?.accepts(getDraggedPayload(payload))) {
+					payload.self.element.dataset.droptarget = "true"
+				}
 			},
-			onDragLeave() {
-				element.removeAttribute("droptarget")
+			onDragLeave(payload) {
+				delete payload.self.element.dataset.droptarget
 			},
 			onDrop(payload) {
-				element.removeAttribute("droptarget")
-				manageDrop(payload)
+				delete payload.self.element.dataset.droptarget
+				delete payload.source.element.dataset.droptarget
+				if (!contract) return
+				manageDrop(payload, contract)
 			},
-			getData,
 		})
 	)
 }
 
-export function createListDropTarget(
+export function createDropTargetList(
 	element: HTMLElement,
-	itemViewModel: {type: string; url: string},
-	selection: SelectionContext,
-	getData: () => DropTargetPayload,
-	canDrop?: Parameters<typeof dropTargetForElements>[0]["canDrop"]
+	contract: DropTargetListContract
 ) {
 	return onCleanup(
 		dropTargetForElements({
 			canDrop(payload) {
-				return canDrop?.(payload) ?? true
+				const dragged = getDraggedPayload(payload)
+				if (!dragged) return false
+				return !!dragged && contract.accepts(dragged)
 			},
 			element,
-			onDragEnter() {
-				element.setAttribute("droptarget", "true")
-			},
-			onDragLeave() {
-				element.removeAttribute("droptarget")
-			},
-			onDrag(payload) {
-				const abovebelow = calculateAboveBelowOnDrag(element, payload)
-				if (abovebelow) {
-					selection.setDropTarget({
-						url: itemViewModel.url,
-						abovebelow,
-					})
-				}
-			},
 			onDrop(payload) {
-				element.removeAttribute("droptarget")
-				manageDrop(payload)
-				selection.setDropTarget(undefined)
+				if (!contract) return
+				manageDrop(payload, contract)
 			},
-			getData,
 		})
 	)
+}
+type GetDropTargetIndexArgs<T extends AutomergeUrl = AutomergeUrl> = {
+	element: HTMLElement
+	items: Accessor<T[]>
+	dragged: DraggableContract
+	isValidDropTarget: DropTargetListContract["childAccepts"]
+	input: Input
+}
+
+export function getDropTargetIndex<T extends AutomergeUrl = AutomergeUrl>({
+	element,
+	input,
+	items,
+	dragged,
+	isValidDropTarget,
+}: GetDropTargetIndexArgs<T>) {
+	// const keyed = new Map<number, HTMLElement>()
+	const validElements = new Map<number, HTMLElement>()
+	const validRectangles = new Map<number, DOMRect>()
+	const distancesFromPageY = new Map<number, number>()
+
+	for (const [index, el] of element.querySelectorAll("[draggable]").entries()) {
+		if (el instanceof HTMLElement) {
+			// keyed.set(index, el)
+			delete el.dataset.droptarget
+			const url = items()[index]
+			const type = getType(url)
+			const item = {url, type}
+			if (isValidDropTarget(item, dragged)) {
+				validElements.set(index, el)
+				const rect = el.getBoundingClientRect()
+				validRectangles.set(index, rect)
+				distancesFromPageY.set(index, Math.abs(input.pageY - rect.top))
+			}
+		}
+	}
+
+	const nearestValidElementIndex = distancesFromPageY
+		.entries()
+		.reduce((nearest, [index, distance]) => {
+			if (nearest == -1) {
+				return index
+			}
+			const accDistance = distancesFromPageY.get(nearest)
+			if (distance < accDistance!) {
+				return index
+			}
+			return nearest
+		}, -1)
+
+	const nearestValidRectangle = validRectangles.get(nearestValidElementIndex)
+
+	const nearestElement = validElements.get(nearestValidElementIndex)
+
+	let dropTargetIndex = 0
+
+	let above = true
+	if (nearestElement && nearestValidRectangle) {
+		const offset = input.clientY - nearestValidRectangle.top
+		dropTargetIndex = nearestValidElementIndex
+		if (offset > nearestValidRectangle.height / 2) {
+			above = false
+		}
+
+		const keys = [...validRectangles.keys()]
+		const lastRectangle = validRectangles.get(keys[keys.length - 1])
+		console.log(
+			input.pageY,
+			lastRectangle?.bottom,
+			validElements.get(keys[keys.length - 1])
+		)
+
+		if (lastRectangle) {
+			if (input.pageY >= lastRectangle.bottom) {
+				console.log(input.pageY, lastRectangle.bottom)
+				dropTargetIndex = keys[keys.length - 1]
+				above = false
+			}
+		}
+	}
+
+	const dropTargetElement = validElements.get(dropTargetIndex)
+	const dropTargetURL = items()[dropTargetIndex]
+
+	return {
+		dropTargetElement,
+		dropTargetURL,
+		dropTargetIndex,
+		isAbove: above,
+	}
 }

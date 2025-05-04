@@ -25,3 +25,9 @@
 	font-weight: inherit;
 	caret-color: var(--caret-color);
 }
+
+.page-container--built-in {
+	.page-title {
+		user-select: none;
+	}
+}

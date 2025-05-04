@@ -1,5 +1,5 @@
 import "./action.css"
-import bemby from "bemby"
+import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
 import {createSignal, Match, Show, Switch} from "solid-js"
 import {type ActionViewModel} from "@/viewmodel/action.ts"
 import NotesIcon from "@/ui/icons/notes.tsx"
@@ -8,28 +8,36 @@ import TitleEditor from "@/ui/components/editor/title-editor.tsx"
 import debug from "debug"
 import {modshift} from "@/infra/lib/hotkeys.ts"
 import Checkbox from "@/ui/components/actions/checkbox.tsx"
-import {isToday} from "../../../domain/generic/doable.ts"
-const log = debug("action")
+import {isToday} from "@/domain/generic/doable.ts"
+const log = debug("taskpad:action")
 import useClickOutside from "solid-click-outside"
 import {createEffect} from "solid-js"
 import {clsx} from "@nberlette/clsx"
+import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import {useDragAndDrop} from "@/infra/dnd/dnd-context.ts"
+
+// todo move to generic types
+export type SelectableProps = {
+	selected: boolean
+	select(): void
+	addSelected(): void
+	addSelectedRange(): void
+	removeSelected(): void
+}
+
+export type ExpandableProps = {
+	expanded: boolean
+	expand(): void
+	collapse(): void
+}
 
 export default function Action(
 	props: {
-		selected: boolean
-		expanded: boolean
-		select(): void
-		addSelected(): void
-		addSelectedRange(): void
-		removeSelected(): void
-		expand(): void
-		collapse(): void
-		ref?(el: HTMLElement): void
-		dragged: boolean
-		dragtarget: boolean
-		droptarget?: "above" | "below"
 		class?: string
-	} & ActionViewModel
+		modifiers?: BembyModifiers | BembyModifier
+	} & SelectableProps &
+		ExpandableProps &
+		ActionViewModel
 ) {
 	const [dismissible, setDismissible] = createSignal<HTMLElement>()
 	createEffect(() => {
@@ -40,11 +48,16 @@ export default function Action(
 		}
 	})
 
+	const dnd = useDragAndDrop()
+
 	return (
 		<article
-			ref={ref => {
-				props.ref?.(ref)
-				setDismissible(ref)
+			tabIndex={0}
+			ref={element => {
+				setDismissible(element)
+				dnd.createDraggableListItem(element, () => props.url)
+				// todo
+				dropTargetForElements({element})
 			}}
 			class={clsx(
 				bemby(
@@ -52,32 +65,54 @@ export default function Action(
 					{
 						current: props.selected,
 						expanded: props.expanded,
-						dragged: props.dragged,
-						dragtarget: props.dragtarget,
-						droptarget: !!props.droptarget,
-						"droptarget-above": props.droptarget === "above",
-						"droptarget-below": props.droptarget === "below",
 						closed: ["canceled", "completed"].includes(props.state),
 						today: isToday(props),
+						dragged: dnd.active && props.selected,
 					},
-					props.state
+					props.state,
+					...((Array.isArray(props.modifiers)
+						? props.modifiers
+						: [props.modifiers]) as BembyModifiers)
 				),
 				props.class
 			)}
 			role="listitem"
 			aria-current={props.selected}
 			aria-expanded={props.expanded}
+			onKeyDown={event => {
+				if (event.key === "Enter") {
+					if (!props.expanded) {
+						props.expand()
+					}
+				}
+				if (event.key == "˚" && event.metaKey) {
+					event.preventDefault()
+					props.toggleCanceled()
+				}
+			}}
 			onClick={event => {
 				if (event.metaKey) {
 					if (props.selected) {
 						props.removeSelected()
+						event.preventDefault()
+						event.stopPropagation()
+						event.stopImmediatePropagation()
 					} else {
 						props.addSelected()
+						event.preventDefault()
+						event.stopPropagation()
+						event.stopImmediatePropagation()
 					}
 				} else if (event.shiftKey) {
 					props.addSelectedRange()
+					event.preventDefault()
+					event.stopPropagation()
+					event.stopImmediatePropagation()
 				} else {
 					props.select()
+					event.preventDefault()
+					event.stopPropagation()
+					event.stopImmediatePropagation()
 				}
 			}}
 			onDblClick={event => {
@@ -130,16 +165,23 @@ export default function Action(
 			</header>
 			<section class="action__editor">
 				<article class="action__note">
-					<NotesEditor
-						placeholder="Notes"
-						blur={() => props.collapse()}
-						doc={props.notes}
-						syncExtension={props.notesSyncExtension}
-						withView={view => view.contentDOM.scrollIntoView()}
-					/>
+					<Show when={props.expanded}>
+						<NotesEditor
+							placeholder="Notes"
+							blur={() => props.collapse()}
+							doc={props.notes}
+							syncExtension={props.notesSyncExtension}
+							withView={view =>
+								view.contentDOM.scrollIntoView({
+									behavior: "smooth",
+								})
+							}
+						/>
+					</Show>
 				</article>
-				<footer class="action__footer" />
+				<footer class="action__expanded-footer" />
 			</section>
+			<footer class="action__collapsed-footer" />
 		</article>
 	)
 }

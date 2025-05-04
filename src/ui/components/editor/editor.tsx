@@ -1,3 +1,4 @@
+import "./editor.css"
 import {
 	drawSelection,
 	EditorView,
@@ -5,56 +6,115 @@ import {
 	keymap,
 	placeholder,
 } from "@codemirror/view"
-import {type Extension} from "@codemirror/state"
-import {onMount} from "solid-js"
+import {Compartment, EditorState, type Extension} from "@codemirror/state"
 import {defaultKeymap, history, historyKeymap} from "@codemirror/commands"
 import type {BembyModifiers} from "bemby"
 import bemby from "bemby"
-import {createEffect} from "solid-js"
-import {on} from "solid-js"
+import {createEffect, untrack} from "solid-js"
+import {onMount} from "solid-js"
 
 export default function Editor(props: {
 	doc: string
-	extensions: Extension
 	withView?(view: EditorView): void
 	keymap?: KeyBinding[]
 	placeholder?: string
 	modifiers?: BembyModifiers
+	extensions?: Extension[]
+	readonly?(): boolean
+	syncExtension: Extension
 }) {
 	const editor = (
 		<div
-			class={bemby("text-editor", props.modifiers)}
+			class={bemby(
+				"text-editor",
+				props.modifiers,
+				props.readonly?.() ? "readonly" : ""
+			)}
 			style={{width: "100%"}}
 		/>
 	) as HTMLDivElement
 
-	let view: EditorView
+	const sync = new Compartment()
+	const readonly = new Compartment()
+	const keymapCompartment = new Compartment()
+	const themeCompartment = new Compartment()
+	const placeholderCompartment = new Compartment()
+	const editable = new Compartment()
+	const isReadonly = () => props.readonly?.() || false
+	const isEditable = () => !isReadonly()
 
-	createEffect(
-		on(
-			() => [props.extensions],
-			() => {
-				view?.destroy()
-				view = new EditorView({
-					parent: editor,
-					doc: props.doc,
-					extensions: [
-						history(),
-						drawSelection(),
-						placeholder(props.placeholder || ""),
-						EditorView.theme(theme),
-						keymap.of(
-							(props.keymap || []).concat(defaultKeymap).concat(historyKeymap)
-						),
-						EditorView.lineWrapping,
-						props.extensions,
-					],
-				})
-			}
-		)
-	)
+	const makeKeymap = () =>
+		(props.keymap || []).concat(defaultKeymap).concat(historyKeymap)
 
-	onMount(() => props.withView?.(view))
+	const makeExtensions = () => [
+		history(),
+		drawSelection(),
+
+		placeholderCompartment.of(placeholder(props.placeholder || "")),
+		themeCompartment.of(EditorView.theme(theme)),
+		keymapCompartment.of(keymap.of(makeKeymap())),
+
+		readonly.of(EditorState.readOnly.of(isReadonly())),
+		editable.of(EditorView.editable.of(isEditable())),
+		EditorView.lineWrapping,
+
+		sync.of(props.syncExtension),
+		...[props.extensions ?? []],
+	]
+
+	const view: EditorView = new EditorView({
+		parent: editor,
+		// eslint-disable-next-line solid/reactivity
+		doc: props.doc,
+		// eslint-disable-next-line solid/reactivity
+		extensions: makeExtensions(),
+	})
+
+	createEffect(() => {
+		const doc = untrack(() => props.doc)
+		view.dispatch({
+			effects: sync.reconfigure(props.syncExtension),
+			changes: {
+				from: 0,
+				to: view.state.doc.length,
+				insert: doc,
+			},
+		})
+	})
+
+	createEffect(() => {
+		view.dispatch({
+			effects: [
+				readonly.reconfigure(EditorState.readOnly.of(isReadonly())),
+				editable.reconfigure(EditorView.editable.of(isEditable())),
+			],
+		})
+	})
+
+	createEffect(() => {
+		view.dispatch({
+			effects: keymapCompartment.reconfigure(keymap.of(makeKeymap())),
+		})
+	})
+
+	createEffect(() => {
+		view.dispatch({
+			effects: themeCompartment.reconfigure(EditorView.theme(theme)),
+		})
+	})
+
+	createEffect(() => {
+		view.dispatch({
+			effects: placeholderCompartment.reconfigure(
+				placeholder(props.placeholder || "")
+			),
+		})
+	})
+
+	onMount(() => {
+		props.withView?.(view)
+	})
+
 	editor.addEventListener("keydown", event => event.stopImmediatePropagation())
 	return editor
 }
@@ -64,6 +124,10 @@ export const theme = {
 	"*": {
 		"font-family": "var(--family-sans)",
 		"font-size": "inherit",
+		color: "var(--text-editor-text-color)",
+	},
+	".cm-placeholder": {
+		color: "var(--text-editor-placeholder-color)",
 	},
 	"&.cm-focused": {
 		outline: "none",

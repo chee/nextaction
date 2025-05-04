@@ -1,29 +1,26 @@
 :root {
 	--action-fill: var(--page-fill);
 	--action-line: var(--page-line);
-	--action-fill--selected: color-mix(
-		in oklab,
-		var(--action-fill),
-		var(--primary-dark) 10%
-	);
+	--action-fill--selected: var(--primary);
 	--action-border-line: color-mix(
 		in oklab,
 		var(--action-fill),
 		var(--action-line) 5%
 	);
+	--action-inline-padding: var(--space-3);
+	--action-trans-duration: 0.37s;
 }
 
 .action {
 	display: flex;
 	flex-direction: column;
-	padding-block: 0.5em;
+	padding-block: var(--space-2);
 	min-height: 1em;
 	border-radius: 8px;
 	transition-property: background, min-height, max-height, height, margin,
 		border-radius, padding, transform;
-	--action-duration: 0.37s;
-	--action-inline-padding: var(--space-3);
-	transition-duration: var(--action-duration);
+
+	transition-duration: var(--action-trans-duration);
 
 	color: var(--action-line);
 }
@@ -64,7 +61,7 @@
 	overflow: hidden;
 	padding-inline: var(--action-inline-padding);
 	transition-property: padding, transform;
-	transition-duration: var(--action-duration);
+	transition-duration: var(--action-trans-duration);
 	[aria-expanded="true"] & {
 		padding-inline: 0;
 	}
@@ -82,7 +79,7 @@
 	align-items: center;
 	padding-inline: var(--action-inline-padding);
 	transition-property: padding, transform;
-	transition-duration: var(--action-duration);
+	transition-duration: var(--action-trans-duration);
 	[aria-expanded="true"] & {
 		padding-inline: 0;
 	}
@@ -140,30 +137,7 @@
 
 .action.action.action--dragged {
 	opacity: 0.5;
-}
-
-.action.action--droptarget {
-	position: relative;
-	&::before {
-		position: absolute;
-		content: "";
-		display: block;
-		left: 0;
-		right: 0;
-		background: var(--sky);
-		height: 2px;
-		width: 100vw;
-	}
-	&.action--droptarget-above {
-		&::before {
-			top: -2px;
-		}
-	}
-	&.action--droptarget-below {
-		&::before {
-			bottom: 0;
-		}
-	}
+	/* display: none; */
 }
 
 .action:not([aria-expanded="true"]) {
@@ -185,4 +159,28 @@
 
 .action:has(.checkbox--mousing) {
 	background: var(--action-fill--mousing);
+}
+
+.action[data-droptarget] {
+	position: relative;
+	&::before {
+		position: absolute;
+		content: "";
+		display: block;
+		left: 0;
+		right: 0;
+		background: var(--drop-target-indicator-fill);
+		height: var(--drop-target-indicator-height);
+		width: var(--drop-target-indicator-width);
+	}
+	&[data-droptarget="above"] {
+		&::before {
+			top: -2px;
+		}
+	}
+	&[data-droptarget="below"] {
+		&::before {
+			bottom: 0;
+		}
+	}
 }

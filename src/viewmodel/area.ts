@@ -1,19 +1,22 @@
 import type {Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
-import {useCodemirrorAutomerge} from "@/infra/editor/codemirror.ts"
-import {useDoable} from "./generic/doable.ts"
-import mergeDescriptors from "merge-descriptors"
 import type {Area, AreaURL} from "@/domain/area.ts"
 import type {ProjectViewModel} from "./project.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
+import mix from "../infra/lib/mix.ts"
+import {useTitleableMixin} from "./mixins/titleable.ts"
+import {useNotableMixin} from "./mixins/notable.ts"
+import {useListViewModel} from "./mixins/list.ts"
+import {dedent} from "@qnighy/dedent"
+import repo from "../infra/sync/automerge-repo.ts"
+import type {Reference, ReferencePointer} from "../domain/reference.ts"
 
 export function useArea(url: Accessor<AreaURL>) {
-	const [area, handle] = useDocument<Area>(url)
-	const titleSyncExtension = useCodemirrorAutomerge(handle, ["title"])
-	const notesSyncExtension = useCodemirrorAutomerge(handle, ["notes"])
-	const doable = useDoable(url)
-
-	return mergeDescriptors(doable, {
+	const [area, handle] = useDocument<Area>(url, {repo: repo})
+	const titleable = useTitleableMixin(area, handle)
+	const notable = useNotableMixin(area, handle)
+	const list = useListViewModel<ActionViewModel | ProjectViewModel>(url, "area")
+	return mix(titleable, notable, list, {
 		type: "area" as const,
 		get icon() {
 			return area()?.icon ?? "🗃️"
@@ -24,27 +27,43 @@ export function useArea(url: Accessor<AreaURL>) {
 		get title() {
 			return area()?.title ?? ""
 		},
-		// todo tags
-		// todo move to a useNoteable
-		get notes() {
-			return area()?.notes ?? ""
+		set icon(icon: string) {
+			const single = [...new Intl.Segmenter().segment(icon)]?.[0]?.segment
+			handle()?.change(project => {
+				project.icon = single ?? "🗂️"
+			})
 		},
-		get notesSyncExtension() {
-			return notesSyncExtension()
+		delete() {
+			handle()?.change(area => {
+				area.deleted = true
+			})
 		},
-		get titleSyncExtension() {
-			return titleSyncExtension()
+		toString() {
+			return dedent`\
+				# ${area()?.icon ?? ""} ${titleable.title}
+
+				${notable.notes?.trim() ?? ""}
+
+				${list.items.map(item => item.toString()).join("\n")}
+			`
+		},
+		asReference(): Reference<"area"> {
+			return {
+				type: "area" as const,
+				url: handle()?.url as AreaURL,
+			}
+		},
+		asPointer(above?: boolean): ReferencePointer<"area"> {
+			return {
+				type: "area" as const,
+				url: handle()?.url as AreaURL,
+				above,
+			}
 		},
 	})
 }
 
-export type AreaViewModel = {
-	type: "area"
-	url: AreaURL
-	title: string
-	notes: string
-	icon: string
-}
+export type AreaViewModel = ReturnType<typeof useArea>
 
 export function isAreaViewModel(area: unknown): area is AreaViewModel {
 	return (area as AreaViewModel).type === "area"

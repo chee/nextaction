@@ -29,4 +29,8 @@ describe("bemby", () => {
 	it("can handle an undefined modifiers", () => {
 		expect(bemby("block", undefined)).toBe("block")
 	})
+
+	it("splits on whitespace", () => {
+		expect(bemby("block", "a b c")).toBe("block block--a block--b block--c")
+	})
 })
