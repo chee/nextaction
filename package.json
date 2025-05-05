@@ -1,0 +1,5 @@
+{
+	"dependencies": {
+		"@solid-primitives/media": "^2.3.1"
+	}
+}

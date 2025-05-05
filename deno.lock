@@ -23,6 +23,7 @@
     "npm:@nberlette/clsx@~0.3.1": "0.3.1",
     "npm:@solid-primitives/date@^2.1.2": "2.1.2_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/keyboard@^1.3.1": "1.3.1_solid-js@1.9.5__seroval@1.2.1",
+    "npm:@solid-primitives/media@^2.3.1": "2.3.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/storage@^4.3.2": "4.3.2_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solidjs/router@~0.15.3": "0.15.3_solid-js@1.9.5__seroval@1.2.1",
     "npm:@types/debug@^4.1.12": "4.1.12",
@@ -4860,6 +4861,11 @@
       "npm:vite@^6.3.3",
       "npm:vitest@^3.1.2",
       "npm:workbox-window@^7.3.0"
-    ]
+    ],
+    "packageJson": {
+      "dependencies": [
+        "npm:@solid-primitives/media@^2.3.1"
+      ]
+    }
   }
 }

@@ -42,3 +42,24 @@
 .chrome__content {
 	height: 100vh;
 }
+
+.chrome--mobile.chrome--showing-sidebar {
+	.chrome__sidebar {
+		&,
+		.sidebar {
+			width: 100vw;
+		}
+		flex-basis: unset !important;
+	}
+	.chrome__main {
+		display: none;
+	}
+}
+
+.chrome__sidebar-control {
+	margin: var(--space-2);
+}
+
+.chrome__sidebar-control--expand {
+	margin-left: 0;
+}
