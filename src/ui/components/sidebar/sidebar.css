@@ -97,7 +97,7 @@
 
 .sidebar .development-note {
 	margin: 0;
-	padding: 0.5em;
+	padding: var(--space-2);
 	scale: 0.8;
 	transform: skewX(4deg);
 	background: black;

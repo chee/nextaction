@@ -56,7 +56,7 @@ export default function Chrome(props: {children?: JSX.Element}) {
 							as="aside"
 							minSize={isMobile() ? 1 : 0.2}
 							collapsible>
-							<Show when={isMobile() && !isCollapsed()}>
+							<Show when={!isCollapsed()}>
 								<Button
 									title="hide sidebar"
 									onClick={() => resizableContext()?.collapse(0)}
@@ -69,7 +69,7 @@ export default function Chrome(props: {children?: JSX.Element}) {
 						<Resizable.Handle class="chrome__handle" />
 						<Resizable.Panel class="chrome__main">
 							<div class="chrome__main">
-								<Show when={isMobile() && isCollapsed()}>
+								<Show when={isCollapsed()}>
 									<Button
 										title="show sidebar"
 										onClick={() => resizableContext()?.expand(0)}

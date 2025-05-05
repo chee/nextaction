@@ -32,15 +32,13 @@
 	width: 100%;
 	font-weight: 700;
 	padding-inline: var(--action-inline-padding);
-	margin-inline: var(--action-inline-padding);
-	margin-top: var(--space-10);
 	user-select: none;
 	border-radius: 7px;
 	border: 2px solid transparent;
 	position: relative;
-	margin-bottom: var(--space-2);
+	/* margin-bottom: var(--space-2); */
 
-	&::after {
+	/* &::after {
 		content: "";
 		position: absolute;
 		left: 0;
@@ -49,14 +47,7 @@
 		width: calc(100% - var(--space-9));
 		left: calc(var(--space-2) + 2px);
 		background: var(--project-header-fill--selected);
-	}
-
-	&[aria-current="true"] {
-		background-color: var(--project-header-fill--selected);
-		&::after {
-			background: transparent;
-		}
-	}
+	} */
 
 	&[aria-expanded="true"] {
 		padding: 0;
@@ -82,10 +73,6 @@
 	width: 100%;
 }
 
-.project-heading:focus-within {
-	background: var(--project-header-fill--editing);
-}
-
 .project-heading {
 	position: relative;
 }
@@ -104,6 +91,52 @@
 .project-heading--clicks {
 	.click-catcher {
 		pointer-events: none;
+	}
+}
+
+.project-heading-container {
+	margin-top: var(--space-10);
+	--project-heading-container-line: var(--project-header-fill--selected);
+	--project-heading-container-line--selected: color-mix(
+		in oklab,
+		var(--primary-dark),
+		transparent 10%
+	);
+	--project-heading-radius: 7px;
+	border-radius: var(--project-heading-radius);
+	border: 1px solid var(--project-heading-container-line);
+	border-radius: 7px;
+}
+
+.project-heading-container:has(.project-heading[aria-current="true"]) {
+	background: var(--project-header-fill--selected);
+}
+
+.project-heading-container:has(
+		.project-heading:focus-within,
+		.project-heading--editing
+	) {
+	background: var(--page-fill);
+	border: 1px solid var(--project-heading-container-line--selected);
+}
+
+.project-heading-container:has([aria-current="true"]) {
+	border: 1px solid var(--project-heading-container-line--selected);
+}
+
+.action-list--in-heading {
+	padding: 0;
+	background: var(--page-fill);
+	border-radius: var(--project-heading-radius);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+
+	.action {
+		border-radius: 0;
+		&:last-of-type {
+			border-bottom-left-radius: var(--project-heading-radius);
+			border-bottom-right-radius: var(--project-heading-radius);
+		}
 	}
 }
 

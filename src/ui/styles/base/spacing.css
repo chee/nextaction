@@ -17,3 +17,10 @@
 	--space-14: calc(var(--space) * 14);
 	--space-15: calc(var(--space) * 15);
 }
+
+@media (max-width: 600px) {
+	:root {
+		font-size: 18px;
+		--space: 0.15rem;
+	}
+}
