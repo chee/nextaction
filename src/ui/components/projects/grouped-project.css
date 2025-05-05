@@ -37,11 +37,11 @@
 	color: var(--text);
 
 	&:hover {
-		color: var(--primary);
+		color: var(--primary-dark);
 		&::after {
 			content: "›";
 			margin-left: var(--space-1);
-			color: var(--primary);
+			color: var(--primary-dark);
 		}
 	}
 }

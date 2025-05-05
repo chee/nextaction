@@ -4,7 +4,6 @@
 	--drop-target-indicator-width: 100cqw;
 }
 
-.page-content,
 .dnd-list {
 	container-name: "dnd-list";
 	container-type: inline-size;

@@ -4,6 +4,7 @@ import type {DropboxURL} from "./dropbox.ts"
 import type {ProjectRef} from "./project.ts"
 import type {AreaRef} from "./area.ts"
 import type {ActionRef} from "@/domain/action.ts"
+import type {Tag} from "./tag.ts"
 
 export type HomeURL = AutomergeUrl & {type: "home"}
 
@@ -18,6 +19,7 @@ export type Home = {
 	// shouldn't get your REAL inbox url!
 	dropboxes: DropboxURL[]
 	sources: DropboxURL[]
+	tags: Tag[]
 }
 
 export function newHome(home: Partial<Home> & {inbox: Home["inbox"]}): Home {
@@ -26,6 +28,7 @@ export function newHome(home: Partial<Home> & {inbox: Home["inbox"]}): Home {
 		dropboxes: [],
 		sources: [],
 		items: [],
+		tags: [],
 		...home,
 	}
 }

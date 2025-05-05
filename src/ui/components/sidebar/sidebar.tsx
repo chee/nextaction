@@ -14,7 +14,7 @@ import bemby from "bemby"
 import {refer} from "@/domain/reference.ts"
 import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
-import {encode} from "@/infra/lib/compress.ts"
+import {encode, encodeJSON, uint8arraytobase64} from "@/infra/lib/compress.ts"
 import {toast} from "../base/toast.tsx"
 import {isDoable} from "../../../domain/generic/doable.ts"
 import {
@@ -24,11 +24,17 @@ import {
 import {getParentURL} from "../../../infra/parent-registry.ts"
 import {getType} from "../../../infra/type-registry.ts"
 import type {ActionRef} from "../../../domain/action.ts"
-import {createDragAndDropContext} from "../../../infra/dnd/dnd-context.ts"
+import {
+	createDragAndDropContext,
+	createSimpleDraggable,
+} from "../../../infra/dnd/dnd-context.ts"
 import {useViewModel} from "../../../viewmodel/useviewmodel.ts"
 import type {ActionViewModel} from "../../../viewmodel/action.ts"
 import type {HeadingViewModel} from "../../../viewmodel/heading.ts"
 import DevelopmentNote from "../development-note.tsx"
+import {cbor} from "@automerge/automerge-repo"
+import {homedir} from "node:os"
+import {draggable} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
@@ -273,6 +279,9 @@ function Sidelink(props: SidebarLinkProps) {
 				if (sidebarProps.droptarget) {
 					createDropTarget(element, sidebarProps.droptarget!)
 				}
+				if (typeof anchorProps.ref == "function") {
+					anchorProps.ref(element)
+				}
 			}}>
 			<span class="sidebar-link__icon">{sidebarProps.icon}</span>
 			<span class="sidebar-link__title">{props.children}</span>
@@ -282,10 +291,17 @@ function Sidelink(props: SidebarLinkProps) {
 
 // todo move to own file
 function SidebarProject(props: {project: ProjectViewModel}) {
+	const home = useHome()
 	return (
 		<ContextMenu>
 			<ContextMenu.Trigger>
 				<Sidelink
+					ref={element => {
+						createSimpleDraggable(element, () => ({
+							type: "project",
+							url: props.project.url,
+						}))
+					}}
 					href={`/projects/${props.project.url}`}
 					icon={props.project.icon}>
 					{props.project.title}
@@ -296,23 +312,25 @@ function SidebarProject(props: {project: ProjectViewModel}) {
 					<ContextMenu.Item
 						class="popmenu__item"
 						onSelect={() => {
-							encode(
-								JSON.stringify(refer(props.project.type, props.project.url))
-							).then(url => {
-								navigator.clipboard.writeText(url)
+							const code = encodeJSON({
+								type: props.project.type,
+								url: props.project.url.replace(/.*:/, ""),
 							})
+
+							navigator.clipboard.writeText(code)
+
 							toast.show({
 								title: "Copied share link to clipboard",
 								body: "Send it to your friend to give them access to this project.",
 								modifiers: "copied-to-clipboard",
 							})
 						}}>
-						Copy Share Link
+						Copy Share Code
 					</ContextMenu.Item>
 					<ContextMenu.Item
 						class="popmenu__item popmenu__item--danger"
-						onSelect={() => props.project.delete()}>
-						Delete project
+						onSelect={() => home.list.removeItemByRef(props.project)}>
+						Remove from Sidebar
 					</ContextMenu.Item>
 				</ContextMenu.Content>
 			</ContextMenu.Portal>

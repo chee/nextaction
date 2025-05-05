@@ -89,7 +89,7 @@ export default function Today() {
 	// sidebar button
 	// todo remove selection when click on page background
 
-	const dnd = createDragAndDropContext(todayURLs, selection)
+	const dnd = createDragAndDropContext(selection)
 
 	return (
 		<DragAndDropProvider value={dnd}>

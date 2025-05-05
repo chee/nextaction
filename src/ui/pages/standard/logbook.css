@@ -1,0 +1,12 @@
+.logbook {
+	.action--logbook,
+	.project-item--logbook {
+		color: var(--text);
+		.state-changed {
+			display: block;
+			font-size: var(--font-size-7);
+			color: var(--primary-dark);
+			font-weight: 700;
+		}
+	}
+}

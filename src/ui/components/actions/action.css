@@ -184,3 +184,7 @@
 		}
 	}
 }
+
+.action .state-changed {
+	display: none;
+}

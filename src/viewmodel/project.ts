@@ -18,7 +18,6 @@ import {
 	type Reference,
 	type ReferencePointer,
 } from "../domain/reference.ts"
-import {addWithOptionsMethod} from "@solid-primitives/storage"
 
 export function useProject(url: Accessor<ProjectURL>) {
 	const [project, handle] = useDocument<Project>(url, {repo: repo})

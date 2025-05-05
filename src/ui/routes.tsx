@@ -1,4 +1,5 @@
 /* @refresh reload */
+import "temporal-polyfill/global"
 import {lazy} from "solid-js"
 import {render} from "solid-js/web"
 import {Route, Router} from "@solidjs/router"
@@ -34,7 +35,7 @@ render(
 
 				<Route
 					path="/upcoming"
-					component={lazy(() => import("./pages/standard/upcoming.tsx"))}
+					component={lazy(() => import("./pages/upcoming/upcoming.tsx"))}
 				/>
 				<Route
 					path="/anytime"
@@ -57,7 +58,7 @@ render(
 
 				<Route
 					path="/tags"
-					component={lazy(() => import("./pages/userland/tags.tsx"))}
+					component={lazy(() => import("./pages/userland/tag-manager.tsx"))}
 				/>
 				<Route
 					path="/search"

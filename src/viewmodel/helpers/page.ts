@@ -1,10 +1,10 @@
 import {createSignal} from "solid-js"
-import type {ActionURL} from "@/domain/action.ts"
 import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {debounce} from "radash"
+import type {ExpandableProps} from "../../ui/components/actions/action.tsx"
 
-export function useExpander<T extends AutomergeUrl = ActionURL>(
+export function useExpander<T extends AutomergeUrl>(
 	selection: SelectionContext
 ) {
 	const [expanded, setExpanded] = createSignal<T>()
@@ -20,6 +20,13 @@ export function useExpander<T extends AutomergeUrl = ActionURL>(
 			setExpanded()
 			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
 			url && selection.select(url)
+		},
+		props(url: T): ExpandableProps {
+			return {
+				expanded: expanded() == url,
+				expand: () => setExpanded(() => url),
+				collapse: () => setExpanded(),
+			}
 		},
 	}
 }

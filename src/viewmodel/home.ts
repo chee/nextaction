@@ -1,7 +1,7 @@
 import {useDocument} from "solid-automerge"
 import {useUser} from "./user.ts"
 import type {Home, HomeURL} from "@/domain/home.ts"
-import {type ActionRef, type ActionURL} from "@/domain/action.ts"
+import {type ActionRef} from "@/domain/action.ts"
 import {
 	isProjectRef,
 	newProject,
@@ -10,7 +10,7 @@ import {
 } from "@/domain/project.ts"
 import {useListViewModel} from "./mixins/list.ts"
 import type {AutomergeUrl, DocHandle} from "@automerge/automerge-repo"
-import {decodeJSON} from "../infra/lib/compress.ts"
+import {decode, decodeJSON} from "../infra/lib/compress.ts"
 import type {ActionViewModel} from "./action.ts"
 import repo, {curl} from "@/infra/sync/automerge-repo.ts"
 import {type Reference} from "@/domain/reference.ts"
@@ -126,6 +126,12 @@ export function useHome() {
 	return {
 		type: "home",
 		list,
+		get flat() {
+			return list.flat
+		},
+		get keyed() {
+			return list.keyed
+		},
 		get url() {
 			return handle()?.url as HomeURL
 		},
@@ -141,18 +147,16 @@ export function useHome() {
 			return url
 		},
 		importProject(string: string) {
-			decodeJSON(string).then(json => {
-				if (isProjectRef(json)) {
-					list.addItem("project", json.url)
-				} else {
-					// todo this is probably UI layer
-					toast.show({
-						title: "Invalid project",
-						body: "maybe ask your friend to send it again??",
-						modifiers: ["error"],
-					})
-				}
-			})
+			const json = decodeJSON(string)
+			if (isProjectRef(json)) {
+				list.addItem("project", json.url)
+			} else {
+				toast.show({
+					title: "Invalid project",
+					body: "maybe ask your friend to send it again??",
+					modifiers: ["error"],
+				})
+			}
 		},
 		adoptActionFromInbox(ref: ActionRef) {
 			if (inbox.hasItemByRef(ref)) {

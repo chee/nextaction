@@ -14,10 +14,9 @@
 	user-select: none;
 	touch-action: manipulation;
 	border-radius: 2px;
+	white-space: nowrap;
 	&:hover {
-		box-shadow:
-			1px 1px 0px var(--border-color),
-			2px 2px 0px var(--border-color);
+		box-shadow: 1px 1px 0px var(--border-color), 2px 2px 0px var(--border-color);
 		top: -1px;
 		left: -1px;
 	}

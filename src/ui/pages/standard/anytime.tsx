@@ -66,7 +66,7 @@ export default function Anytime() {
 	// sidebar button
 	// todo remove selection when click on page background
 
-	const dnd = createDragAndDropContext(selectableItemURLs, selection)
+	const dnd = createDragAndDropContext(selection)
 	return (
 		<DragAndDropProvider value={dnd}>
 			<div class="anytime page-container page-container--built-in">

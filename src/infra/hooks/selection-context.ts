@@ -1,10 +1,11 @@
 import type {Accessor} from "solid-js"
 import {createSignal} from "solid-js"
+import type {SelectableProps} from "../../ui/components/actions/action.tsx"
 
 export type SelectionDropTarget = {url: string; abovebelow?: "above" | "below"}
 
 export interface SelectionContext<S extends string = string> {
-	/** kept in the same order as the allItems */
+	all(): S[]
 	selected(): S[]
 	select(target: S): void
 	addSelected(target: S): void
@@ -19,18 +20,19 @@ export interface SelectionContext<S extends string = string> {
 	lastSelectedIndex(): number
 	topSelectedIndex(): number
 	bottomSelectedIndex(): number
+	itemBeforeSelection(): S | undefined
+	itemAfterSelection(): S | undefined
 }
 
-// todo and .itemBeforeSelection and .itemAfterSelection
-// todo this should have .selectPrevious and .selectNext
-// todo and .moveSelectionUp and .moveSelectionDown
-// todo this is probably a viewmodel(mixin?)
 export function createSelectionContext<S extends string = string>(
 	allItems: Accessor<S[]>
 ): SelectionContext<S> {
 	const [selectedItems, setSelectedItems] = createSignal<S[]>([])
 
 	return {
+		all() {
+			return allItems()
+		},
 		select(id) {
 			setSelectedItems([id])
 		},
@@ -88,5 +90,32 @@ export function createSelectionContext<S extends string = string>(
 				allItems()?.length ?? 0
 			)
 		},
+		itemBeforeSelection() {
+			const all = allItems()
+			if (!all) return undefined
+			const index = this.topSelectedIndex()
+			if (index === 0) return undefined
+			return all[index - 1]
+		},
+		itemAfterSelection() {
+			const all = allItems()
+			if (!all) return undefined
+			const index = this.bottomSelectedIndex()
+			if (index === all.length - 1) return undefined
+			return all[index + 1]
+		},
+	}
+}
+
+export function getSelectionProps<T extends string>(
+	selection: SelectionContext,
+	url: T
+): SelectableProps {
+	return {
+		selected: selection.isSelected(url),
+		addSelected: () => selection.addSelected(url),
+		addSelectedRange: () => selection.addSelectedRange(url),
+		removeSelected: () => selection.removeSelected(url),
+		select: () => selection.select(url),
 	}
 }

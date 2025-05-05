@@ -1,4 +1,3 @@
-// todo maybe a doable should have a state of "doing" or "awaiting"
 export type Doable = {
 	priority?: "!" | "!!" | "!!!"
 	when?: Date | "someday" | null
@@ -56,17 +55,18 @@ function midnightify(date: Date): Date {
 
 export function isToday(thing: WhenHaver): boolean {
 	if (!thing.when) return false
+	if (thing.when == "someday") return false
 	const tonightDate = midnightify(new Date())
 	const tonight = tonightDate.getTime()
-	// todo stop redating date when data is updated
-	const when = new Date(thing.when)
+	const when = thing.when
 	return when.getTime() < tonight
 }
 
 export function isTomorrow(thing: WhenHaver): boolean {
 	if (!thing.when) return false
+	if (thing.when == "someday") return false
 	const now = new Date()
-	const when = new Date(thing.when)
+	const when = thing.when
 	return (
 		when.getDate() === now.getDate() + 1 &&
 		when.getMonth() === now.getMonth() &&

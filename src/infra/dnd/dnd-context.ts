@@ -2,7 +2,11 @@
 import {createContext, createSignal, onCleanup} from "solid-js"
 import {useContext} from "solid-js"
 import {draggable} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {updateDraggedItems} from "./contract.ts"
+import {
+	updateDraggedItems,
+	type DragAndDropItem,
+	type DraggableContract,
+} from "./contract.ts"
 import type {SelectionContext} from "../hooks/selection-context.ts"
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {getParentURL, type ParentType} from "../parent-registry.ts"
@@ -34,7 +38,6 @@ declare module "solid-js" {
 }
 
 export function createDragAndDropContext<T extends AutomergeUrl>(
-	items: () => T[],
 	selection: SelectionContext<T>
 ) {
 	// todo remove selection when click on page background
@@ -72,4 +75,22 @@ export function createDragAndDropContext<T extends AutomergeUrl>(
 			)
 		},
 	} satisfies DragAndDropContext
+}
+
+export function createSimpleDraggable(
+	element: HTMLElement,
+	info: () => DragAndDropItem
+) {
+	onCleanup(
+		draggable({
+			element,
+			onDragStart(payload) {
+				element.dataset.dragged = "true"
+				updateDraggedItems(payload, [info()])
+			},
+			onDrop() {
+				delete element.dataset.dragged
+			},
+		})
+	)
 }

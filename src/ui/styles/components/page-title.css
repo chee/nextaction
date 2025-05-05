@@ -11,10 +11,33 @@
 	font-weight: 500;
 	font-size: var(--font-size-2);
 	color: var(--page-title-line);
+	word-break: keep-all;
+}
+
+@container (width < 700px) {
+	.page-title {
+		font-size: var(--font-size-3);
+	}
+}
+
+@container (width < 500px) {
+	.page-title {
+		font-size: var(--font-size-4);
+	}
+}
+
+@container (width < 400px) {
+	.page-title .text-editor {
+		font-size: var(--font-size-5);
+		&:has(+ *) {
+			font-size: var(--font-size-6);
+		}
+	}
 }
 
 .page-title__icon {
 	user-select: none;
+	margin-right: var(--space-2);
 	svg {
 		width: 1em;
 		height: 1em;
@@ -24,6 +47,7 @@
 .page-title__title {
 	font-weight: inherit;
 	caret-color: var(--caret-color);
+	word-break: keep-all;
 }
 
 .page-container--built-in {

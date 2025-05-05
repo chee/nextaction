@@ -63,7 +63,7 @@ export default function Inbox() {
 		toggleItemCanceled: toggleCanceled,
 	})
 
-	const dnd = createDragAndDropContext<ActionURL>(inbox, selection)
+	const dnd = createDragAndDropContext<ActionURL>(selection)
 
 	return (
 		<DragAndDropProvider value={dnd}>

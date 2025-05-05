@@ -21,16 +21,18 @@
 	height: 100%;
 	width: 100%;
 	overflow: scroll;
+	container: page / inline-size;
 }
 
 .page-content {
 	flex: 1;
-	max-width: calc(100% - 8em);
+	max-width: calc(100% - 2em);
 	margin-right: auto;
 	width: 100%;
 	padding-bottom: 8em;
+	container: page-content / inline-size;
 }
 
 .page-title {
-	max-width: calc(100% - 8em);
+	max-width: calc(100% - 2em);
 }

@@ -126,6 +126,17 @@ export default function Action(
 			</Show>
 			<header class="action__header">
 				<Checkbox {...props} />
+				<time
+					class="state-changed state-changed--action"
+					dateTime={props.stateChanged?.toISOString()}>
+					{
+						/* todo today */
+						props.stateChanged?.toLocaleDateString(undefined, {
+							month: "short",
+							day: "numeric",
+						})
+					}
+				</time>
 				<h2 id={`${props.url}-title`} class="action__title">
 					<Switch>
 						<Match when={props.expanded}>

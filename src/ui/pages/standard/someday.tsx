@@ -61,7 +61,7 @@ export default function Someday() {
 	})
 
 	const expander = useExpander<ActionURL>(selection)
-	const dnd = createDragAndDropContext(selectableItemURLs, selection)
+	const dnd = createDragAndDropContext(selection)
 
 	return (
 		<DragAndDropProvider value={dnd}>

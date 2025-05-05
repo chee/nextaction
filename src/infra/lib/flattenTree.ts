@@ -1,10 +1,4 @@
-export default function flattenTree<
-	T extends Record<string, unknown> & {
-		// deno-lint-ignore no-explicit-any
-		items?: any[] // eslint-disable-line @typescript-eslint/no-explicit-any
-		url: string
-	}
->(tree: T[]): T[] {
+export default function flattenTree<T extends object>(tree: T[]): T[] {
 	return tree.reduce((list, item) => {
 		list.push(item)
 
@@ -13,5 +7,5 @@ export default function flattenTree<
 		}
 
 		return list
-	}, [] as (T & {parent?: string})[])
+	}, [] as T[])
 }

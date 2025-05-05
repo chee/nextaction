@@ -57,6 +57,8 @@ import Bar, {BarButton, BarNewAction} from "../../../components/bar/bar.tsx"
 import BigPlus from "../../../icons/big-plus.tsx"
 import {useViewModel} from "../../../../viewmodel/useviewmodel.ts"
 import {createRoot} from "solid-js"
+import {useHome} from "../../../../viewmodel/home.ts"
+import {Button} from "@kobalte/core/button"
 
 const log = debug("taskpad:project")
 
@@ -149,7 +151,12 @@ export default function Project() {
 		}
 	})
 
-	const dnd = createDragAndDropContext(() => items(), selection)
+	const dnd = createDragAndDropContext(selection)
+
+	const home = useHome()
+	const inHome = createMemo(() => {
+		return !!home.keyed[project.url]
+	})
 
 	return (
 		<DragAndDropProvider value={dnd}>
@@ -328,6 +335,7 @@ export default function Project() {
 							<code>{project.url}</code>
 						</h1>
 					</Show>
+
 					<h1 class="page-title">
 						{/* todo editable title component, share with Area */}
 						<EmojiPicker
@@ -348,6 +356,20 @@ export default function Project() {
 								if (state?.isNewProject) view.focus()
 							}}
 						/>
+
+						<Show when={!inHome()}>
+							<Button
+								class="button page-title__add-to-sidebar"
+								onClick={() => home.list.addItem("project", project.url)}>
+								Add to sidebar
+							</Button>
+						</Show>
+
+						<Show when={project.deleted}>
+							<Button class="button" onClick={() => (project.deleted = false)}>
+								Undelete
+							</Button>
+						</Show>
 					</h1>
 
 					<main class="page-content">

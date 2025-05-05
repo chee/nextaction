@@ -17,13 +17,15 @@ import {registerParent, type ParentType} from "@/infra/parent-registry.ts"
 import {registerType} from "../../infra/type-registry.ts"
 import {createEffect} from "solid-js"
 import repo from "../../infra/sync/automerge-repo.ts"
+import flattenTree from "../../infra/lib/flattenTree.ts"
+import {createMemo} from "solid-js"
 
 // todo figure out how to do a map between models and refs
 // todo refs might need to be generic
-export function useListViewModel<ItemType, R extends AnyRef = AnyRef>(
-	url: Accessor<AutomergeUrl | undefined>,
-	type: ParentType
-) {
+export function useListViewModel<
+	ItemType extends {type: R["type"]; url: R["url"]},
+	R extends AnyRef = AnyRef
+>(url: Accessor<AutomergeUrl | undefined>, type: ParentType) {
 	const [list, handle] = useDocument<{items: R[]}>(url, {repo: repo})
 	createEffect(() => {
 		// todo this should be done in the individual viewmodels
@@ -47,6 +49,7 @@ export function useListViewModel<ItemType, R extends AnyRef = AnyRef>(
 		}
 	)
 
+	// @ts-expect-error todo fix this
 	const items = mapArray(
 		() => list()?.items,
 		ref => {
@@ -62,6 +65,13 @@ export function useListViewModel<ItemType, R extends AnyRef = AnyRef>(
 	type MaybeArray<T> = T | T[]
 	type SingleTypeURL = R["url"]
 	type TypeURLs = MaybeArray<R["url"]>
+
+	const keyed = createMemo(() => {
+		return items().reduce((acc, item) => {
+			acc[item.url] = item
+			return acc
+		}, {} as Record<SingleTypeURL, ItemType>)
+	})
 	return {
 		get url() {
 			return url()
@@ -71,6 +81,13 @@ export function useListViewModel<ItemType, R extends AnyRef = AnyRef>(
 		},
 		get itemURLs() {
 			return itemURLs()
+		},
+		get flat() {
+			// @ts-expect-error todo fix this
+			return flattenTree(items())
+		},
+		get keyed() {
+			return keyed()
 		},
 		addItem(
 			type: R["type"],

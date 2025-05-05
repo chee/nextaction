@@ -17,6 +17,9 @@ export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
 	const [item, handle] = useDocument<Doable>(url, {repo: repo})
 
 	return {
+		get stateChanged() {
+			return item()?.stateChanged ?? null
+		},
 		get state() {
 			return item()?.state ?? "open"
 		},
@@ -44,6 +47,11 @@ export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
 		},
 		get deleted() {
 			return item()?.deleted ?? false
+		},
+		set deleted(value: boolean) {
+			handle()?.change(item => {
+				item.deleted = value
+			})
 		},
 	}
 }

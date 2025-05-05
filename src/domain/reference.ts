@@ -1,27 +1,34 @@
-import type {ActionRef} from "@/domain/action.ts"
-import type {ProjectRef} from "@/domain/project.ts"
-import type {AreaRef} from "@/domain/area.ts"
-import type {HeadingRef} from "./heading.ts"
+import type {ActionRef, ActionURL} from "@/domain/action.ts"
+import type {ProjectRef, ProjectURL} from "@/domain/project.ts"
+import type {AreaRef, AreaURL} from "@/domain/area.ts"
+import type {HeadingRef, HeadingURL} from "./heading.ts"
 
-// todo make url based on type, we know what things can be referenced
-export type Reference<Type extends string = string> = {
+export type Reference<
+	Type extends string = string,
+	URLType = Type extends "action"
+		? ActionURL
+		: Type extends "project"
+		? ProjectURL
+		: Type extends "area"
+		? AreaURL
+		: Type extends "heading"
+		? HeadingURL
+		: string
+> = {
 	type: Type
-	url: string
+	url: URLType
 }
 
-export type ReferencePointer<Type extends string = string> = {
+export type ReferencePointer<
+	Type extends string = string,
+	URLType = Reference<Type>["url"]
+> = {
 	type: Type
-	url: string
+	url: URLType
 	above?: boolean
 }
 
 export type AnyRef = ActionRef | ProjectRef | AreaRef | HeadingRef
-export type RefMap = {
-	action: ActionRef
-	project: ProjectRef
-	area: AreaRef
-	heading: HeadingRef
-}
 
 export type AnyList = {items: AnyRef[]}
 
@@ -45,10 +52,11 @@ export function indexOfURL<T extends Reference>(list: T[], url: T["url"]) {
 	return list.findIndex(item => item.url === url)
 }
 
-export function refer<T extends AnyRef["url"], U extends AnyRef["url"]>(
-	type: T,
-	url: U
-) {
+export function refer<
+	X extends AnyRef,
+	T extends X["type"],
+	U extends X["url"]
+>(type: T, url: U) {
 	return {type, url, ref: true} as const
 }
 
@@ -59,7 +67,7 @@ function array<T>(item: T | T[]) {
 
 export function addReference(
 	list: Reference[],
-	type: string,
+	type: Reference["type"],
 	urls: string | string[],
 	index?: number | ReferencePointer
 ) {
