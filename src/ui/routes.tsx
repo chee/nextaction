@@ -2,7 +2,7 @@
 import "temporal-polyfill/global"
 import {lazy} from "solid-js"
 import {render} from "solid-js/web"
-import {redirect, Route, Router} from "@solidjs/router"
+import {redirect, Route, Router, useNavigate} from "@solidjs/router"
 import App from "./layouts/app.tsx"
 import {useUserId} from "../infra/storage/user-id.ts"
 import {encodeJSON} from "../infra/lib/compress.ts"
@@ -108,6 +108,9 @@ render(
 										setUserId(undefined)
 										delete globalThis.localStorage["taskplace:user-id"]
 										redirect("/")
+										const nav = useNavigate()
+										location.reload()
+										nav("/")
 									}}>
 									logout
 								</button>
