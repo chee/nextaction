@@ -2,8 +2,10 @@
 import "temporal-polyfill/global"
 import {lazy} from "solid-js"
 import {render} from "solid-js/web"
-import {Route, Router} from "@solidjs/router"
+import {redirect, Route, Router} from "@solidjs/router"
 import App from "./layouts/app.tsx"
+import {useUserId} from "../infra/storage/user-id.ts"
+import {encodeJSON} from "../infra/lib/compress.ts"
 
 // todo
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Periodic_Background_Synchronization_API#browser_compatibility
@@ -80,6 +82,38 @@ render(
 				<Route
 					path="/projects/:projectId"
 					component={lazy(() => import("./pages/userland/project/project.tsx"))}
+				/>
+				<Route
+					path="/logout"
+					component={() => {
+						const [userId, setUserId] = useUserId()
+						const current = encodeJSON({type: "user", url: userId()})
+						return (
+							<div class="page-container page-container--logout">
+								<h1 class="page-title">logout</h1>
+								<p style={{padding: "1rem"}}>
+									Are you sure you want to logout? To get back in you'll need
+									this:
+								</p>
+								<pre style={{padding: "1rem"}}>
+									<code onClick={() => navigator.clipboard.writeText(current)}>
+										{current}
+									</code>
+								</pre>
+								<button
+									type="button"
+									class="danger button"
+									style={{margin: "1rem"}}
+									onClick={() => {
+										setUserId(undefined)
+										delete globalThis.localStorage["taskplace:user-id"]
+										redirect("/")
+									}}>
+									logout
+								</button>
+							</div>
+						)
+					}}
 				/>
 
 				<Route

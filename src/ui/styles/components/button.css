@@ -48,8 +48,8 @@
 		color: black;
 	}
 	&.danger {
-		--fill: var(--danger);
+		--fill: var(--danger-light);
 		--border-color: var(--danger-dark);
-		color: black;
+		color: white;
 	}
 }
