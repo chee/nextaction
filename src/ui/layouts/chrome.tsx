@@ -110,7 +110,7 @@ export default function Chrome(props: {children?: JSX.Element}) {
 										<Button
 											title="hide sidebar"
 											onClick={() => collapseSidebar()}
-											class="button chrome__sidebar-control chrome__sidebar-control--collapse">
+											class="hard button chrome__sidebar-control chrome__sidebar-control--collapse">
 											<SidebarCollapseIcon />
 										</Button>
 									</div>
@@ -142,13 +142,11 @@ export default function Chrome(props: {children?: JSX.Element}) {
 												</Button>
 											</Show>
 										</div>
-										<div class="chrome__header-right">
-											{/* <Bar modifiers="desktop" /> */}
-										</div>
+										<div class="chrome__header-right" />
 									</header>
 									<div class="chrome__content">{props.children}</div>
 									<footer class="chrome__footer">
-										<Bar modifiers="desktop" />
+										<Bar modifiers="mobile" />
 									</footer>
 								</Resizable.Panel>
 							</>

@@ -3,8 +3,25 @@
 	height: 100%;
 	width: 100%;
 	transition: background 0.4s;
+	position: relative;
+	&::after {
+		content: "";
+		position: absolute;
+		top: 0;
+		bottom: 0;
+		left: 0;
+		right: 0;
+		background: var(--primary);
+		opacity: 0;
+		z-index: -1;
+		pointer-events: none;
+	}
 	&:has(.action--expanded) {
-		background: color-mix(in oklab, var(--page-fill), var(--sidebar-fill) 10%);
+		/* background:  var(--sidebar-fill); */
+		&::after {
+			opacity: 0.2;
+			transition: opacity 0.3s ease-out;
+		}
 	}
 }
 
@@ -13,6 +30,7 @@
 }
 
 .chrome__sidebar {
+	padding-top: env(safe-area-inset-top);
 	display: flex;
 	flex-direction: column;
 	background: var(--sidebar-fill);
@@ -63,6 +81,9 @@
 	height: 100%;
 	display: flex;
 	flex-direction: column;
+	.chrome--mobile & {
+		padding-left: var(--space-2);
+	}
 }
 
 .chrome__content {
@@ -71,6 +92,7 @@
 }
 
 .chrome__header {
+	padding-top: env(safe-area-inset-top);
 	display: flex;
 	flex-direction: row;
 	color: var(--sidebar-line);
@@ -110,12 +132,13 @@
 		}
 		flex-basis: unset !important;
 	}
-	.chrome__handle {
-		display: none;
-	}
 	.chrome__main {
 		display: none;
 	}
+}
+
+.chrome--mobile .chrome__handle {
+	display: none;
 }
 
 .chrome--not-showing-sidebar .chrome__main {
@@ -137,3 +160,8 @@
 .chrome--desktop .bar--mobile {
 	display: none;
 }
+/*
+.chrome__footer:has(.bar:empty) {
+	display: none;
+}
+ */

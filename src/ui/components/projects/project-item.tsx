@@ -10,6 +10,10 @@ import {useProjectProgress} from "./use-project-progress.ts"
 import type {SelectableProps} from "../actions/action.tsx"
 import {useDragAndDrop} from "::infra/dnd/dnd-context.ts"
 
+export function ProgressPie(props: {progress: number}) {
+	return <div class="progress-pie" style={{"--progress": props.progress}} />
+}
+
 export function ProjectItem(
 	props: {
 		modifiers?: BembyModifiers | BembyModifier
@@ -57,7 +61,9 @@ export function ProjectItem(
 			<header class="project-item__header">
 				{/* todo debug & magic project checkbox */}
 				{/* <Checkbox {...props} /> */}
-				<span class="project-item__progress">{progress()}%</span>
+				<span class="project-item__progress">
+					<ProgressPie progress={progress()} />
+				</span>
 				<h3 id={`${props.url}-title`} class="project-item__title">
 					<span class="project-item__title-icon">{props.icon}</span>
 					<Show

@@ -71,6 +71,8 @@
 
 .project-heading {
 	position: relative;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
 }
 
 .project-heading:not(.project-heading--clicks) {
@@ -91,8 +93,13 @@
 }
 
 .project-heading-container {
+	margin-left: var(--space-2);
 	margin-top: var(--space-10);
-	--project-heading-container-line: var(--project-header-fill--selected);
+	--project-heading-container-line: color-mix(
+		in oklab,
+		var(--page),
+		var(--text) 5%
+	);
 	--project-heading-container-line--selected: color-mix(
 		in oklab,
 		var(--primary-dark),
@@ -102,9 +109,19 @@
 	border-radius: var(--project-heading-radius);
 	border: 1px solid var(--project-heading-container-line);
 	border-radius: 7px;
+	transition: border-color 0.2 ease-out;
 }
 
-.project-heading-container:has(.project-heading[aria-current="true"]) {
+.project-heading-container + .action {
+	margin-top: var(--space-10);
+}
+
+.text-editor:has(+ .project-heading-container) + .project-heading-container {
+	margin-top: 0;
+}
+
+.project-heading-container:has(.project-heading[aria-current="true"])
+	.project-heading {
 	background: var(--project-header-fill--selected);
 }
 

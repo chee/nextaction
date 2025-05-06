@@ -81,13 +81,6 @@ export default function Upcoming() {
 					// dnd.createDraggableList(element)
 				}}
 				class="upcoming page-container page-container--built-in">
-				{/* <Bar>
-					<BarNewAction
-						newAction={upcoming.newAction}
-						newProject={upcoming.newProject}
-					/>
-					<BarMenu />
-				</Bar> */}
 				<div class="page">
 					<h1 class="page-title">
 						<div class="page-title__icon">📅</div>

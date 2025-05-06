@@ -65,14 +65,6 @@ export default function Someday() {
 	return (
 		<DragAndDropProvider value={dnd}>
 			<div class="today page-container page-container--built-in">
-				{/* <Bar>
-					<BarNewAction
-						selection={today.selection}
-						expand={url => today.expand(url)}
-						newAction={today.newAction}
-					/>
-					<BarMenu />
-				</Bar> */}
 				<div class="page">
 					<h1 class="page-title">
 						<div class="page-title__icon">🎁</div>

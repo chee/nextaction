@@ -192,39 +192,6 @@ export default function Today() {
 					})
 					onCleanup(clean)
 				}}>
-				<Bar>
-					<BarNewAction
-						newAction={() => {
-							const url = curl<ActionURL>(newAction({when: magicWhen("today")}))
-							home.list.addItem(
-								"action",
-								url,
-								selection.lastSelectedIndex() == -1
-									? today().length
-									: selection.lastSelectedIndex() + 1
-							)
-							expander.expand(url)
-						}}
-					/>
-					<BarButton
-						style={{background: "pink", rotate: "30deg"}}
-						icon={<BigPlus />}
-						label="new project"
-						onClick={() => {
-							const url = curl<ProjectURL>(
-								newProject({when: magicWhen("today")})
-							)
-							home.list.addItem(
-								"project",
-								url,
-								selection.lastSelectedIndex() == -1
-									? today().length
-									: selection.lastSelectedIndex() + 1
-							)
-							// expander.expand(url)
-						}}
-					/>
-				</Bar>
 				<div class="page">
 					<h1 class="page-title">
 						<div class="page-title__icon">✨</div>

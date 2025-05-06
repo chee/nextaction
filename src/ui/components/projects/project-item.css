@@ -15,6 +15,17 @@
 	user-select: none;
 }
 
+.progress-pie {
+	height: 1.5em;
+	width: 1.5em;
+	border-radius: 50%;
+	border: 1px solid var(--primary-dark);
+	background: conic-gradient(
+		var(--primary-dark) calc(var(--progress) * 1%),
+		white 0
+	);
+}
+
 .project-item__header {
 	display: flex;
 	align-items: center;

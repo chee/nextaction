@@ -41,7 +41,8 @@
 .action[aria-expanded="true"] {
 	min-height: 8em;
 	background: var(--page-fill);
-	border: 1px solid var(--selected-fill);
+	border: 1px solid var(--primary-dark);
+	border-radius: 8px;
 	box-shadow: 0 1px 2px
 		color-mix(in oklab, var(--primary-dark), transparent 80%);
 	margin-inline: -0.5rem;

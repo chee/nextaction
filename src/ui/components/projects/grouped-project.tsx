@@ -10,6 +10,7 @@ import type {ProjectViewModel} from "::viewmodel/project.ts"
 import ActionList from "../actions/action-list.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
 import flattenTree from "::infra/lib/flattenTree.ts"
+import {ProgressPie} from "./project-item.tsx"
 
 export function GroupedProject(props: {
 	project: ProjectViewModel
@@ -29,7 +30,9 @@ export function GroupedProject(props: {
 		<Show when={actions().filter(props.filter).length > 0}>
 			<div class="grouped-project">
 				<header class="grouped-project__header">
-					<div class="grouped-project__progress">{progress()}%</div>
+					<div class="grouped-project__progress">
+						<ProgressPie progress={progress()} />
+					</div>
 					<A
 						class="grouped-project__title"
 						href={`/projects/${props.project.url}`}>

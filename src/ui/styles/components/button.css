@@ -1,8 +1,9 @@
 .button {
 	--fill: var(--page);
-	--border-color: var(--text);
+	--border-color: color-mix(in oklab, var(--page), var(--text) 10%);
+	--text-color: color-mix(in oklab, var(--page), var(--text) 70%);
 	background: var(--fill);
-	color: var(--text);
+	color: var(--text-color);
 	font-family: var(--family-sans);
 	font-size: 0.96rem;
 	text-decoration: none;
@@ -18,10 +19,18 @@
 	display: flex;
 	min-height: 2rem;
 	align-items: center;
+	transition: border-color 0.1s ease-out, color 0.1s ease-out,
+		background-color 0.1s ease-out;
 	&:hover {
+		--border-color: var(--text);
+		--text-color: var(--text);
 		box-shadow: 1px 1px 0px var(--border-color), 2px 2px 0px var(--border-color);
 		top: -1px;
 		left: -1px;
+	}
+	&.hard {
+		--border-color: var(--text);
+		--text-color: var(--text);
 	}
 	&:active {
 		box-shadow: 0px 0px 0px 0px;

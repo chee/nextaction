@@ -168,7 +168,7 @@ export default function Inbox() {
 								page.stage(() => item.toggleCanceled(force), item.url)
 							}
 							toggleCompleted={(i, f) =>
-								page.stage(() => i.toggleCanceled(f), i.url)
+								page.stage(() => i.toggleCompleted(f), i.url)
 							}
 						/>
 					</main>
