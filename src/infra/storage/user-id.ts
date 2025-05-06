@@ -1,14 +1,30 @@
 import {createSignal} from "solid-js"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {makePersisted} from "@solid-primitives/storage"
+import type {UserURL} from "::domain/user.ts"
+
+useUserId.key = "nextaction:user-id"
 
 export function useUserId() {
+	const oldId = localStorage.getItem("taskplace:user-id")
+	if (oldId) {
+		delete globalThis.localStorage["taskplace:user-id"]
+		localStorage.setItem("nextaction:user-id", oldId)
+	}
+
 	const [userId, setUserId] = makePersisted(
 		// eslint-disable-next-line solid/reactivity
-		createSignal<AutomergeUrl | undefined>(undefined),
+		createSignal<UserURL | undefined>(undefined),
 		{
-			name: "taskplace:user-id",
+			name: useUserId.key,
 		}
 	)
-	return [userId, setUserId] as const
+
+	return [
+		userId,
+		setUserId,
+		() => {
+			setUserId(undefined)
+			delete globalThis.localStorage[useUserId.key]
+		},
+	] as const
 }

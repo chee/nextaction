@@ -1,6 +1,6 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {Doable} from "./generic/doable.ts"
-import type {Reference} from "@/domain/reference.ts"
+import type {Reference} from "::domain/reference.ts"
 import type {HeadingRef} from "./heading.ts"
 import type {ActionRef} from "./action.ts"
 

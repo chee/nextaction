@@ -2,35 +2,36 @@ import "./sidebar.css"
 import {A, type AnchorProps} from "@solidjs/router"
 import {For, splitProps, Suspense} from "solid-js"
 import type {JSX} from "solid-js"
-import {useHomeContext} from "@/viewmodel/home.ts"
+import {useHomeContext} from "::viewmodel/home.ts"
 import {
 	createDropTarget,
 	type DropTargetContract,
-} from "@/infra/dnd/contract.ts"
-import {isAreaViewModel, type AreaViewModel} from "@/viewmodel/area.ts"
-import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
+} from "::infra/dnd/contract.ts"
+import {isAreaViewModel, type AreaViewModel} from "::viewmodel/area.ts"
+import {isProjectViewModel, type ProjectViewModel} from "::viewmodel/project.ts"
 import bemby from "bemby"
 import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
-import {encodeJSON} from "@/infra/lib/compress.ts"
+import {encodeJSON} from "::infra/lib/compress.ts"
 import {toast} from "../base/toast.tsx"
-import {useDoableMixin} from "@/viewmodel/mixins/doable.ts"
-import {getParentURL} from "@/infra/parent-registry.ts"
-import {getType} from "@/infra/type-registry.ts"
-import {isAction, type ActionRef, type ActionURL} from "@/domain/action.ts"
-import {createSimpleDraggable} from "@/infra/dnd/dnd-context.ts"
-import {useViewModel} from "@/viewmodel/useviewmodel.ts"
+import {useDoableMixin} from "::viewmodel/mixins/doable.ts"
+import {getParentURL} from "::infra/parent-registry.ts"
+import {getType} from "::infra/type-registry.ts"
+import {isAction, type ActionRef, type ActionURL} from "::domain/action.ts"
+import {createSimpleDraggable} from "::infra/dnd/dnd-context.ts"
+import {useViewModel} from "::viewmodel/useviewmodel.ts"
 import DevelopmentNote from "../development-note.tsx"
-import {isHeading} from "@/domain/heading.ts"
-import {useMovements} from "@/viewmodel/movements.ts"
+import {isHeading} from "::domain/heading.ts"
+import {useMovements} from "::viewmodel/movements.ts"
+import {createMediaQuery} from "@solid-primitives/media"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
-export default function Sidebar() {
+export default function Sidebar(props: {collapse: () => void}) {
 	const home = useHomeContext()
 
 	return (
-		<div class="sidebar">
+		<div class="sidebar" on:sidebarclose={() => props.collapse()}>
 			<div class="sidebar__links">
 				<nav class="sidebar__section sidebar__section--default sidebar__section--inboxes">
 					<Sidelink href="/inbox" icon="📥">
@@ -252,12 +253,22 @@ interface SidebarLinkProps extends AnchorProps {
 	droptarget?: DropTargetContract
 }
 
+// todo move
+const isMobile = createMediaQuery("(max-width: 600px)")
+
 function Sidelink(props: SidebarLinkProps) {
 	const [sidebarProps, anchorProps] = splitProps(props, ["icon", "droptarget"])
 
 	return (
 		<A
 			class="sidebar-link"
+			onClick={event => {
+				if (isMobile()) {
+					event.target.dispatchEvent(
+						new CustomEvent("sidebarclose", {bubbles: true})
+					)
+				}
+			}}
 			{...anchorProps}
 			ref={element => {
 				if (sidebarProps.droptarget) {

@@ -3,7 +3,7 @@ import type {InboxURL} from "./inbox.ts"
 import type {DropboxURL} from "./dropbox.ts"
 import type {ProjectRef} from "./project.ts"
 import type {AreaRef} from "./area.ts"
-import type {ActionRef} from "@/domain/action.ts"
+import type {ActionRef} from "::domain/action.ts"
 import type {Tag} from "./tag.ts"
 
 export type HomeURL = AutomergeUrl & {type: "home"}

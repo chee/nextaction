@@ -1,19 +1,19 @@
 import {useDocument} from "solid-automerge"
 import {UserContext, useUser} from "./user.ts"
-import type {Home, HomeURL} from "@/domain/home.ts"
-import {type ActionRef} from "@/domain/action.ts"
+import type {Home, HomeURL} from "::domain/home.ts"
+import {type ActionRef} from "::domain/action.ts"
 import {
 	isProjectRef,
 	newProject,
 	ProjectURL,
 	type Project,
-} from "@/domain/project.ts"
-import {useListViewModel} from "./mixins/list.ts"
+} from "::domain/project.ts"
+import {useListViewModel, type ListViewModel} from "./mixins/list.ts"
 import type {DocHandle} from "@automerge/automerge-repo"
-import {decodeJSON} from "../infra/lib/compress.ts"
-import repo, {curl} from "@/infra/sync/automerge-repo.ts"
-import {toast} from "@/ui/components/base/toast.tsx"
-import mix from "../infra/lib/mix.ts"
+import {decodeJSON} from "::infra/lib/compress.ts"
+import repo, {curl} from "::infra/sync/automerge-repo.ts"
+import {toast} from "::ui/components/base/toast.tsx"
+import mix from "::infra/lib/mix.ts"
 import {useContext} from "solid-js"
 
 declare global {
@@ -21,7 +21,8 @@ declare global {
 		home(): DocHandle<Home> | undefined
 	}
 }
-export function useHome() {
+
+export function useHome(): HomeViewModel {
 	const user = useUser()
 
 	const [home, handle] = useDocument<Home>(() => user.homeURL, {repo})
@@ -42,9 +43,6 @@ export function useHome() {
 		},
 		get url() {
 			return handle()?.url as HomeURL
-		},
-		get dropboxes() {
-			return home()?.dropboxes ?? []
 		},
 		get inbox() {
 			return inbox
@@ -87,7 +85,20 @@ export function useHome() {
 	return vm
 }
 
-export type HomeViewModel = ReturnType<typeof useHome>
+export interface HomeViewModel {
+	type: "home"
+	url: HomeURL
+	list: ListViewModel<"home">
+	inbox: ListViewModel<"inbox">
+	keyed: ListViewModel<"home">["keyed"]
+	flat: ListViewModel<"home">["flat"]
+
+	createProject(project?: Project): ProjectURL
+	importProject(string: string): void
+	adoptActionFromInbox(ref: ActionRef): void
+	giveActionToInbox(ref: ActionRef): void
+}
+
 export type InboxViewModel = HomeViewModel["inbox"]
 
 export function useHomeContext() {

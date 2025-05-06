@@ -2,9 +2,9 @@ import "./action-list.css"
 import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
 import {Suspense} from "solid-js"
 import {For} from "solid-js"
-import {type ActionViewModel} from "@/viewmodel/action.ts"
-import Action from "@/ui/components/actions/action.tsx"
-import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
+import {type ActionViewModel} from "::viewmodel/action.ts"
+import Action from "::ui/components/actions/action.tsx"
+import type {SelectionContext} from "::infra/hooks/selection-context.ts"
 import {createEffect} from "solid-js"
 
 export default function ActionList(props: {

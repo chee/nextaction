@@ -1,13 +1,13 @@
 import "./sidebar-footer.css"
 import {DropdownMenu} from "@kobalte/core/dropdown-menu"
 import {Button} from "@kobalte/core/button"
-import {useHome, useHomeContext} from "@/viewmodel/home.ts"
-import {toast} from "@/ui/components/base/toast.tsx"
-import BigPlus from "@/ui/icons/big-plus.tsx"
-import PreferencesIcon from "@/ui/icons/preferences.tsx"
+import {useHomeContext} from "::viewmodel/home.ts"
+import {toast} from "::ui/components/base/toast.tsx"
+import BigPlus from "::ui/icons/big-plus.tsx"
+import PreferencesIcon from "::ui/icons/preferences.tsx"
 import {useNavigate} from "@solidjs/router"
-import {encodeJSON} from "../../../infra/lib/compress.ts"
-import {useUserId} from "../../../infra/storage/user-id.ts"
+import {encodeJSON} from "::infra/lib/compress.ts"
+import {useUserId} from "::infra/storage/user-id.ts"
 
 export default function SidebarFooter() {
 	const home = useHomeContext()

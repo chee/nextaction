@@ -1,22 +1,20 @@
-import "../layouts/chrome.css"
-
-import {clsx} from "@nberlette/clsx"
-import type {JSX} from "solid-js"
+import type {BembyModifier} from "bemby"
+import bemby from "bemby"
+import {type JSX} from "solid-js"
 
 export default function Page(props: {
-	name: string
+	modifiers: BembyModifier
 	title: JSX.Element
-	children?: JSX.Element
+	children: JSX.Element
 }) {
 	return (
-		<div class={clsx(props.name, "page-container")}>
-			{/* <Bar>
-				<BarNewAction />
-			</Bar> */}
-			<div class="page">
-				<h1 class="page-title">{props.title}</h1>
-				<main class="page-content">{props.children}</main>
-			</div>
+		<div class={bemby("page-container", props.modifiers)}>
+			<article class={bemby("page", props.modifiers)}>
+				<h1 class={bemby("page-title", props.modifiers)}>{props.title}</h1>
+				<main class={bemby("page-content", props.modifiers)}>
+					{props.children}
+				</main>
+			</article>
 		</div>
 	)
 }

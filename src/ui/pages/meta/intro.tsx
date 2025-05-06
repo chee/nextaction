@@ -1,11 +1,11 @@
 import {Button} from "@kobalte/core/button"
 import "./intro.css"
-import {decode, decodeJSON} from "@/infra/lib/compress.ts"
+import {decode, decodeJSON} from "::infra/lib/compress.ts"
 import {isValidAutomergeUrl, type AutomergeUrl} from "@automerge/automerge-repo"
 import {useNavigate} from "@solidjs/router"
 import {createEffect} from "solid-js"
-import {useUserId} from "@/infra/storage/user-id.ts"
-import {createFirstTimeUser} from "@/viewmodel/user.ts"
+import {useUserId} from "::infra/storage/user-id.ts"
+import {createFirstTimeUser} from "::viewmodel/user.ts"
 import {toast} from "../../components/base/toast.tsx"
 
 export default function Intro() {

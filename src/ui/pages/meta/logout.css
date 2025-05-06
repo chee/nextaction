@@ -1,0 +1,23 @@
+.page-container--logout .page-content {
+	display: flex;
+	flex-direction: column;
+	height: 100vh;
+	gap: 3rem;
+	code {
+		display: block;
+		padding: 1rem;
+		margin: 2rem;
+		text-align: center;
+		font-family: var(--family-mono);
+		font-size: 2rem;
+		word-break: break-all;
+		&:hover {
+			background-color: var(--selected-fill);
+			cursor: default;
+			border-radius: 2rem;
+		}
+	}
+	button {
+		font-size: 2rem;
+	}
+}

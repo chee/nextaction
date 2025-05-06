@@ -1,72 +1,99 @@
 // import Bar, {BarMenu, BarNewAction} from "../../components/bar/bar.tsx"
-import ActionList from "@/ui/components/actions/action-list.tsx"
-import {useHotkeys} from "@/infra/lib/hotkeys.ts"
-import {newAction, type ActionURL} from "@/domain/action.ts"
-import {
-	createSelectionContext,
-	type SelectionContext,
-} from "@/infra/hooks/selection-context.ts"
-import {useHomeContext} from "@/viewmodel/home.ts"
-import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
-import {isClosed} from "@/domain/generic/doable.ts"
-import {useAction, type ActionViewModel} from "@/viewmodel/action.ts"
-import {mapArray, onCleanup} from "solid-js"
+import ActionList from "::ui/components/actions/action-list.tsx"
+import {useHotkeys} from "::infra/lib/hotkeys.ts"
+import {newAction, type ActionRef, type ActionURL} from "::domain/action.ts"
+import {type SelectionContext} from "::infra/hooks/selection-context.ts"
+import {useHomeContext} from "::viewmodel/home.ts"
+import {usePageContext} from "::viewmodel/helpers/page.ts"
+import {isClosed} from "::domain/generic/doable.ts"
+import {useAction, type ActionViewModel} from "::viewmodel/action.ts"
+import {onCleanup} from "solid-js"
 import {createShortcut} from "@solid-primitives/keyboard"
-import {
-	createDragAndDropContext,
-	DragAndDropProvider,
-} from "../../../infra/dnd/dnd-context.ts"
-import Bar, {BarNewAction} from "../../components/bar/bar.tsx"
+import {DragAndDropProvider} from "../../../infra/dnd/dnd-context.ts"
 import {curl} from "../../../infra/sync/automerge-repo.ts"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {
 	getDraggedPayload,
 	getDropTargetIndex,
 	getInput,
-} from "../../../infra/dnd/contract.ts"
+} from "::infra/dnd/contract.ts"
 
 // inbox is special because it has its own list
 export default function Inbox() {
 	const home = useHomeContext()
 
-	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved<ActionURL>()
-
-	const filter = (item: ActionViewModel) =>
-		(!item.deleted && !isClosed(item)) || wasRecentlyClosed(item.url)
-
-	const toggleCompleted = (item: ActionViewModel, force?: boolean) => {
-		recentlyClose(() => item.toggleCompleted(force), item.url)
-	}
-
-	const toggleCanceled = (item: ActionViewModel, force?: boolean) => {
-		recentlyClose(() => item.toggleCanceled(force), item.url)
-	}
-
-	const inbox = mapArray(
-		() => home.inbox.items.filter(filter),
-		i => i.url
-	)
-
-	const selection = createSelectionContext<ActionURL>(() => inbox())
-
-	useSelectionHotkeys<ActionURL>({
-		selection,
-		selectableItemURLs: inbox,
+	const page = usePageContext({
+		items: () => home.inbox.items,
+		selectableItemFilter: item =>
+			(!("deleted" in item) || !item.deleted) &&
+			(!("state" in item) || !isClosed(item)),
 	})
 
-	const expander = useExpander<ActionURL>(selection)
-
-	useCompleteHotkeys({
-		actions: () => home.inbox.items.filter(filter),
-		selection,
-		toggleItemCompleted: toggleCompleted,
-		toggleItemCanceled: toggleCanceled,
+	page.commandRegistry.setCommands({
+		"new-action": {
+			id: "new-action",
+			label: "New action",
+			shortcut: "space",
+			exe: () => {
+				// todo so much of this needs wrapped into a command
+				// list.
+				// url = page.expander.expand(home.inbox.newItem("action",
+				// template))
+				// and then
+				// return page.newItemCommand("action", template)
+				const newActionURL = curl<ActionURL>(newAction())
+				const selected = page.selection.lastSelected()
+				const selref = home.inbox.keyed[selected]?.asReference() as
+					| ActionRef
+					| undefined
+				home.inbox.addItem("action", newActionURL, selref)
+				page.expander.expand(newActionURL)
+				return {
+					undo() {
+						home.inbox.removeItem("action", newActionURL)
+					},
+					redo() {
+						home.inbox.addItem("action", newActionURL, selref)
+					},
+				}
+			},
+		},
+		delete: {
+			id: "delete",
+			label: "Delete item",
+			shortcut: "backspace",
+			exe() {
+				const selected = page.selection.selected()
+				const bottom = page.selection.bottomSelectedIndex()
+				for (const url of selected) {
+					home.inbox.keyed[url]?.delete()
+				}
+				page.selection.select(
+					page.selectableItemURLs()[bottom] ??
+						page.selectableItemURLs()[bottom - 1] ??
+						page.selectableItemURLs()[bottom + 1] ??
+						page.selectableItemURLs()[page.selectableItemURLs().length - 1]
+				)
+				return {
+					undo() {
+						for (const url of selected) {
+							home.inbox.addItem("action", url as ActionURL)
+						}
+					},
+					redo() {
+						for (const url of selected) {
+							home.inbox.removeItem("action", url as ActionURL)
+						}
+					},
+				}
+			},
+		},
 	})
 
-	const dnd = createDragAndDropContext<ActionURL>(selection)
+	useSelectionHotkeys(page)
 
 	return (
-		<DragAndDropProvider value={dnd}>
+		<DragAndDropProvider value={page.dnd}>
 			<div
 				ref={element => {
 					const clean = dropTargetForElements({
@@ -79,7 +106,7 @@ export default function Inbox() {
 							const {isAbove, dropTargetURL} = getDropTargetIndex({
 								element: element,
 								input,
-								items: inbox,
+								items: page.selectableItemURLs,
 								dragged,
 								isValidDropTarget() {
 									// there's only actions in here
@@ -110,7 +137,7 @@ export default function Inbox() {
 							const {dropTargetElement, isAbove} = getDropTargetIndex({
 								element: element,
 								input,
-								items: inbox,
+								items: page.selectableItemURLs,
 								dragged,
 								isValidDropTarget() {
 									return true
@@ -126,17 +153,6 @@ export default function Inbox() {
 					onCleanup(clean)
 				}}
 				class="inbox page-container page-container--built-in">
-				<Bar>
-					<BarNewAction
-						newAction={() => {
-							const newActionURL = curl<ActionURL>(newAction())
-							const selected = selection.lastSelectedIndex()
-							home.inbox.addItem("action", newActionURL, selected + 1)
-							expander.expand(newActionURL)
-						}}
-					/>
-				</Bar>
-
 				<div class="page">
 					<h1 class="page-title">
 						<div class="page-title__icon">📥</div>
@@ -144,12 +160,16 @@ export default function Inbox() {
 					</h1>
 					<main class="page-content">
 						<ActionList
-							selection={selection}
-							{...expander}
-							isSelected={selection.isSelected}
-							actions={home.inbox.items.filter(filter)}
-							toggleCanceled={toggleCanceled}
-							toggleCompleted={toggleCompleted}
+							selection={page.selection}
+							{...page.expander}
+							isSelected={page.selection.isSelected}
+							actions={home.inbox.items.filter(page.filter)}
+							toggleCanceled={(item, force) =>
+								page.stage(() => item.toggleCanceled(force), item.url)
+							}
+							toggleCompleted={(i, f) =>
+								page.stage(() => i.toggleCanceled(f), i.url)
+							}
 						/>
 					</main>
 				</div>
@@ -203,6 +223,10 @@ export function useSelectionHotkeys<T extends string = string>(props: {
 		} else {
 			props.selection.select(props.selectableItemURLs()[0])
 		}
+	})
+
+	useHotkeys("cmd+a", () => {
+		props.selection.selectAll()
 	})
 
 	useHotkeys("shift+up", () => {

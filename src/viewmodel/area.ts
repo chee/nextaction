@@ -1,16 +1,16 @@
 import type {Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
-import type {Area, AreaURL} from "@/domain/area.ts"
+import type {Area, AreaURL} from "::domain/area.ts"
 import type {ProjectViewModel} from "./project.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
-import mix from "../infra/lib/mix.ts"
-import {useTitleableMixin} from "./mixins/titleable.ts"
-import {useNotableMixin} from "./mixins/notable.ts"
-import {useListViewModel} from "./mixins/list.ts"
+import mix from "::infra/lib/mix.ts"
+import {useTitleableMixin, type TitleableViewModel} from "./mixins/titleable.ts"
+import {useNotableMixin, type NotableViewModel} from "./mixins/notable.ts"
+import {useListViewModel, type ListViewModel} from "./mixins/list.ts"
 import {dedent} from "@qnighy/dedent"
-import repo from "../infra/sync/automerge-repo.ts"
-import type {Reference, ReferencePointer} from "../domain/reference.ts"
-export function useArea(url: Accessor<AreaURL>) {
+import repo from "::infra/sync/automerge-repo.ts"
+import type {Reference, ReferencePointer} from "::domain/reference.ts"
+export function useArea(url: Accessor<AreaURL>): AreaViewModel {
 	const [area, handle] = useDocument<Area>(url, {repo: repo})
 	const titleable = useTitleableMixin(area, handle)
 	const notable = useNotableMixin(area, handle)
@@ -65,7 +65,18 @@ export function useArea(url: Accessor<AreaURL>) {
 	return vm
 }
 
-export type AreaViewModel = ReturnType<typeof useArea>
+export interface AreaViewModel
+	extends TitleableViewModel,
+		NotableViewModel,
+		ListViewModel<"area"> {
+	type: "area"
+	icon: string
+	url: AreaURL
+	delete(): void
+	toString(): string
+	asReference(): Reference<"area">
+	asPointer(above?: boolean): ReferencePointer<"area">
+}
 
 export function isAreaViewModel(area: unknown): area is AreaViewModel {
 	return (area as AreaViewModel).type === "area"

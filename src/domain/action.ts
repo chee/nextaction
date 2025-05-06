@@ -1,6 +1,6 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {parseIncomingWhen, type Doable} from "./generic/doable.ts"
-import {type Reference} from "@/domain/reference.ts"
+import {type Reference} from "::domain/reference.ts"
 
 export type ActionURL = AutomergeUrl & {type: "action"}
 export type ActionRef = Reference<"action">

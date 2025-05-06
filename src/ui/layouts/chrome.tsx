@@ -1,6 +1,6 @@
 import "./chrome.css"
 
-import Sidebar from "@/ui/components/sidebar/sidebar.tsx"
+import Sidebar from "::ui/components/sidebar/sidebar.tsx"
 import {createSignal, type JSX, Show} from "solid-js"
 import Resizable, {ContextValue as ResizableContext} from "@corvu/resizable"
 import {makePersisted} from "@solid-primitives/storage"
@@ -10,8 +10,10 @@ import bemby from "bemby"
 import {useIsRouting} from "@solidjs/router"
 import {createEffect} from "solid-js"
 import {onMount} from "solid-js"
-import {UserContext, useUser} from "../../viewmodel/user.ts"
+import {UserContext, useUser} from "::viewmodel/user.ts"
 import {createMediaQuery} from "@solid-primitives/media"
+import {CommandRegistryProvider} from "../commands/commands.tsx"
+import Bar from "::components/bar/bar.tsx"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
 
@@ -27,10 +29,12 @@ const isMobile = createMediaQuery("(max-width: 600px)")
 
 export default function Chrome(props: {children?: JSX.Element}) {
 	const user = useUser()
+	// eslint-disable-next-line solid/reactivity
 	const [sizes, setSizes] = makePersisted(createSignal<number[]>([0.2, 0.8]), {
 		name: "taskplace:chrome-sizes",
 	})
 	const [preferredSidebarSize, setPreferredSidebarSize] = makePersisted(
+		// eslint-disable-next-line solid/reactivity
 		createSignal(0.2)
 	)
 
@@ -80,70 +84,79 @@ export default function Chrome(props: {children?: JSX.Element}) {
 	})
 
 	return (
-		<UserContext.Provider value={user}>
-			<Resizable
-				class={bemby("chrome", {
-					mobile: isMobile(),
-					"showing-sidebar": !sidebarIsCollapsed(),
-					"not-showing-sidebar": sidebarIsCollapsed(),
-					"first-load": firstLoad(),
-				})}
-				sizes={sizes() ?? [0.2, 0.8]}
-				onSizesChange={setSizes}>
-				{() => {
-					setResizableContext(Resizable.useContext())
-					return (
-						<>
-							<Resizable.Panel
-								class={bemby("chrome__sidebar", {
-									"manually-resizing": manuallyDragging(),
-								})}
-								as="aside"
-								collapsible>
-								<div>
-									<Button
-										title="hide sidebar"
-										onClick={() => collapseSidebar()}
-										class="button chrome__sidebar-control chrome__sidebar-control--collapse">
-										<SidebarCollapseIcon />
-									</Button>
-								</div>
-								<Sidebar />
-							</Resizable.Panel>
-							<Resizable.Handle
-								class="chrome__handle"
-								onHandleDragStart={() => {
-									setManuallyResizing(true)
-								}}
-								onHandleDragEnd={() => {
-									setManuallyResizing(false)
-									const current = currentSidebarSize()
-									if (typeof current == "number" && current > 0) {
-										setPreferredSidebarSize(current)
-									}
-								}}
-							/>
-							<Resizable.Panel class="chrome__main">
-								<div class="chrome__main">
+		<CommandRegistryProvider>
+			<UserContext.Provider value={user}>
+				<Resizable
+					class={bemby("chrome", {
+						mobile: isMobile(),
+						desktop: !isMobile(),
+						"showing-sidebar": !sidebarIsCollapsed(),
+						"not-showing-sidebar": sidebarIsCollapsed(),
+						"first-load": firstLoad(),
+					})}
+					sizes={sizes() ?? [0.2, 0.8]}
+					onSizesChange={setSizes}>
+					{() => {
+						setResizableContext(Resizable.useContext())
+						return (
+							<>
+								<Resizable.Panel
+									class={bemby("chrome__sidebar", {
+										"manually-resizing": manuallyDragging(),
+									})}
+									as="aside"
+									collapsible>
 									<div>
-										<Show when={sidebarIsCollapsed()}>
-											<Button
-												onDragEnter={() => expandSidebar()}
-												title="show sidebar"
-												onClick={() => expandSidebar()}
-												class="button chrome__sidebar-control chrome__sidebar-control--expand">
-												<SidebarExpandIcon />
-											</Button>
-										</Show>
+										<Button
+											title="hide sidebar"
+											onClick={() => collapseSidebar()}
+											class="button chrome__sidebar-control chrome__sidebar-control--collapse">
+											<SidebarCollapseIcon />
+										</Button>
 									</div>
-									<main class="chrome__content">{props.children}</main>
-								</div>
-							</Resizable.Panel>
-						</>
-					)
-				}}
-			</Resizable>
-		</UserContext.Provider>
+									<Sidebar collapse={() => collapseSidebar()} />
+								</Resizable.Panel>
+								<Resizable.Handle
+									class="chrome__handle"
+									onHandleDragStart={() => {
+										setManuallyResizing(true)
+									}}
+									onHandleDragEnd={() => {
+										setManuallyResizing(false)
+										const current = currentSidebarSize()
+										if (typeof current == "number" && current > 0) {
+											setPreferredSidebarSize(current)
+										}
+									}}
+								/>
+								<Resizable.Panel class="chrome__main">
+									<header class="chrome__header">
+										<div class="chrome__header-left">
+											<Show when={sidebarIsCollapsed()}>
+												<Button
+													onDragEnter={() => expandSidebar()}
+													title="show sidebar"
+													onClick={() => expandSidebar()}
+													class="button chrome__sidebar-control chrome__sidebar-control--expand">
+													<SidebarExpandIcon />
+												</Button>
+											</Show>
+										</div>
+										<div class="chrome__header-right">
+											{/* <Bar modifiers="desktop" /> */}
+										</div>
+									</header>
+									<div class="chrome__content">{props.children}</div>
+									<footer class="chrome__footer">
+										<Bar modifiers="desktop" />
+									</footer>
+								</Resizable.Panel>
+							</>
+						)
+					}}
+				</Resizable>
+			</UserContext.Provider>
+		</CommandRegistryProvider>
 	)
 }
 

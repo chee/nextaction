@@ -2,13 +2,13 @@ import "./project-item.css"
 import {clsx} from "@nberlette/clsx"
 import {useNavigate} from "@solidjs/router"
 import {Show} from "solid-js"
-import {isClosed, isToday} from "@/domain/generic/doable.ts"
+import {isClosed, isToday} from "::domain/generic/doable.ts"
 import bemby, {type BembyModifiers, type BembyModifier} from "bemby"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
-import NotesIcon from "@/ui/icons/notes.tsx"
+import type {ProjectViewModel} from "::viewmodel/project.ts"
+import NotesIcon from "::ui/icons/notes.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
 import type {SelectableProps} from "../actions/action.tsx"
-import {useDragAndDrop} from "../../../infra/dnd/dnd-context.ts"
+import {useDragAndDrop} from "::infra/dnd/dnd-context.ts"
 
 export function ProjectItem(
 	props: {

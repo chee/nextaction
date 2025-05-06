@@ -1,20 +1,20 @@
 import "./action.css"
 import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
 import {createSignal, Match, Show, Switch} from "solid-js"
-import {type ActionViewModel} from "@/viewmodel/action.ts"
-import NotesIcon from "@/ui/icons/notes.tsx"
-import NotesEditor from "@/ui/components/text-editor/editors/notes-editor.tsx"
-import TitleEditor from "@/ui/components/text-editor/editors/title-editor.tsx"
+import {type ActionViewModel} from "::viewmodel/action.ts"
+import NotesIcon from "::ui/icons/notes.tsx"
+import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
+import TitleEditor from "::ui/components/text-editor/editors/title-editor.tsx"
 import debug from "debug"
-import {modshift} from "@/infra/lib/hotkeys.ts"
-import Checkbox from "@/ui/components/actions/checkbox.tsx"
-import {isToday} from "@/domain/generic/doable.ts"
+import {modshift} from "::infra/lib/hotkeys.ts"
+import Checkbox from "::ui/components/actions/checkbox.tsx"
+import {isToday} from "::domain/generic/doable.ts"
 const log = debug("nextaction:action")
 import useClickOutside from "solid-click-outside"
 import {createEffect} from "solid-js"
 import {clsx} from "@nberlette/clsx"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {useDragAndDrop} from "@/infra/dnd/dnd-context.ts"
+import {useDragAndDrop} from "::infra/dnd/dnd-context.ts"
 import {Suspense} from "solid-js"
 
 // todo move to generic types
@@ -96,25 +96,13 @@ export default function Action(
 					if (event.metaKey) {
 						if (props.selected) {
 							props.removeSelected()
-							event.preventDefault()
-							event.stopPropagation()
-							event.stopImmediatePropagation()
 						} else {
 							props.addSelected()
-							event.preventDefault()
-							event.stopPropagation()
-							event.stopImmediatePropagation()
 						}
 					} else if (event.shiftKey) {
 						props.addSelectedRange()
-						event.preventDefault()
-						event.stopPropagation()
-						event.stopImmediatePropagation()
 					} else {
 						props.select()
-						event.preventDefault()
-						event.stopPropagation()
-						event.stopImmediatePropagation()
 					}
 				}}
 				onDblClick={event => {
@@ -187,6 +175,7 @@ export default function Action(
 								withView={view =>
 									view.contentDOM.scrollIntoView({
 										behavior: "smooth",
+										block: "nearest",
 									})
 								}
 							/>

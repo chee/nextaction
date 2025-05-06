@@ -6,30 +6,46 @@ import type {
 } from "@atlaskit/pragmatic-drag-and-drop/types"
 import {onCleanup, type Accessor} from "solid-js"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
-import {getType, type ItemType} from "../type-registry.ts"
+import {getType} from "../type-registry.ts"
+import type {
+	AnyChildType,
+	AnyParentType,
+	ConceptURLMap,
+	FlatChildTypesFor,
+	FlatChildURLsFor,
+} from "::concepts"
+import {refer} from "::domain/reference.ts"
 
-export type DragAndDropItem = {
+export type DragAndDropItem<ItemType extends AnyChildType> = {
 	type: ItemType
-	url: AutomergeUrl
+	url: ConceptURLMap[ItemType]
 }
 
-export type DraggableContract = {items: DragAndDropItem[]}
-
-export type DropTargetContract = {
-	accepts(source?: DraggableContract): boolean
-	drop(payload: DraggableContract, input: Input): void
+export type DraggableContract<ItemType extends AnyChildType> = {
+	items: DragAndDropItem<ItemType>[]
 }
 
-export type DropTargetListContract = DropTargetContract & {
-	items(): AutomergeUrl[]
-	childAccepts(item: DragAndDropItem, source: DraggableContract): boolean
+export type DropTargetContract<ParentType extends AnyParentType> = {
+	accepts(source?: DraggableContract<FlatChildTypesFor<ParentType>>): boolean
+	drop(
+		payload: DraggableContract<FlatChildTypesFor<ParentType>>,
+		input: Input
+	): void
 }
 
-export function getDraggedPayload(payload: {
+export type DropTargetListContract<ParentType extends AnyParentType> =
+	DropTargetContract<ParentType> & {
+		items(): ConceptURLMap[FlatChildTypesFor<ParentType>][]
+		childAccepts(
+			item: DragAndDropItem<FlatChildTypesFor<ParentType>>,
+			source: DraggableContract<FlatChildTypesFor<ParentType>>
+		): boolean
+	}
+
+export function getDraggedPayload<T extends AnyChildType>(payload: {
 	source: BaseEventPayload<ElementDragType>["source"]
-}): DraggableContract | undefined {
-	return payload.source.data as DraggableContract
+}): DraggableContract<T> | undefined {
+	return payload.source.data as DraggableContract<T>
 }
 
 export function getDropTarget(
@@ -38,15 +54,15 @@ export function getDropTarget(
 	return payload.location.current.dropTargets[0]
 }
 
-export function getDropTargetPayload(
+export function getDropTargetPayload<T extends AnyParentType>(
 	payload: BaseEventPayload<ElementDragType>
-): DropTargetContract | undefined {
-	return getDropTarget(payload)?.data as DropTargetContract
+): DropTargetContract<T> | undefined {
+	return getDropTarget(payload)?.data as DropTargetContract<T>
 }
 
-export function manageDrop(
+export function manageDrop<T extends AnyParentType>(
 	payload: BaseEventPayload<ElementDragType>,
-	contract: DropTargetContract
+	contract: DropTargetContract<T>
 ) {
 	const dragged = getDraggedPayload(payload)
 	const input = getInput(payload)
@@ -65,11 +81,11 @@ export function updateData(
 	Object.assign(payload.source.data, data)
 }
 
-export function updateDraggedItems(
+export function updateDraggedItems<T extends AnyChildType>(
 	payload: BaseEventPayload<ElementDragType>,
-	items: DragAndDropItem[]
+	items: DragAndDropItem<T>[]
 ) {
-	Object.assign(payload.source.data, {items} as DraggableContract)
+	Object.assign(payload.source.data, {items} as DraggableContract<T>)
 }
 
 export function calculateAboveBelow(element: Element, clientY: number) {
@@ -79,9 +95,9 @@ export function calculateAboveBelow(element: Element, clientY: number) {
 	return abovebelow
 }
 
-export function createDropTarget(
+export function createDropTarget<T extends AnyParentType>(
 	element: HTMLElement,
-	contract: DropTargetContract
+	contract: DropTargetContract<T>
 ) {
 	return onCleanup(
 		dropTargetForElements({
@@ -92,14 +108,14 @@ export function createDropTarget(
 			element,
 			onDragEnter(payload) {
 				if (contract?.accepts(getDraggedPayload(payload))) {
-					payload.self.element.dataset.droptarget = "true"
+					;(payload.self.element as HTMLElement).dataset.droptarget = "true"
 				}
 			},
 			onDragLeave(payload) {
-				delete payload.self.element.dataset.droptarget
+				delete (payload.self.element as HTMLElement).dataset.droptarget
 			},
 			onDrop(payload) {
-				delete payload.self.element.dataset.droptarget
+				delete (payload.self.element as HTMLElement).dataset.droptarget
 				delete payload.source.element.dataset.droptarget
 				if (!contract) return
 				manageDrop(payload, contract)
@@ -108,9 +124,9 @@ export function createDropTarget(
 	)
 }
 
-export function createDropTargetList(
+export function createDropTargetList<T extends AnyParentType>(
 	element: HTMLElement,
-	contract: DropTargetListContract
+	contract: DropTargetListContract<T>
 ) {
 	return onCleanup(
 		dropTargetForElements({
@@ -127,15 +143,15 @@ export function createDropTargetList(
 		})
 	)
 }
-type GetDropTargetIndexArgs<T extends AutomergeUrl = AutomergeUrl> = {
+type GetDropTargetIndexArgs<T extends AnyParentType> = {
 	element: HTMLElement
-	items: Accessor<T[]>
-	dragged: DraggableContract
-	isValidDropTarget: DropTargetListContract["childAccepts"]
+	items: Accessor<FlatChildURLsFor<T>[]>
+	dragged: DraggableContract<FlatChildTypesFor<T>>
+	isValidDropTarget: DropTargetListContract<T>["childAccepts"]
 	input: Input
 }
 
-export function getDropTargetIndex<T extends AutomergeUrl = AutomergeUrl>({
+export function getDropTargetIndex<T extends AnyParentType>({
 	element,
 	input,
 	items,
@@ -153,7 +169,7 @@ export function getDropTargetIndex<T extends AutomergeUrl = AutomergeUrl>({
 			delete el.dataset.droptarget
 			const url = items()[index]
 			const type = getType(url)
-			const item = {url, type}
+			const item = refer(type, url)
 			if (isValidDropTarget(item, dragged)) {
 				validElements.set(index, el)
 				const rect = el.getBoundingClientRect()
@@ -192,15 +208,9 @@ export function getDropTargetIndex<T extends AutomergeUrl = AutomergeUrl>({
 
 		const keys = [...validRectangles.keys()]
 		const lastRectangle = validRectangles.get(keys[keys.length - 1])
-		console.log(
-			input.pageY,
-			lastRectangle?.bottom,
-			validElements.get(keys[keys.length - 1])
-		)
 
 		if (lastRectangle) {
 			if (input.pageY >= lastRectangle.bottom) {
-				console.log(input.pageY, lastRectangle.bottom)
 				dropTargetIndex = keys[keys.length - 1]
 				above = false
 			}

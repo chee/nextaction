@@ -1,42 +1,39 @@
 import "./logbook.css"
 // import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHomeContext} from "@/viewmodel/home.ts"
-import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
-import {type ProjectURL} from "@/domain/project.ts"
-import {type ActionURL} from "@/domain/action.ts"
-import {isClosed, isDoable} from "@/domain/generic/doable.ts"
-import {isActionViewModel, type ActionViewModel} from "@/viewmodel/action.ts"
-import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
+import {useHomeContext} from "::viewmodel/home.ts"
+import {useExpander, useStagingArea} from "::viewmodel/helpers/page.ts"
+import {type ProjectURL} from "::domain/project.ts"
+import {type ActionURL} from "::domain/action.ts"
+import {isClosed, isDoable} from "::domain/generic/doable.ts"
+import {isActionViewModel, type ActionViewModel} from "::viewmodel/action.ts"
+import {isProjectViewModel, type ProjectViewModel} from "::viewmodel/project.ts"
 import {createMemo, For, Switch, Match} from "solid-js"
 import {
 	createSelectionContext,
 	getSelectionProps,
-} from "@/infra/hooks/selection-context.ts"
+} from "::infra/hooks/selection-context.ts"
 import {
 	createDragAndDropContext,
 	DragAndDropProvider,
 } from "../../../infra/dnd/dnd-context.ts"
-import DevelopmentNote from "../../components/development-note.tsx"
-import type {AnyDoableViewModel} from "../../../viewmodel/mixins/doable.ts"
-import type {Accessor} from "solid-js"
+import DevelopmentNote from "::components/development-note.tsx"
 import {mapArray} from "solid-js"
-import Action from "../../components/actions/action.tsx"
-import {ProjectItem} from "../../components/projects/project-item.tsx"
+import Action from "::components/actions/action.tsx"
+import {ProjectItem} from "::components/projects/project-item.tsx"
+import type {AnyDoableViewModel} from "::concepts"
 
 // todo create a LogbookItem
 export default function Logbook() {
 	const home = useHomeContext()
-	const [wasRecentlyOpened, openAndHold] = useRecentlyRemoved()
+	const [wasRecentlyOpened, openAndHold] = useStagingArea()
 	const all = createMemo(() => [...home.flat, ...home.inbox.flat])
 	const filter = (item: (typeof home.list.items)[number]) =>
 		isDoable(item) && (isClosed(item) || wasRecentlyOpened(item.url))
-	const closed = createMemo(() => all().filter(filter)) as Accessor<
-		AnyDoableViewModel[]
-	>
+	const closed = createMemo(() => all().filter(filter) as AnyDoableViewModel[])
 	const sorted = createMemo(() =>
 		closed().sort(
-			(a, b) => a.stateChanged!.getTime() - b.stateChanged!.getTime()
+			(a, b) => b.stateChanged!.getTime() - a.stateChanged!.getTime()
 		)
 	)
 	const selectableItemURLs = mapArray(

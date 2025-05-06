@@ -1,5 +1,5 @@
-import {getParentURL} from "@/infra/parent-registry.ts"
-import {getType} from "@/infra/type-registry.ts"
+import {getParentURL} from "::infra/parent-registry.ts"
+import {getType} from "::infra/type-registry.ts"
 import {useViewModel} from "./useviewmodel.ts"
 import {useHomeContext} from "./home.ts"
 import type {
@@ -14,7 +14,7 @@ export function useMovements() {
 	return {
 		reparent<T extends AnyChildType, U extends ConceptURLMap[T]>(
 			itemURL: U,
-			targetParentURL: ConceptURLMap[ChildConceptParentMap[T]]
+			targetParentURL: ConceptURLMap[ChildConceptParentMap[T][number]]
 		) {
 			const itemType = getType(itemURL) as unknown as T
 			const oldParentURL = getParentURL(itemURL)

@@ -1,7 +1,7 @@
-import type {ProjectURL} from "@/domain/project.ts"
-import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
-import {ProjectItem} from "@/ui/components/projects/project-item.tsx"
+import type {ProjectURL} from "::domain/project.ts"
+import type {SelectionContext} from "::infra/hooks/selection-context.ts"
+import type {ProjectViewModel} from "::viewmodel/project.ts"
+import {ProjectItem} from "::ui/components/projects/project-item.tsx"
 
 export function TodayProjectItem(props: {
 	selection: SelectionContext<ProjectURL>

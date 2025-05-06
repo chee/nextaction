@@ -9,13 +9,13 @@ import {
 	removeReferenceByRef,
 	type ReferencePointer,
 	addReferenceByRef,
-} from "@/domain/reference.ts"
-import {useViewModel} from "@/viewmodel/useviewmodel.ts"
-import {registerParent} from "@/infra/parent-registry.ts"
-import {registerType, type ConceptRegistry} from "../../infra/type-registry.ts"
+} from "::domain/reference.ts"
+import {useViewModel} from "::viewmodel/useviewmodel.ts"
+import {registerParent} from "::infra/parent-registry.ts"
+import {registerType, type ConceptRegistry} from "::infra/type-registry.ts"
 import {createEffect} from "solid-js"
-import repo from "../../infra/sync/automerge-repo.ts"
-import flattenTree from "../../infra/lib/flattenTree.ts"
+import repo from "::infra/sync/automerge-repo.ts"
+import flattenTree from "::infra/lib/flattenTree.ts"
 import {createMemo} from "solid-js"
 import type {
 	ConceptURLMap,
@@ -25,12 +25,12 @@ import type {
 	ChildTypesFor,
 	ChildViewModelsFor,
 	ChildRefsFor,
-} from "../../concepts.ts"
+} from "::concepts"
 
 export function useListViewModel<
 	T extends AnyParentType,
 	U extends ConceptURLMap[T]
->(url: Accessor<U | undefined>, type: T) {
+>(url: Accessor<U | undefined>, type: T): ListViewModel<T, U> {
 	type Item = ChildViewModelsFor<T>
 	type R = ChildRefsFor<T>
 
@@ -73,15 +73,16 @@ export function useListViewModel<
 				return []
 			}
 		}
-		// todo
-	) as unknown as Accessor<Item[]>
+	) as Accessor<Item[]>
 
+	// todo ? https://primitives.solidjs.community/package/keyed/
 	type KeyedViewModels = {
 		[K in ConceptName as ConceptURLMap[K]]: ConceptViewModelMap[K]
 	}
 
 	const keyed = createMemo(() => {
 		return items().reduce((acc, item) => {
+			// @ts-expect-error until
 			acc[item.url] = item
 			return acc
 		}, {} as KeyedViewModels)
@@ -125,11 +126,13 @@ export function useListViewModel<
 			})
 		},
 		hasItem(type: R["type"], url: R["url"]) {
-			return list()?.items.some(item => item.type == type && item.url == url)
+			return Boolean(
+				list()?.items.some(item => item.type == type && item.url == url)
+			)
 		},
 		hasItemByRef(ref: R) {
-			return list()?.items.some(
-				item => item.type == ref.type && item.url == ref.url
+			return Boolean(
+				list()?.items.some(item => item.type == ref.type && item.url == ref.url)
 			)
 		},
 		moveItem(type: R["type"], urls: R["url"] | R["url"][], index: number) {
@@ -165,7 +168,54 @@ export function useListViewModel<
 	}
 }
 
-export type ListViewModel<
+export interface ListViewModel<
 	T extends AnyParentType,
-	U extends ConceptURLMap[T]
-> = ReturnType<typeof useListViewModel<T, U>>
+	U extends ConceptURLMap[T] = ConceptURLMap[T]
+> {
+	readonly url: U | undefined
+	readonly items: ChildViewModelsFor<T>[]
+	readonly itemURLs: ChildRefsFor<T>["url"][]
+	readonly flat: ChildViewModelsFor<T>[]
+	readonly keyed: {
+		[K in ConceptName as ConceptURLMap[K]]: ConceptViewModelMap[K]
+	}
+	readonly addItem: <I extends ConceptName>(
+		type: I,
+		urls: ConceptURLMap[I] | ConceptURLMap[I][],
+		index?: number | ReferencePointer<ChildTypesFor<T>>
+	) => void
+	readonly addItemByRef: (
+		ref: ChildRefsFor<T> | ChildRefsFor<T>[],
+		index?: number | ReferencePointer<ChildRefsFor<T>["type"]>
+	) => void
+	readonly removeItem: <I extends ChildTypesFor<T>>(
+		type: I,
+		urls: ConceptURLMap[I] | ConceptURLMap[I][]
+	) => void
+	readonly removeItemByRef: (ref: ChildRefsFor<T> | ChildRefsFor<T>[]) => void
+	readonly hasItem: (
+		type: ChildRefsFor<T>["type"],
+		url: ChildRefsFor<T>["url"]
+	) => boolean
+	readonly hasItemByRef: (ref: ChildRefsFor<T>) => boolean
+	readonly moveItem: (
+		type: ChildRefsFor<T>["type"],
+		urls: ChildRefsFor<T>["url"] | ChildRefsFor<T>["url"][],
+		index: number
+	) => void
+	readonly moveItemAfter: (
+		type: ChildRefsFor<T>["type"],
+		urls: ChildRefsFor<T>["url"] | ChildRefsFor<T>["url"][],
+		target: ChildRefsFor<T>["url"]
+	) => void
+	readonly moveItemBefore: <C extends ChildRefsFor<T>>(
+		type: C["type"],
+		urls: C["url"] | C["url"][],
+		target: C["url"]
+	) => void
+	readonly insertItemBefore: (
+		type: ChildRefsFor<T>["type"],
+		url: ChildRefsFor<T>["url"],
+		target: ChildRefsFor<T>["url"]
+	) => void
+}

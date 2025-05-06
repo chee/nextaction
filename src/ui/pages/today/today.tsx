@@ -1,45 +1,45 @@
-// import Bar, {BarMenu, BarNewAction} from "@/ui/components/bar/bar.tsx"
-import {useHomeContext} from "@/viewmodel/home.ts"
+// import Bar, {BarMenu, BarNewAction} from "::ui/components/bar/bar.tsx"
+import {useHomeContext} from "::viewmodel/home.ts"
 import {
 	isClosed,
 	isToday,
 	parseIncomingWhen as magicWhen,
-} from "@/domain/generic/doable.ts"
+} from "::domain/generic/doable.ts"
 import {For, Match} from "solid-js"
 import {Switch} from "solid-js"
-import {isActionViewModel, type ActionViewModel} from "@/viewmodel/action.ts"
-import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
-import {isAction, newAction, type ActionURL} from "@/domain/action.ts"
+import {isActionViewModel, type ActionViewModel} from "::viewmodel/action.ts"
+import {isProjectViewModel, type ProjectViewModel} from "::viewmodel/project.ts"
+import {isAction, newAction, type ActionURL} from "::domain/action.ts"
 import {
 	createSelectionContext,
 	type SelectionContext,
-} from "@/infra/hooks/selection-context.ts"
+} from "::infra/hooks/selection-context.ts"
 import {useSelectionHotkeys} from "../standard/inbox.tsx"
-import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
-import {isProject, newProject, type ProjectURL} from "@/domain/project.ts"
+import {useExpander, useStagingArea} from "::viewmodel/helpers/page.ts"
+import {isProject, newProject, type ProjectURL} from "::domain/project.ts"
 import {createMemo} from "solid-js"
 import {Show} from "solid-js"
-import flattenTree from "@/infra/lib/flattenTree.ts"
+import flattenTree from "::infra/lib/flattenTree.ts"
 import {TodayProject} from "./today-project.tsx"
 import {TodayAction} from "./today-action.tsx"
-import {isAreaViewModel, type AreaViewModel} from "@/viewmodel/area.ts"
-import Bar, {BarButton, BarNewAction} from "@/ui/components/bar/bar.tsx"
-import {curl} from "@/infra/sync/automerge-repo.ts"
-import BigPlus from "@/ui/icons/big-plus.tsx"
+import {isAreaViewModel, type AreaViewModel} from "::viewmodel/area.ts"
+import Bar, {BarButton, BarNewAction} from "::ui/components/bar/bar.tsx"
+import {curl} from "::infra/sync/automerge-repo.ts"
+import BigPlus from "::ui/icons/big-plus.tsx"
 import {
 	getDraggedPayload,
 	getDropTargetIndex,
 	getInput,
 	type DragAndDropItem,
 	type DraggableContract,
-} from "@/infra/dnd/contract.ts"
+} from "::infra/dnd/contract.ts"
 import {
 	createDragAndDropContext,
 	DragAndDropProvider,
-} from "@/infra/dnd/dnd-context.ts"
+} from "::infra/dnd/dnd-context.ts"
 import {mapArray} from "solid-js"
-import {getParentURL} from "@/infra/parent-registry.ts"
-import {getType} from "@/infra/type-registry.ts"
+import {getParentURL} from "::infra/parent-registry.ts"
+import {getType} from "::infra/type-registry.ts"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {onCleanup} from "solid-js"
 import DevelopmentNote from "../../components/development-note.tsx"
@@ -47,7 +47,7 @@ import type {AreaURL} from "../../../domain/area.ts"
 
 export default function Today() {
 	const home = useHomeContext()
-	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
+	const [wasRecentlyClosed, recentlyClose] = useStagingArea()
 
 	const filter = (item: (typeof home.list.items)[number]) =>
 		(isProject(item) || isAction(item)) &&

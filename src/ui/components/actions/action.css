@@ -1,7 +1,7 @@
 :root {
 	--action-fill: var(--page-fill);
 	--action-line: var(--page-line);
-	--action-fill--selected: var(--primary);
+	--action-fill--selected: var(--selected-fill);
 	--action-border-line: color-mix(
 		in oklab,
 		var(--action-fill),

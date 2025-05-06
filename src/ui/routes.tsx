@@ -13,6 +13,7 @@ import {encodeJSON} from "../infra/lib/compress.ts"
 render(
 	() => (
 		<Router root={App}>
+			<Route path="/share" component={() => "not implemented"} />
 			<Route
 				path="/test"
 				component={lazy(() => import("./pages/meta/test.tsx"))}
@@ -85,38 +86,7 @@ render(
 				/>
 				<Route
 					path="/logout"
-					component={() => {
-						const [userId, setUserId] = useUserId()
-						const current = encodeJSON({type: "user", url: userId()})
-						return (
-							<div class="page-container page-container--logout">
-								<h1 class="page-title">logout</h1>
-								<p style={{padding: "1rem"}}>
-									Are you sure you want to logout? To get back in you'll need
-									this:
-								</p>
-								<pre style={{padding: "1rem"}}>
-									<code onClick={() => navigator.clipboard.writeText(current)}>
-										{current}
-									</code>
-								</pre>
-								<button
-									type="button"
-									class="danger button"
-									style={{margin: "1rem"}}
-									onClick={() => {
-										setUserId(undefined)
-										delete globalThis.localStorage["taskplace:user-id"]
-										redirect("/")
-										const nav = useNavigate()
-										location.reload()
-										nav("/")
-									}}>
-									logout
-								</button>
-							</div>
-						)
-					}}
+					component={lazy(() => import("./pages/meta/logout.tsx"))}
 				/>
 
 				<Route

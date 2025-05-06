@@ -4,9 +4,9 @@ import {useContext} from "solid-js"
 import {draggable} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {updateDraggedItems, type DragAndDropItem} from "./contract.ts"
 import type {SelectionContext} from "../hooks/selection-context.ts"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
-import {getParentURL, type ParentType} from "../parent-registry.ts"
+import {getParentURL} from "../parent-registry.ts"
 import {getType} from "../type-registry.ts"
+import type {AnyChildType, AnyParentType, FlatChildURLsFor} from "::concepts"
 
 export type DragAndDropContext = {
 	createDraggableListItem(element: HTMLElement, item: () => string): void
@@ -33,8 +33,8 @@ declare module "solid-js" {
 	}
 }
 
-export function createDragAndDropContext<T extends AutomergeUrl>(
-	selection: SelectionContext<T>
+export function createDragAndDropContext<P extends AnyParentType>(
+	selection: SelectionContext<FlatChildURLsFor<P>>
 ) {
 	// todo remove selection when click on page background
 	const [active, setActive] = createSignal(false)
@@ -42,7 +42,10 @@ export function createDragAndDropContext<T extends AutomergeUrl>(
 		get active() {
 			return active()
 		},
-		createDraggableListItem(element: HTMLElement, url: () => T) {
+		createDraggableListItem(
+			element: HTMLElement,
+			url: () => FlatChildURLsFor<P>
+		) {
 			onCleanup(
 				draggable({
 					element,
@@ -56,7 +59,7 @@ export function createDragAndDropContext<T extends AutomergeUrl>(
 							selection.selected().map(url => {
 								const parentURL = getParentURL(url)
 								return {
-									parentType: getType(parentURL) as ParentType,
+									parentType: getType(parentURL),
 									parentURL,
 									url: url,
 									type: getType(url),
@@ -73,9 +76,9 @@ export function createDragAndDropContext<T extends AutomergeUrl>(
 	} satisfies DragAndDropContext
 }
 
-export function createSimpleDraggable(
+export function createSimpleDraggable<C extends AnyChildType>(
 	element: HTMLElement,
-	info: () => DragAndDropItem
+	info: () => DragAndDropItem<C>
 ) {
 	onCleanup(
 		draggable({

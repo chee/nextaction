@@ -1,10 +1,10 @@
 import {createMemo} from "solid-js"
-import {isClosed} from "@/domain/generic/doable.ts"
-import type {ProjectURL} from "@/domain/project.ts"
-import {useHome} from "@/viewmodel/home.ts"
-import flattenTree from "@/infra/lib/flattenTree.ts"
-import {isAction} from "@/domain/action.ts"
-import type {ActionViewModel} from "../../../viewmodel/action.ts"
+import {isClosed} from "::domain/generic/doable.ts"
+import type {ProjectURL} from "::domain/project.ts"
+import {useHome} from "::viewmodel/home.ts"
+import flattenTree from "::infra/lib/flattenTree.ts"
+import {isAction} from "::domain/action.ts"
+import type {ActionViewModel} from "::viewmodel/action.ts"
 
 export function useProjectProgress(
 	projectURL: () => ProjectURL

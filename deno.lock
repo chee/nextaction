@@ -24,6 +24,7 @@
     "npm:@solid-primitives/clipboard@^1.6.1": "1.6.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/date@^2.1.2": "2.1.2_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/event-listener@^2.4.1": "2.4.1_solid-js@1.9.5__seroval@1.2.1",
+    "npm:@solid-primitives/history@~0.2.1": "0.2.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/keyboard@^1.3.1": "1.3.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/map@~0.7.1": "0.7.1_solid-js@1.9.5__seroval@1.2.1",
     "npm:@solid-primitives/media@^2.3.1": "2.3.1_solid-js@1.9.5__seroval@1.2.1",
@@ -1738,6 +1739,13 @@
     },
     "@solid-primitives/event-listener@2.4.1_solid-js@1.9.5__seroval@1.2.1": {
       "integrity": "sha512-Xc/lBCeuh9LwzR4lYbMDtopwWK7N9b4o+FmI4uoI8DOtVGYi0Ip20DG8PtwHk+g31lHgvwtFFVKfnUx2UaqZJg==",
+      "dependencies": [
+        "@solid-primitives/utils",
+        "solid-js"
+      ]
+    },
+    "@solid-primitives/history@0.2.1_solid-js@1.9.5__seroval@1.2.1": {
+      "integrity": "sha512-Z0uSorVx+e9Ynbkx1p3TlBq+x7k3v0qFl6tWDh+9GfbFjtZuGg12PR7s0Lbd86S8mLD7dYs4Ui8Iik2SudhsUQ==",
       "dependencies": [
         "@solid-primitives/utils",
         "solid-js"
@@ -4850,6 +4858,7 @@
       "npm:@solid-primitives/clipboard@^1.6.1",
       "npm:@solid-primitives/date@^2.1.2",
       "npm:@solid-primitives/event-listener@^2.4.1",
+      "npm:@solid-primitives/history@~0.2.1",
       "npm:@solid-primitives/keyboard@^1.3.1",
       "npm:@solid-primitives/map@~0.7.1",
       "npm:@solid-primitives/media@^2.3.1",

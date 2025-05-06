@@ -1,5 +1,5 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import type {Reference} from "@/domain/reference.ts"
+import type {Reference} from "::domain/reference.ts"
 import type {ProjectRef} from "./project.ts"
 import type {ActionRef} from "./action.ts"
 

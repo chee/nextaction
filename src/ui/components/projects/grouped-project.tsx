@@ -2,14 +2,14 @@ import "./grouped-project.css"
 import {A} from "@solidjs/router"
 import {createMemo, Show} from "solid-js"
 
-import {type ActionURL} from "@/domain/action.ts"
-import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
-import {type ActionViewModel, isActionViewModel} from "@/viewmodel/action.ts"
-import type {Expander} from "@/viewmodel/helpers/page.ts"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
+import {type ActionURL} from "::domain/action.ts"
+import type {SelectionContext} from "::infra/hooks/selection-context.ts"
+import {type ActionViewModel, isActionViewModel} from "::viewmodel/action.ts"
+import type {Expander} from "::viewmodel/helpers/page.ts"
+import type {ProjectViewModel} from "::viewmodel/project.ts"
 import ActionList from "../actions/action-list.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
-import flattenTree from "@/infra/lib/flattenTree.ts"
+import flattenTree from "::infra/lib/flattenTree.ts"
 
 export function GroupedProject(props: {
 	project: ProjectViewModel

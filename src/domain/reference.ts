@@ -1,11 +1,11 @@
-import type {AnyRef, ConceptURLMap} from "../concepts.ts"
+import type {AnyRef, ConceptName, ConceptURLMap} from "::concepts"
 
-export type Reference<T extends keyof ConceptURLMap> = {
+export type Reference<T extends ConceptName> = {
 	type: T
 	url: ConceptURLMap[T]
 }
 
-export type ReferencePointer<T extends keyof ConceptURLMap> = {
+export type ReferencePointer<T extends ConceptName> = {
 	type: T
 	url: Reference<T>["url"]
 	above?: boolean
@@ -31,7 +31,7 @@ export function indexOfURL<T extends AnyRef>(list: T[], url: T["url"]) {
 	return list.findIndex(item => item.url === url)
 }
 
-export function refer<T extends keyof ConceptURLMap>(
+export function refer<T extends ConceptName>(
 	type: T,
 	url: ConceptURLMap[T]
 ): Reference<T> {
@@ -50,7 +50,7 @@ export function addReference<T extends AnyRef>(
 	index?: number | ReferencePointer<T["type"]>
 ) {
 	for (const url of array(urls)) {
-		const ref = refer(type, url as ConceptURLMap[typeof type])
+		const ref = refer(type, url as ConceptURLMap[T["type"]])
 		addReferenceByRef(list, ref as T, index)
 	}
 }
@@ -88,7 +88,7 @@ export function removeReference<T extends AnyRef>(
 	urls: T["url"] | T["url"][]
 ) {
 	for (const url of array(urls)) {
-		const ref = refer(type, url as ConceptURLMap[typeof type])
+		const ref = refer(type, url as ConceptURLMap[T["type"]])
 		removeReferenceByRef(list, ref as T)
 	}
 }
@@ -113,7 +113,7 @@ export function moveReference<T extends AnyRef>(
 	targetIndex: number
 ) {
 	const toInsert = array(urls)
-		.map(url => refer(type, url as ConceptURLMap[typeof type]))
+		.map(url => refer(type, url as ConceptURLMap[T["type"]]))
 		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
@@ -139,7 +139,7 @@ export function moveReferenceAfter<T extends AnyRef>(
 	offset = 1
 ) {
 	const newItems = array(urls)
-		.map(url => refer(type, url as ConceptURLMap[typeof type]))
+		.map(url => refer(type, url as ConceptURLMap[T["type"]]))
 		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
@@ -157,7 +157,7 @@ export function moveReferenceAfter<T extends AnyRef>(
 
 	const targetRef =
 		typeof target === "string"
-			? refer(type, target as ConceptURLMap[typeof type])
+			? refer(type, target as ConceptURLMap[T["type"]])
 			: target
 	const index = indexOfReference(list, targetRef as T) + offset
 

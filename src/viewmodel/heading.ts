@@ -4,15 +4,15 @@ import {
 	toggleArchived,
 	type Heading,
 	type HeadingURL,
-} from "@/domain/heading.ts"
+} from "::domain/heading.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
-import {useTitleableMixin} from "./mixins/titleable.ts"
-import mix from "@/infra/lib/mix.ts"
-import {useListViewModel} from "./mixins/list.ts"
-import repo from "../infra/sync/automerge-repo.ts"
-import type {Reference, ReferencePointer} from "../domain/reference.ts"
+import {useTitleableMixin, type TitleableViewModel} from "./mixins/titleable.ts"
+import mix from "::infra/lib/mix.ts"
+import {useListViewModel, type ListViewModel} from "./mixins/list.ts"
+import repo from "::infra/sync/automerge-repo.ts"
+import type {Reference, ReferencePointer} from "::domain/reference.ts"
 
-export function useHeading(url: Accessor<HeadingURL>) {
+export function useHeading(url: Accessor<HeadingURL>): HeadingViewModel {
 	const [heading, handle] = useDocument<Heading>(url, {repo: repo})
 	const titleable = useTitleableMixin(heading, handle)
 	const list = useListViewModel(url, "heading")
@@ -54,8 +54,18 @@ export function useHeading(url: Accessor<HeadingURL>) {
 	return vm
 }
 
-export type HeadingViewModel = ReturnType<typeof useHeading>
-
+export interface HeadingViewModel
+	extends ListViewModel<"heading">,
+		TitleableViewModel {
+	readonly type: "heading"
+	readonly url: HeadingURL
+	readonly archived: boolean
+	toggleArchived(force?: boolean): void
+	toString(): string
+	asReference(): Reference<"heading">
+	asPointer(above?: boolean): ReferencePointer<"heading">
+	delete(): void
+}
 export function isHeadingViewModel(
 	heading: unknown
 ): heading is HeadingViewModel {

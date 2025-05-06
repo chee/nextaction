@@ -15,6 +15,9 @@
 	touch-action: manipulation;
 	border-radius: 2px;
 	white-space: nowrap;
+	display: flex;
+	min-height: 2rem;
+	align-items: center;
 	&:hover {
 		box-shadow: 1px 1px 0px var(--border-color), 2px 2px 0px var(--border-color);
 		top: -1px;
@@ -45,11 +48,21 @@
 	&.warning {
 		--fill: var(--warning);
 		--border-color: var(--warning-dark);
-		color: black;
+		color: var(--text);
 	}
 	&.danger {
 		--fill: var(--danger-light);
 		--border-color: var(--danger-dark);
 		color: white;
+	}
+	&.subtle.danger {
+		--fill: var(--page);
+		--border-color: var(--text);
+		color: var(--text);
+		&:hover {
+			--fill: var(--danger-light);
+			--border-color: var(--danger-dark);
+			color: white;
+		}
 	}
 }

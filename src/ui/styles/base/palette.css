@@ -73,5 +73,5 @@
 
 	--caret-color: #5cdbce;
 
-	--selected-fill: var(--primary);
+	--selected-fill: color-mix(in oklab, var(--primary), transparent 20%);
 }

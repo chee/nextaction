@@ -1,16 +1,20 @@
 import {useDocument} from "solid-automerge"
-import {newUser, type User, type UserURL} from "@/domain/user.ts"
-import {useUserId} from "@/infra/storage/user-id.ts"
-import {type HomeURL, newHome} from "@/domain/home.ts"
-import repo, {curl} from "@/infra/sync/automerge-repo.ts"
-import {newInbox} from "@/domain/inbox.ts"
-import {useHome} from "@/viewmodel/home.ts"
+import {newUser, type User, type UserURL} from "::domain/user.ts"
+import {useUserId} from "::infra/storage/user-id.ts"
+import {type HomeURL, newHome} from "::domain/home.ts"
+import repo, {curl} from "::infra/sync/automerge-repo.ts"
+import {newInbox} from "::domain/inbox.ts"
+import {useHome, type HomeViewModel} from "::viewmodel/home.ts"
 import {createContext} from "solid-js"
 
-export function useUser() {
+export function useUser(): UserViewModel {
 	const [userId] = useUserId()
 	const [user, handle] = useDocument<User>(userId, {repo})
 	return {
+		type: "user" as const,
+		get url() {
+			return userId()!
+		},
 		get home() {
 			return useHome()
 		},
@@ -36,7 +40,14 @@ export function useUser() {
 	}
 }
 
-export type UserViewModel = ReturnType<typeof useUser>
+export interface UserViewModel {
+	readonly type: "user"
+	readonly url: UserURL
+	readonly homeURL?: HomeURL
+	readonly home: HomeViewModel
+	image: Uint8Array | undefined
+	name: string
+}
 
 export function createFirstTimeUser(name: string) {
 	const [_, setUserId] = useUserId()

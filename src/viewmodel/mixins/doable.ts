@@ -1,5 +1,4 @@
 import {type Accessor} from "solid-js"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {useDocument} from "solid-automerge"
 import {
 	Doable,
@@ -7,13 +6,14 @@ import {
 	setWhenFromFancy,
 	toggleCanceled,
 	toggleCompleted,
-} from "@/domain/generic/doable.ts"
-import type {ActionViewModel} from "@/viewmodel/action.ts"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
-import repo from "../../infra/sync/automerge-repo.ts"
+} from "::domain/generic/doable.ts"
+import repo from "::infra/sync/automerge-repo.ts"
+import type {ProjectURL} from "::domain/project.ts"
+import type {ActionURL} from "::domain/action.ts"
 
-export type AnyDoableViewModel = ActionViewModel | ProjectViewModel
-export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
+export function useDoableMixin(
+	url: Accessor<ActionURL | ProjectURL | undefined>
+): DoableViewModel {
 	const [item, handle] = useDocument<Doable>(url, {repo: repo})
 
 	return {
@@ -24,7 +24,7 @@ export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
 			return item()?.state ?? "open"
 		},
 		get closed() {
-			return item() && isClosed(item()!)
+			return Boolean(item() && isClosed(item()!))
 		},
 		toggleCompleted(force?: boolean) {
 			handle()?.change(item => toggleCompleted(item, force))
@@ -36,13 +36,13 @@ export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
 			return item()?.when ?? null
 		},
 		clearWhen() {
-			handle()?.change(action => {
-				delete action.when
+			handle()?.change(doable => {
+				delete doable.when
 			})
 		},
 		setWhen(when: Parameters<typeof setWhenFromFancy>[1]) {
-			handle()?.change(action => {
-				setWhenFromFancy(action, when)
+			handle()?.change(doable => {
+				setWhenFromFancy(doable, when)
 			})
 		},
 		get deleted() {
@@ -56,4 +56,14 @@ export function useDoableMixin(url: Accessor<AutomergeUrl | undefined>) {
 	}
 }
 
-export type DoableViewModel = ReturnType<typeof useDoableMixin>
+export interface DoableViewModel {
+	readonly stateChanged: Date | null
+	readonly state: Doable["state"]
+	readonly closed: boolean
+	toggleCompleted(force?: boolean): void
+	toggleCanceled(force?: boolean): void
+	readonly when: Doable["when"]
+	clearWhen(): void
+	setWhen(when: Parameters<typeof setWhenFromFancy>[1]): void
+	deleted: boolean
+}

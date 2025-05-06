@@ -1,6 +1,6 @@
 import {isClosed} from "../../../domain/generic/doable.ts"
 import type {ActionViewModel} from "../../../viewmodel/action.ts"
-import {useRecentlyRemoved} from "../../../viewmodel/helpers/page.ts"
+import {useStagingArea} from "../../../viewmodel/helpers/page.ts"
 import {useHomeContext} from "../../../viewmodel/home.ts"
 import type {ProjectViewModel} from "../../../viewmodel/project.ts"
 import flattenTree from "../../../infra/lib/flattenTree.ts"
@@ -27,7 +27,7 @@ export default function Upcoming() {
 	const [_now] = createDateNow(60 * 1000)
 
 	const home = useHomeContext()
-	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
+	const [wasRecentlyClosed, recentlyClose] = useStagingArea()
 
 	type SelectableItemURL = ActionURL | ProjectURL
 	const selectableItemFilter = (item: AnyDoableViewModel) =>

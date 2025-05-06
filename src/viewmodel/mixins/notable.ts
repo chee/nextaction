@@ -1,5 +1,6 @@
 import type {DocHandle} from "@automerge/automerge-repo"
-import {useCodemirrorAutomerge} from "../../infra/editor/codemirror.ts"
+import {useCodemirrorAutomerge} from "::infra/editor/codemirror.ts"
+import type {Extension} from "@codemirror/state"
 
 export function useNotableMixin(
 	doc: () => {notes: string} | undefined,
@@ -14,4 +15,9 @@ export function useNotableMixin(
 			return doc()?.notes ?? ""
 		},
 	}
+}
+
+export interface NotableViewModel {
+	readonly notesSyncExtension?: Extension
+	readonly notes: string
 }

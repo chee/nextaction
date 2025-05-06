@@ -22,6 +22,7 @@ export interface SelectionContext<S extends string = string> {
 	bottomSelectedIndex(): number
 	itemBeforeSelection(): S | undefined
 	itemAfterSelection(): S | undefined
+	selectAll(): void
 }
 
 export function createSelectionContext<S extends string = string>(
@@ -32,6 +33,9 @@ export function createSelectionContext<S extends string = string>(
 	return {
 		all() {
 			return allItems()
+		},
+		selectAll() {
+			setSelectedItems(allItems())
 		},
 		select(id) {
 			setSelectedItems([id])

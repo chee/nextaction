@@ -1,4 +1,4 @@
-import type {ConceptName, ConceptURLMap} from "@/concepts.ts"
+import type {ConceptName, ConceptURLMap} from "::concepts.ts"
 import {createStore} from "solid-js/store"
 
 export type ConceptRegistry = {

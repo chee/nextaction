@@ -1,25 +1,18 @@
 import type {Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
-import type {Project, ProjectURL} from "../domain/project.ts"
-import {useDoableMixin} from "./mixins/doable.ts"
+import type {Project, ProjectURL} from "::domain/project.ts"
+import {useDoableMixin, type DoableViewModel} from "./mixins/doable.ts"
 import {isHeadingViewModel, type HeadingViewModel} from "./heading.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
-import {useListViewModel} from "./mixins/list.ts"
-import type {HeadingURL} from "@/domain/heading.ts"
-import type {ActionURL} from "@/domain/action.ts"
-import mix from "@/infra/lib/mix.ts"
-import {useNotableMixin} from "./mixins/notable.ts"
-import {useTitleableMixin} from "./mixins/titleable.ts"
+import {useListViewModel, type ListViewModel} from "./mixins/list.ts"
+import mix from "::infra/lib/mix.ts"
+import {useNotableMixin, type NotableViewModel} from "./mixins/notable.ts"
+import {useTitleableMixin, type TitleableViewModel} from "./mixins/titleable.ts"
 import {dedent} from "@qnighy/dedent"
-import repo from "../infra/sync/automerge-repo.ts"
-import {
-	addReference,
-	indexOfReference,
-	type Reference,
-	type ReferencePointer,
-} from "../domain/reference.ts"
+import repo from "::infra/sync/automerge-repo.ts"
+import {type Reference, type ReferencePointer} from "::domain/reference.ts"
 
-export function useProject(url: Accessor<ProjectURL>) {
+export function useProject(url: Accessor<ProjectURL>): ProjectViewModel {
 	const [project, handle] = useDocument<Project>(url, {repo: repo})
 
 	const notable = useNotableMixin(project, handle)
@@ -40,30 +33,6 @@ export function useProject(url: Accessor<ProjectURL>) {
 			handle()?.change(project => {
 				project.deleted = true
 			})
-		},
-		addItem(
-			type: "heading" | "action",
-			urls: typeof type extends "heading" ? HeadingURL[] : ActionURL[],
-			index?: number | ReferencePointer<typeof type>
-		) {
-			if (type == "action") {
-				const firstHeadingIndex = list.items.findIndex(r => r.type == "heading")
-				let idx = 0
-				if (typeof index == "number") {
-					idx = index
-				} else if (index) {
-					idx =
-						indexOfReference(project()!.items, {
-							type: "action" as const,
-							url: index.url as ActionURL,
-						}) + (index?.above ? 1 : 0)
-				}
-				idx = firstHeadingIndex == -1 ? idx : Math.min(idx, firstHeadingIndex)
-
-				handle()?.change(doc => addReference(doc.items, type, urls, idx))
-				return
-			}
-			handle()?.change(doc => addReference(doc.items, type, urls, index))
 		},
 		// todo move to domain
 		set icon(icon: string) {
@@ -99,7 +68,19 @@ export function useProject(url: Accessor<ProjectURL>) {
 	return vm
 }
 
-export type ProjectViewModel = ReturnType<typeof useProject>
+export interface ProjectViewModel
+	extends ListViewModel<"project">,
+		DoableViewModel,
+		NotableViewModel,
+		TitleableViewModel {
+	readonly type: "project"
+	icon: string
+	readonly url: ProjectURL
+	delete(): void
+	toString(): string
+	asReference(): Reference<"project">
+	asPointer(above?: boolean): ReferencePointer<"project">
+}
 
 export function isProjectViewModel(
 	project: unknown

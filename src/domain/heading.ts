@@ -1,5 +1,5 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import type {Reference} from "@/domain/reference.ts"
+import type {Reference} from "::domain/reference.ts"
 import type {ActionRef} from "./action.ts"
 
 export type HeadingURL = AutomergeUrl & {type: "heading"}

@@ -1,9 +1,9 @@
 import {Suspense} from "solid-js"
-import type {ActionURL} from "@/domain/action.ts"
-import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
-import type {ActionViewModel} from "@/viewmodel/action.ts"
-import type {Expander} from "@/viewmodel/helpers/page.ts"
-import Action from "@/ui/components/actions/action.tsx"
+import type {ActionURL} from "::domain/action.ts"
+import type {SelectionContext} from "::infra/hooks/selection-context.ts"
+import type {ActionViewModel} from "::viewmodel/action.ts"
+import type {Expander} from "::viewmodel/helpers/page.ts"
+import Action from "::ui/components/actions/action.tsx"
 
 // todo make this the standard action interface?
 export function TodayAction(props: {

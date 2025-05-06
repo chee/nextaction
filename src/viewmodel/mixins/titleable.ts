@@ -1,5 +1,6 @@
 import type {DocHandle} from "@automerge/automerge-repo"
-import {useCodemirrorAutomerge} from "../../infra/editor/codemirror.ts"
+import {useCodemirrorAutomerge} from "::infra/editor/codemirror.ts"
+import type {Extension} from "@codemirror/state"
 
 export function useTitleableMixin(
 	doc: () => {title: string} | undefined,
@@ -14,4 +15,9 @@ export function useTitleableMixin(
 			return doc()?.title ?? ""
 		},
 	}
+}
+
+export interface TitleableViewModel {
+	readonly titleSyncExtension?: Extension
+	readonly title: string
 }

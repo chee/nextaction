@@ -1,14 +1,14 @@
 import type {Accessor} from "solid-js"
-import {Action, type ActionURL} from "@/domain/action.ts"
+import {Action, type ActionURL} from "::domain/action.ts"
 import {useDocument} from "solid-automerge"
-import {useDoableMixin} from "./mixins/doable.ts"
-import mix from "@/infra/lib/mix.ts"
-import {useNotableMixin} from "./mixins/notable.ts"
-import {useTitleableMixin} from "./mixins/titleable.ts"
-import repo from "../infra/sync/automerge-repo.ts"
-import type {Reference, ReferencePointer} from "../domain/reference.ts"
+import {useDoableMixin, type DoableViewModel} from "./mixins/doable.ts"
+import mix from "::infra/lib/mix.ts"
+import {useNotableMixin, type NotableViewModel} from "./mixins/notable.ts"
+import {useTitleableMixin, type TitleableViewModel} from "./mixins/titleable.ts"
+import repo from "::infra/sync/automerge-repo.ts"
+import type {Reference, ReferencePointer} from "::domain/reference.ts"
 
-export function useAction(url: Accessor<ActionURL>) {
+export function useAction(url: Accessor<ActionURL>): ActionViewModel {
 	const [action, handle] = useDocument<Action>(url, {repo})
 	const notable = useNotableMixin(action, handle)
 	const titleable = useTitleableMixin(action, handle)
@@ -55,7 +55,16 @@ export function useAction(url: Accessor<ActionURL>) {
 	return vm
 }
 
-export type ActionViewModel = ReturnType<typeof useAction>
+export interface ActionViewModel
+	extends DoableViewModel,
+		NotableViewModel,
+		TitleableViewModel {
+	readonly type: "action"
+	readonly url: ActionURL
+	delete(): void
+	asReference(): Reference<"action">
+	asPointer(above?: boolean): ReferencePointer<"action">
+}
 
 export function isActionViewModel(action: unknown): action is ActionViewModel {
 	return (action as ActionViewModel).type === "action"

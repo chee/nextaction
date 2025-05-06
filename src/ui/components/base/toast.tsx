@@ -5,14 +5,19 @@ import {Portal} from "solid-js/web"
 import type {BembyModifier, BembyModifiers} from "bemby"
 import bemby from "bemby"
 
-export function show(opts: {
-	title: JSX.Element
-	body: JSX.Element
-	modifiers?: BembyModifier | BembyModifiers
-}) {
-	const {title, body, modifiers: modifier} = opts
+export function show(
+	opts:
+		| {
+				title: JSX.Element
+				body: JSX.Element
+				modifiers?: BembyModifier | BembyModifiers
+		  }
+		| string
+) {
+	const {title, body, modifiers} =
+		typeof opts === "string" ? {title: opts} : opts
 	return toaster.show(props => (
-		<Toast toastId={props.toastId} class={bemby("toast", opts.modifiers)}>
+		<Toast toastId={props.toastId} class={bemby("toast", modifiers)}>
 			<div class="toast__content">
 				<div>
 					<Toast.Title class="toast__title">{title}</Toast.Title>

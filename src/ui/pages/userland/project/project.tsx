@@ -1,45 +1,31 @@
 import "./project.css"
-// import Bar, {BarMenu, BarNewAction} from "@/ui/components/bar/bar.tsx"
 import {createMemo, createSignal, For, onCleanup, Suspense} from "solid-js"
 import {useLocation, useParams} from "@solidjs/router"
-import type {ProjectURL} from "@/domain/project.ts"
-import NotesEditor from "@/ui/components/text-editor/editors/notes-editor.tsx"
-import TitleEditor from "@/ui/components/text-editor/editors/title-editor.tsx"
-import EmojiPicker from "@/ui/components/emoji-picker.tsx"
+import type {ProjectURL} from "::domain/project.ts"
+import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
+import TitleEditor from "::ui/components/text-editor/editors/title-editor.tsx"
+import EmojiPicker from "::ui/components/emoji-picker.tsx"
 import Action, {
 	type ExpandableProps,
 	type SelectableProps,
-} from "@/ui/components/actions/action.tsx"
+} from "::components/actions/action.tsx"
 import {Switch} from "solid-js"
 import {Match} from "solid-js"
-import {type ActionViewModel} from "@/viewmodel/action.ts"
-import {useSelectionHotkeys} from "@/ui/pages/standard/inbox.tsx"
-import {useHotkeys} from "@/infra/lib/hotkeys.ts"
-import ActionList from "@/ui/components/actions/action-list.tsx"
-import {type HeadingViewModel} from "@/viewmodel/heading.ts"
-import {isHeading, newHeading, type HeadingURL} from "@/domain/heading.ts"
-import {curl} from "@/infra/sync/automerge-repo.ts"
-import {type Reference, type ReferencePointer} from "@/domain/reference.ts"
-import {
-	useExpander,
-	useRecentlyRemoved,
-	type Expander,
-} from "@/viewmodel/helpers/page.ts"
-import {isAction, newAction, type ActionURL} from "@/domain/action.ts"
-import {useProject, type ProjectViewModel} from "@/viewmodel/project.ts"
-import {isClosed} from "@/domain/generic/doable.ts"
-import flattenTree from "@/infra/lib/flattenTree.ts"
-import {
-	createSelectionContext,
-	type SelectionContext,
-} from "@/infra/hooks/selection-context.ts"
+import {type ActionViewModel} from "::viewmodel/action.ts"
+import {useSelectionHotkeys} from "::ui/pages/standard/inbox.tsx"
+import ActionList from "::components/actions/action-list.tsx"
+import {type HeadingViewModel} from "::viewmodel/heading.ts"
+import {isHeading, newHeading, type HeadingURL} from "::domain/heading.ts"
+import {curl} from "::infra/sync/automerge-repo.ts"
+import {type Reference, type ReferencePointer} from "::domain/reference.ts"
+import {usePageContext, type Expander} from "::viewmodel/helpers/page.ts"
+import {isAction, newAction, type ActionURL} from "::domain/action.ts"
+import {useProject, type ProjectViewModel} from "::viewmodel/project.ts"
+import {isClosed} from "::domain/generic/doable.ts"
+import {type SelectionContext} from "::infra/hooks/selection-context.ts"
 import {Show} from "solid-js"
 import bemby from "bemby"
-import {
-	createDragAndDropContext,
-	DragAndDropProvider,
-	useDragAndDrop,
-} from "@/infra/dnd/dnd-context.ts"
+import {DragAndDropProvider, useDragAndDrop} from "::infra/dnd/dnd-context.ts"
 import debug from "debug"
 import {createEffect} from "solid-js"
 import {
@@ -48,21 +34,15 @@ import {
 	getInput,
 	type DragAndDropItem,
 	type DraggableContract,
-} from "@/infra/dnd/contract.ts"
-import {getType} from "@/infra/type-registry.ts"
+} from "::infra/dnd/contract.ts"
+import {getType} from "::infra/type-registry.ts"
 import {getParentURL} from "../../../../infra/parent-registry.ts"
 import useClickOutside from "solid-click-outside"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import Bar, {BarButton, BarNewAction} from "../../../components/bar/bar.tsx"
-import BigPlus from "../../../icons/big-plus.tsx"
 import {useViewModel} from "../../../../viewmodel/useviewmodel.ts"
 import {createRoot} from "solid-js"
 import {useHomeContext} from "../../../../viewmodel/home.ts"
 import {Button} from "@kobalte/core/button"
-import {
-	createEventListener,
-	makeEventListener,
-} from "@solid-primitives/event-listener"
 
 const log = debug("nextaction:project")
 
@@ -70,122 +50,103 @@ export default function Project() {
 	const home = useHomeContext()
 	const params = useParams<{projectId: ProjectURL}>()
 	const project = useProject(() => params.projectId)
+	const {
+		selection,
+		expander,
+		stage,
+		selectableItemURLs,
+		dnd,
+		commandRegistry,
+		filter,
+	} = usePageContext({
+		items: () => project.items,
+		selectableItemFilter: item =>
+			item &&
+			((isHeading(item) && !item.archived) ||
+				(isAction(item) && !item.deleted && !isClosed(item))),
+	})
 
 	const titleExtension = () => project.titleSyncExtension
 	const notesExtension = () => project.notesSyncExtension
 
-	// todo send ephemeral message on delete item
-	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
+	useSelectionHotkeys({selection, selectableItemURLs})
 
-	const filter = (item: (typeof project.items)[number]) =>
-		(item &&
-			((isHeading(item) && !item.archived) ||
-				(isAction(item) && !item.deleted && !isClosed(item)))) ||
-		wasRecentlyClosed(item.url)
-
-	const toggleCompleted = (item: ActionViewModel, force?: boolean) => {
-		recentlyClose(() => item.toggleCompleted(force), item.url)
-	}
-
-	const toggleCanceled = (item: ActionViewModel, force?: boolean) => {
-		recentlyClose(() => item.toggleCanceled(force), item.url)
-	}
-
-	const toggleArchived = (item: HeadingViewModel, force?: boolean) => {
-		recentlyClose(() => item.toggleArchived(force), item.url)
-	}
-
-	const itemViewModels = createMemo(() =>
-		flattenTree(project.items).filter(filter)
-	)
-
-	const items = createMemo(
-		() => itemViewModels().map(i => i.url) as (ActionURL | HeadingURL)[]
-	)
-
-	const selection = createSelectionContext(() => items())
-
-	useSelectionHotkeys<ActionURL | HeadingURL>({
-		selection,
-		selectableItemURLs: items,
-	})
-
-	const expander = useExpander<ActionURL | HeadingURL>(selection)
-
-	useHotkeys("cmd+ctrl+h", () => {
-		// // todo move to project viewmodel
-		// // project.heading()
-		// const index = Math.min(
-		// 	selection.bottomSelectedIndex() + 1,
-		// 	items().length - 1
-		// )
-		// const nextHeadingIndex = items().findIndex(
-		// 	item => item.type == "heading",
-		// 	index
-		// )
-		// const actionsBelow = items().slice(index, nextHeadingIndex) as ActionURL[]
-		// project.removeItem("action", actionsBelow)
-		// const url = curl<HeadingURL>(
-		// 	newHeading({items: actionsBelow.map(url => refer("action", url))})
-		// )
-		// project.addItem("heading", url, index)
-		// selection.select(url)
-	})
-
-	useHotkeys("backspace", () => {
-		for (const [parentURL, items] of Object.entries(
-			Object.groupBy(
-				selection.selected().map(i => {
-					return {
-						url: i,
-						type: getType(i),
-						parentURL: getParentURL(i),
-						parentType: getType(getParentURL(i)),
+	commandRegistry.setCommands({
+		"new-action": {
+			id: "new-action",
+			label: "New action",
+			shortcut: "space",
+			exe: () => {
+				const newActionURL = curl<ActionURL>(newAction())
+				project.addItem("action", newActionURL)
+				expander.expand(newActionURL)
+				return {}
+			},
+		},
+		"new-heading": {
+			id: "new-heading",
+			label: "New heading",
+			exe: () => {
+				const newHeadingURL = curl<HeadingURL>(newHeading())
+				project.addItem("heading", newHeadingURL)
+				expander.expand(newHeadingURL)
+				return {}
+			},
+		},
+		delete: {
+			id: "delete",
+			label: "Delete item",
+			shortcut: "backspace",
+			exe: () => {
+				const selected = selection.selected()
+				if (selected.length) {
+					for (const url of selected) {
+						const item = project.items.find(i => i.url == url)
+						if (item) {
+							if (isAction(item)) {
+								item.delete()
+							} else if (isHeading(item)) {
+								item.toggleArchived(true)
+							}
+						}
 					}
-				}),
-				key => key.parentURL
-			)
-		)) {
-			const parentType = getType(parentURL)
-			const parentViewModel = useViewModel(() => ({
-				type: parentType as "project" | "heading",
-				url: parentURL,
-			})) as ProjectViewModel | HeadingViewModel
-			if (items) {
-				parentViewModel.removeItemByRef(items)
-			}
-		}
+					selection.clearSelected()
+				}
+				return {}
+			},
+		},
 	})
-
-	const dnd = createDragAndDropContext(selection)
 
 	const inHome = createMemo(() => {
 		// return home.list.itemURLs.includes(project.url)
 		return !!home.keyed[project.url]
 	})
 
-	createEventListener<{copy: ClipboardEvent}>(globalThis, "copy", event => {
-		if (selection.selected().length) {
-			event.clipboardData?.setData(
-				"text/plain",
-				selection
-					.selected()
-					.map(i => {
-						return itemViewModels()
-							?.find(url => url.url == i)
-							?.toString()
-							.trim()
-					})
-					.join("\n")
-			)
-			event.preventDefault()
-		}
-	})
+	const toggleCompleted = (item: ActionViewModel, force?: boolean) => {
+		stage(() => item.toggleCompleted(force), item.url)
+	}
+
+	const toggleCanceled = (item: ActionViewModel, force?: boolean) => {
+		stage(() => item.toggleCanceled(force), item.url)
+	}
+
+	const toggleArchived = (item: HeadingViewModel, force?: boolean) => {
+		stage(() => item.toggleArchived(force), item.url)
+	}
 
 	return (
 		<Suspense>
 			<DragAndDropProvider value={dnd}>
 				<div
+					on:click={event => {
+						if (
+							event.target.closest(".action") ||
+							event.target.closest(".project-heading")
+						) {
+							return
+						}
+						selection.clearSelected()
+					}}
 					class="project page-container"
 					ref={element => {
 						const clean = dropTargetForElements({
@@ -200,7 +161,7 @@ export default function Project() {
 								const {isAbove, dropTargetURL} = getDropTargetIndex({
 									element: element,
 									input,
-									items,
+									items: selectableItemURLs,
 									dragged,
 									isValidDropTarget: isValidDropTarget,
 								})
@@ -304,57 +265,6 @@ export default function Project() {
 						})
 						onCleanup(clean)
 					}}>
-					<Bar>
-						<BarNewAction
-							newAction={() => {
-								createRoot(() => {
-									const newActionURL = curl<ActionURL>(newAction())
-									const selected = selection.lastSelected()
-									const selectedType = getType(selected)
-									if (!selected) {
-										project.addItem("action", newActionURL)
-										expander.expand(newActionURL)
-										return
-									}
-									if (selectedType == "heading") {
-										const headingViewModel = useViewModel(() => ({
-											type: selectedType as "heading",
-											url: selected,
-										})) as HeadingViewModel
-										headingViewModel.addItem("action", newActionURL)
-										expander.expand(newActionURL)
-										return
-									}
-									const parentOfSelected = getParentURL(selected)
-									const parentType = getType(parentOfSelected)
-									const parentViewModel = useViewModel(() => ({
-										type: parentType as "project" | "heading",
-										url: parentOfSelected,
-									})) as ProjectViewModel | HeadingViewModel
-
-									parentViewModel.addItem(
-										"action",
-										newActionURL,
-										parentViewModel.itemURLs.indexOf(selected) + 1
-									)
-
-									expander.expand(newActionURL)
-								})
-							}}
-						/>
-						<BarButton
-							style={{background: "orange", rotate: "30deg"}}
-							icon={<BigPlus />}
-							label="new heading"
-							onClick={() => {
-								createRoot(() => {
-									const newHeadingURL = curl<HeadingURL>(newHeading())
-									project.addItem("heading", newHeadingURL)
-									expander.expand(newHeadingURL)
-								})
-							}}
-						/>
-					</Bar>
 					<div class="page">
 						<Show when={log.enabled}>
 							<h1 class="page-title">
@@ -363,7 +273,6 @@ export default function Project() {
 						</Show>
 
 						<h1 class="page-title">
-							{/* todo editable title component, share with Area */}
 							<EmojiPicker
 								icon={project.icon}
 								modifiers={["project-title", "page-title"]}
@@ -488,7 +397,7 @@ function ProjectHeading(
 		toggleCompleted: (item: ActionViewModel, force?: boolean) => void
 		toggleArchived: (item: HeadingViewModel, force?: boolean) => void
 		filter: (item: ActionViewModel) => boolean
-		expander: Expander<ActionURL>
+		expander: Expander<"action">
 		selection: SelectionContext<ActionURL>
 	} & ExpandableProps &
 		SelectableProps
@@ -564,6 +473,7 @@ function ProjectHeading(
 							readonly={() => !props.expanded}
 							withView={view => {
 								view.focus()
+								view.dom.scrollIntoView({behavior: "smooth", block: "nearest"})
 								createEffect(() => {
 									if (!props.expanded) {
 										view.dom.blur()
@@ -599,3 +509,75 @@ const isValidDropTarget = (
 		return true
 	}
 }
+
+/** // todo
+ * createEventListener<{copy: ClipboardEvent}>(globalThis, "copy", event => {
+		if (selection.selected().length) {
+			event.clipboardData?.setData(
+				"text/plain",
+				selection
+					.selected()
+					.map(i => {
+						return itemViewModels()
+							?.find(url => url.url == i)
+							?.toString()
+							.trim()
+					})
+					.join("\n")
+			)
+			event.preventDefault()
+		}
+	})
+
+	createEventListener<{paste: ClipboardEvent}>(
+		globalThis,
+		"paste",
+		async event => {
+			if (!selection.selected().length) {
+				const text = await navigator.clipboard.readText()
+				// todo use a markdown parser
+				const items = text.split("\n").map(i => {
+					i = i.trim()
+					const actionMatch = i.match(/- \[([ xX])\] /)
+					if (actionMatch) {
+						return {
+							type: "action" as const,
+							title: i.replace(/- \[([ xX])\] /, ""),
+							state: actionMatch[1].trim()
+								? ("completed" as const)
+								: ("open" as const),
+						}
+					}
+					const headingMatch = i.match(/#+ (.+)/)
+					if (headingMatch) {
+						return {
+							type: "heading" as const,
+							title: headingMatch[1].trim(),
+						}
+					}
+				})
+
+				if (items.length) {
+					event.preventDefault()
+					event.stopPropagation()
+					event.stopImmediatePropagation()
+				}
+				let currentTarget = project as ProjectViewModel | HeadingViewModel
+
+				for (const item of items) {
+					if (!item) continue
+					if (item.type == "heading") {
+						const headingURL = curl<HeadingURL>(newHeading({title: item.title}))
+						currentTarget = useHeading(() => headingURL)
+						project.addItem("heading", headingURL)
+					} else if (item.type == "action") {
+						const actionURL = curl<ActionURL>(
+							newAction({title: item.title, state: item.state})
+						)
+						currentTarget.addItem("action", actionURL)
+					}
+				}
+			}
+		}
+	)
+ */

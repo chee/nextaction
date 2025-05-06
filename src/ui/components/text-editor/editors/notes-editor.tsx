@@ -1,5 +1,5 @@
 import {EditorView, type KeyBinding} from "@codemirror/view"
-import Editor from "@/ui/components/text-editor/text-editor.tsx"
+import Editor from "::ui/components/text-editor/text-editor.tsx"
 import type {Extension} from "@codemirror/state"
 import {Show} from "solid-js"
 

@@ -31,7 +31,6 @@
 }
 
 :root {
-	--sidebar-handle-fill: var(--sidebar-fill-dark);
 	--sidebar-fill-dark: color-mix(
 		in oklab,
 		var(--sidebar-fill),
@@ -43,18 +42,64 @@
 		var(--page-fill) 90%
 	);
 	--sidebar-line: var(--text);
+	--sidebar-divider-line: color-mix(
+		in oklab,
+		var(--sidebar-fill),
+		var(--sidebar-line) 10%
+	);
+	--page-divider-line: color-mix(
+		in oklab,
+		var(--page-fill),
+		var(--page-line) 10%
+	);
 }
 
 .chrome__handle {
-	border-left: 1px solid var(--sidebar-handle-fill);
+	border-left: 1px solid var(--sidebar-divider-line);
 	background: transparent;
 }
 
-.chrome__main,
-.chrome__content {
-	height: 100vh;
+.chrome__main {
+	height: 100%;
 	display: flex;
 	flex-direction: column;
+}
+
+.chrome__content {
+	height: 100%;
+	overflow: scroll;
+}
+
+.chrome__header {
+	display: flex;
+	flex-direction: row;
+	color: var(--sidebar-line);
+}
+
+.chrome__header-right {
+	margin-left: auto;
+}
+
+:root {
+	--footer-height: 4rem;
+	--footer-padding: var(--space-2);
+	--footer-line: color-mix(in oklab, var(--page-fill), var(--page-line) 10%);
+}
+
+.chrome__footer {
+	height: calc(var(--sidebar-footer-height) - 1px);
+	margin-left: -12px;
+	overflow: hidden;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: var(--space-2);
+	padding: calc(var(--footer-padding) + var(--space-3));
+	border-top: 1px solid var(--page-divider-line);
+	margin-top: auto;
+	&.sidebar-footer--hidden {
+		display: none;
+	}
 }
 
 .chrome--mobile.chrome--showing-sidebar {
@@ -83,4 +128,12 @@
 
 .chrome__sidebar-control--expand {
 	margin-left: 0;
+}
+
+.chrome--mobile .bar--desktop {
+	display: none;
+}
+
+.chrome--desktop .bar--mobile {
+	display: none;
 }

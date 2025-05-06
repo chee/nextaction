@@ -1,15 +1,14 @@
-import {useAction, type ActionViewModel} from "@/viewmodel/action.ts"
-import type {ActionURL} from "@/domain/action.ts"
+import {useAction, type ActionViewModel} from "::viewmodel/action.ts"
+import type {ActionURL} from "::domain/action.ts"
 import {useProject, type ProjectViewModel} from "./project.ts"
 import {useArea, type AreaViewModel} from "./area.ts"
 import {useHeading, type HeadingViewModel} from "./heading.ts"
 import type {Accessor} from "solid-js"
-import type {ConceptName, ConceptViewModelMap} from "../concepts.ts"
-import type {Reference} from "../domain/reference.ts"
-import type {ProjectURL} from "../domain/project.ts"
-import type {AreaURL} from "../domain/area.ts"
-import type {HeadingURL} from "../domain/heading.ts"
-import {useHome} from "./home.ts"
+import type {ConceptName, ConceptViewModelMap} from "::concepts"
+import type {Reference} from "::domain/reference.ts"
+import type {ProjectURL} from "::domain/project.ts"
+import type {AreaURL} from "::domain/area.ts"
+import type {HeadingURL} from "::domain/heading.ts"
 
 export function useVM(
 	ref: Reference<"action"> | Accessor<Reference<"action">>
@@ -24,7 +23,6 @@ export function useVM(
 	ref: Reference<"heading"> | Accessor<Reference<"heading">>
 ): HeadingViewModel
 
-// implementation — NO GENERICS HERE
 export function useVM(
 	ref: Reference<ConceptName> | Accessor<Reference<ConceptName>>
 ): ConceptViewModelMap[ConceptName] {
@@ -47,5 +45,6 @@ export function useVM(
 export function useViewModel<T extends ConceptName>(
 	ref: Reference<T> | Accessor<Reference<T>>
 ): ConceptViewModelMap[T] {
+	// @ts-expect-error i'm fine with this
 	return useVM(ref) as ConceptViewModelMap[T]
 }
