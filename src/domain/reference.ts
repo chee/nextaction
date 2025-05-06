@@ -1,90 +1,75 @@
-import type {ActionRef, ActionURL} from "@/domain/action.ts"
-import type {ProjectRef, ProjectURL} from "@/domain/project.ts"
-import type {AreaRef, AreaURL} from "@/domain/area.ts"
-import type {HeadingRef, HeadingURL} from "./heading.ts"
+import type {AnyRef, ConceptURLMap, TypeFromURL} from "../concepts.ts"
+import {getType} from "../infra/type-registry.ts"
 
-export type Reference<
-	Type extends string = string,
-	URLType = Type extends "action"
-		? ActionURL
-		: Type extends "project"
-		? ProjectURL
-		: Type extends "area"
-		? AreaURL
-		: Type extends "heading"
-		? HeadingURL
-		: string
-> = {
-	type: Type
-	url: URLType
+export type Reference<T extends keyof ConceptURLMap> = {
+	type: T
+	url: ConceptURLMap[T]
 }
 
-export type ReferencePointer<
-	Type extends string = string,
-	URLType = Reference<Type>["url"]
-> = {
-	type: Type
-	url: URLType
+export type ReferencePointer<T extends keyof ConceptURLMap> = {
+	type: T
+	url: Reference<T>["url"]
 	above?: boolean
 }
 
-export type AnyRef = ActionRef | ProjectRef | AreaRef | HeadingRef
-
-export type AnyList = {items: AnyRef[]}
-
-export function includesReference<T extends Reference>(list: T[], ref: T) {
+export function includesReference<T extends AnyRef>(list: T[], ref: T) {
 	return list.some(
 		item => item == ref || (item.url === ref.url && item.type === ref.type)
 	)
 }
 
-export function indexOfReference<T extends Reference>(list: T[], ref: T) {
+export function indexOfReference<T extends AnyRef>(list: T[], ref: T) {
 	return list.findIndex(
 		item => item == ref || (item.url === ref.url && item.type === ref.type)
 	)
 }
 
-export function includesURL<T extends Reference>(list: T[], url: T["url"]) {
+export function includesURL<T extends AnyRef>(list: T[], url: T["url"]) {
 	return list.some(item => item.url === url)
 }
 
-export function indexOfURL<T extends Reference>(list: T[], url: T["url"]) {
+export function indexOfURL<T extends AnyRef>(list: T[], url: T["url"]) {
 	return list.findIndex(item => item.url === url)
 }
 
-export function refer<
-	X extends AnyRef,
-	T extends X["type"],
-	U extends X["url"]
->(type: T, url: U) {
-	return {type, url, ref: true} as const
+export function refer<T extends keyof ConceptURLMap>(
+	type: T,
+	url: ConceptURLMap[T]
+): Reference<T> {
+	return {type, url} as const
 }
-
-function array<T>(item: T | T[]) {
+function referURL<U extends ConceptURLMap[keyof ConceptURLMap]>(
+	url: U
+): Reference<TypeFromURL<U>> {
+	const ref = {
+		type: getType(url) as TypeFromURL<U>,
+		url,
+	} satisfies Reference<TypeFromURL<U>>
+	return ref
+}
+function array<T>(item: T | T[]): T[] {
 	if (Array.isArray(item)) return item
 	return [item]
 }
 
-export function addReference(
-	list: Reference[],
-	type: Reference["type"],
-	urls: string | string[],
-	index?: number | ReferencePointer
+export function addReference<T extends AnyRef>(
+	list: T[],
+	type: T["type"],
+	urls: T["url"] | T["url"][],
+	index?: number | ReferencePointer<T["type"]>
 ) {
-	urls = array(urls)
-	for (const url of urls) {
+	for (const url of array(urls)) {
 		const ref = refer(type, url)
-		addReferenceByRef(list, ref, index)
+		addReferenceByRef(list, ref as T, index)
 	}
 }
 
-export function addReferenceByRef(
-	list: Reference[],
-	refs: Reference | Reference[],
-	index?: number | ReferencePointer
+export function addReferenceByRef<T extends AnyRef>(
+	list: T[],
+	refs: T | T[],
+	index?: number | ReferencePointer<T["type"]>
 ) {
-	refs = array(refs)
-	for (const ref of refs) {
+	for (const ref of array(refs)) {
 		if (includesReference(list, ref)) continue
 		if (typeof index == "number") {
 			if (index >= 0 && index < list.length + 1) {
@@ -94,7 +79,7 @@ export function addReferenceByRef(
 			}
 		} else if (typeof index == "object") {
 			const refpoint = index
-			const i = indexOfReference(list, refer(refpoint.type, refpoint.url))
+			const i = indexOfReference(list, refer(refpoint.type, refpoint.url) as T)
 			if (i != -1) {
 				list.splice(i + (index.above ? 0 : 1), 0, ref)
 			} else {
@@ -106,24 +91,22 @@ export function addReferenceByRef(
 	}
 }
 
-export function removeReference(
-	list: Reference[],
-	type: string,
-	urls: string | string[]
+export function removeReference<T extends AnyRef>(
+	list: T[],
+	type: T["type"],
+	urls: T["url"] | T["url"][]
 ) {
-	urls = array(urls)
-	for (const url of urls) {
+	for (const url of array(urls)) {
 		const ref = refer(type, url)
-		removeReferenceByRef(list, ref)
+		removeReferenceByRef(list, ref as T)
 	}
 }
 
-export function removeReferenceByRef(
-	list: Reference[],
-	refs: Reference | Reference[]
+export function removeReferenceByRef<T extends AnyRef>(
+	list: T[],
+	refs: T | T[]
 ) {
-	refs = array(refs)
-	for (const ref of refs) {
+	for (const ref of array(refs)) {
 		if (!includesReference(list, ref)) continue
 		const i = indexOfReference(list, ref)
 		if (i != -1) {
@@ -132,78 +115,76 @@ export function removeReferenceByRef(
 	}
 }
 
-export function moveReference(
-	list: Reference[],
-	type: string,
-	urls: string | string[],
+export function moveReference<T extends AnyRef>(
+	list: T[],
+	type: T["type"],
+	urls: T["url"] | T["url"][],
 	targetIndex: number
 ) {
-	urls = array(urls)
-	const toInsert = urls
+	const toInsert = array(urls)
 		.map(url => refer(type, url))
-		.filter(ref => includesReference(list, ref))
+		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
-				indexOfReference(list, left) - indexOfReference(list, right)
+				indexOfReference(list, left as T) - indexOfReference(list, right as T)
 		)
 
 	if (!toInsert.length) return
 
 	toInsert
-		.map(ref => indexOfReference(list, ref))
+		.map(ref => indexOfReference(list, ref as T))
 		.sort((a, b) => b - a)
 		.forEach(i => list.splice(i, 1))
 
 	const insertAt = Math.max(0, Math.min(targetIndex, list.length))
-	list.splice(insertAt, 0, ...toInsert)
+	list.splice(insertAt, 0, ...(toInsert as T[]))
 }
 
-export function moveReferenceAfter(
-	list: Reference[],
-	type: string,
-	urls: string | string[],
-	target: string | Reference,
+export function moveReferenceAfter<T extends AnyRef>(
+	list: T[],
+	type: T["type"],
+	urls: T["url"] | T["url"][],
+	target: string | T,
 	offset = 1
 ) {
-	urls = array(urls)
-	const newItems = urls
+	const newItems = array(urls)
 		.map(url => refer(type, url))
-		.filter(ref => includesReference(list, ref))
+		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
-				indexOfReference(list, left) - indexOfReference(list, right)
+				indexOfReference(list, left as T) - indexOfReference(list, right as T)
 		)
 
 	if (!newItems.length) return
 
 	newItems.forEach(item => {
-		const itemIndex = indexOfReference(list, item)
+		const itemIndex = indexOfReference(list, item as T)
 		if (itemIndex !== -1) {
 			list.splice(itemIndex, 1)
 		}
 	})
 
 	const targetRef = typeof target === "string" ? refer(type, target) : target
-	const index = indexOfReference(list, targetRef) + offset
+	const index = indexOfReference(list, targetRef as T) + offset
 
 	if (index > list.length) {
-		list.push(...newItems)
+		list.push(...(newItems as T[]))
 		return
 	}
 
 	if (index < 0) {
-		list.unshift(...newItems)
+		list.unshift(...(newItems as T[]))
 		return
 	}
 
-	list.splice(index, 0, ...newItems)
+	list.splice(index, 0, ...(newItems as T[]))
 }
 
-export function moveReferenceBefore(
-	list: Reference[],
-	type: string,
-	urls: string | string[],
-	target: string | Reference
+export function moveReferenceBefore<T extends AnyRef>(
+	list: T[],
+	type: T["type"],
+	urls: T["url"] | T["url"][],
+	target: string | T
 ) {
 	moveReferenceAfter(list, type, urls, target, 0)
 }

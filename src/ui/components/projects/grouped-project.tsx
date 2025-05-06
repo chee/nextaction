@@ -2,14 +2,14 @@ import "./grouped-project.css"
 import {A} from "@solidjs/router"
 import {createMemo, Show} from "solid-js"
 
-import {isAction, type ActionURL} from "@/domain/action.ts"
+import {type ActionURL} from "@/domain/action.ts"
 import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
 import {type ActionViewModel, isActionViewModel} from "@/viewmodel/action.ts"
 import type {Expander} from "@/viewmodel/helpers/page.ts"
 import type {ProjectViewModel} from "@/viewmodel/project.ts"
 import ActionList from "../actions/action-list.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
-import flattenTree from "../../../infra/lib/flattenTree.ts"
+import flattenTree from "@/infra/lib/flattenTree.ts"
 import Project from "../../pages/userland/project/project.tsx"
 
 export function GroupedProject(props: {
@@ -24,7 +24,7 @@ export function GroupedProject(props: {
 		flattenTree(props.project.items).filter(isActionViewModel)
 	)
 
-	const [progress] = useProjectProgress(() => actions())
+	const [progress] = useProjectProgress(() => props.project.url)
 
 	return (
 		<Show when={actions().filter(props.filter).length > 0}>

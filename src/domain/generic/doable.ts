@@ -4,7 +4,7 @@ export type Doable = {
 	due?: Date | null
 	period?: "morning" | "afternoon" | "evening"
 	state: "open" | "doing" | "awaiting" | "completed" | "canceled"
-	stateChanged?: Date
+	stateChanged?: Date | null
 	deleted?: boolean
 	// zoozoo says you don't need reminders because you should always be
 	// opening the app, and if something should happen on a certain day then

@@ -1,14 +1,17 @@
 import "./sidebar-footer.css"
 import {DropdownMenu} from "@kobalte/core/dropdown-menu"
 import {Button} from "@kobalte/core/button"
-import {useHome} from "@/viewmodel/home.ts"
+import {useHome, useHomeContext} from "@/viewmodel/home.ts"
 import {toast} from "@/ui/components/base/toast.tsx"
 import BigPlus from "@/ui/icons/big-plus.tsx"
 import PreferencesIcon from "@/ui/icons/preferences.tsx"
 import {useNavigate} from "@solidjs/router"
+import {encodeJSON} from "../../../infra/lib/compress.ts"
+import {useUserId} from "../../../infra/storage/user-id.ts"
 
 export default function SidebarFooter() {
-	const home = useHome()
+	const home = useHomeContext()
+
 	const nav = useNavigate()
 	return (
 		<footer class="sidebar-footer">
@@ -82,6 +85,13 @@ export default function SidebarFooter() {
 				class="sidebar-footer__button"
 				title="Open settings"
 				onClick={() => {
+					const [u] = useUserId()
+					navigator.clipboard.writeText(
+						encodeJSON({
+							type: "user",
+							url: u(),
+						})
+					)
 					toast.show({
 						title: "Settings?",
 						body: "lol! what settings?",

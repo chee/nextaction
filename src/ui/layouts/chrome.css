@@ -1,4 +1,7 @@
 .chrome {
+	display: flex;
+	height: 100%;
+	width: 100%;
 	transition: background 0.4s;
 	&:has(.action--expanded) {
 		background: color-mix(in oklab, var(--page-fill), var(--sidebar-fill) 10%);
@@ -10,12 +13,21 @@
 }
 
 .chrome__sidebar {
+	display: flex;
+	flex-direction: column;
 	background: var(--sidebar-fill);
 	color: var(--sidebar-line);
 	min-width: 0;
-	&[data-collapsed] > * {
-		display: none;
+	transition: flex-basis 0.14s ease-out;
+	&[data-collapsed] {
+		overflow: hidden;
+		/* display: none; */
 	}
+}
+
+.chrome--first-load .chrome__sidebar,
+.chrome__sidebar--manually-resizing {
+	transition: none;
 }
 
 :root {
@@ -41,6 +53,8 @@
 .chrome__main,
 .chrome__content {
 	height: 100vh;
+	display: flex;
+	flex-direction: column;
 }
 
 .chrome--mobile.chrome--showing-sidebar {
@@ -51,9 +65,16 @@
 		}
 		flex-basis: unset !important;
 	}
+	.chrome__handle {
+		display: none;
+	}
 	.chrome__main {
 		display: none;
 	}
+}
+
+.chrome--not-showing-sidebar .chrome__main {
+	flex-basis: 100% !important;
 }
 
 .chrome__sidebar-control {

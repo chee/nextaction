@@ -1,5 +1,5 @@
 // import Bar, {BarMenu, BarNewAction} from "@/ui/components/bar/bar.tsx"
-import {moveBetweenParents, useHome} from "@/viewmodel/home.ts"
+import {moveBetweenParents, useHome, useHomeContext} from "@/viewmodel/home.ts"
 import {
 	isClosed,
 	isToday,
@@ -46,7 +46,7 @@ import type {ReferencePointer} from "@/domain/reference.ts"
 import DevelopmentNote from "../../components/development-note.tsx"
 
 export default function Today() {
-	const home = useHome()
+	const home = useHomeContext()
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
 
 	const filter = (item: (typeof home.list.items)[number]) =>

@@ -5,8 +5,8 @@ import {useDoableMixin} from "./mixins/doable.ts"
 import {isHeadingViewModel, type HeadingViewModel} from "./heading.ts"
 import {isActionViewModel, type ActionViewModel} from "./action.ts"
 import {useListViewModel} from "./mixins/list.ts"
-import type {HeadingRef, HeadingURL} from "@/domain/heading.ts"
-import type {ActionRef, ActionURL} from "@/domain/action.ts"
+import type {HeadingURL} from "@/domain/heading.ts"
+import type {ActionURL} from "@/domain/action.ts"
 import mix from "@/infra/lib/mix.ts"
 import {useNotableMixin} from "./mixins/notable.ts"
 import {useTitleableMixin} from "./mixins/titleable.ts"
@@ -21,16 +21,14 @@ import {
 
 export function useProject(url: Accessor<ProjectURL>) {
 	const [project, handle] = useDocument<Project>(url, {repo: repo})
+
 	const notable = useNotableMixin(project, handle)
 	const titleable = useTitleableMixin(project, handle)
 
 	const doable = useDoableMixin(url)
-	const list = useListViewModel<
-		ActionViewModel | HeadingViewModel,
-		ActionRef | HeadingRef
-	>(url, "project")
+	const list = useListViewModel(url, "project")
 
-	return mix(doable, list, notable, titleable, {
+	const vm = mix(doable, list, notable, titleable, {
 		type: "project" as const,
 		get url() {
 			return url()
@@ -56,7 +54,7 @@ export function useProject(url: Accessor<ProjectURL>) {
 				} else if (index) {
 					idx =
 						indexOfReference(project()!.items, {
-							type: "action",
+							type: "action" as const,
 							url: index.url as ActionURL,
 						}) + (index?.above ? 1 : 0)
 				}
@@ -97,6 +95,8 @@ export function useProject(url: Accessor<ProjectURL>) {
 			}
 		},
 	})
+
+	return vm
 }
 
 export type ProjectViewModel = ReturnType<typeof useProject>

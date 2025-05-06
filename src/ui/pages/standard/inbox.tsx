@@ -6,7 +6,7 @@ import {
 	createSelectionContext,
 	type SelectionContext,
 } from "@/infra/hooks/selection-context.ts"
-import {useHome} from "@/viewmodel/home.ts"
+import {useHome, useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {isClosed} from "@/domain/generic/doable.ts"
 import {useAction, type ActionViewModel} from "@/viewmodel/action.ts"
@@ -27,7 +27,7 @@ import {
 
 // inbox is special because it has its own list
 export default function Inbox() {
-	const home = useHome()
+	const home = useHomeContext()
 
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved<ActionURL>()
 

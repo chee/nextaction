@@ -5,7 +5,7 @@ import {
 	useExpander,
 	useRecentlyRemoved,
 } from "../../../viewmodel/helpers/page.ts"
-import {useHome} from "../../../viewmodel/home.ts"
+import {useHome, useHomeContext} from "../../../viewmodel/home.ts"
 import type {ProjectViewModel} from "../../../viewmodel/project.ts"
 import flattenTree from "../../../infra/lib/flattenTree.ts"
 import type {AnyDoableViewModel} from "../../../viewmodel/mixins/doable.ts"
@@ -31,7 +31,7 @@ import {createDateNow} from "@solid-primitives/date"
 export default function Upcoming() {
 	const [now] = createDateNow(60 * 1000)
 
-	const home = useHome()
+	const home = useHomeContext()
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
 
 	type SelectableItemURL = ActionURL | ProjectURL

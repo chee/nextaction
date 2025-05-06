@@ -6,6 +6,14 @@
 	--checkbox-size: 18px;
 	--checkbox-radius: 6px;
 }
+
+@media (max-width: 600px) {
+	:root {
+		--checkbox-size: 20px;
+		--checkbox-radius: 7px;
+	}
+}
+
 .checkbox {
 	border-radius: var(--checkbox-radius);
 	border: 1px solid var(--checkbox-line);

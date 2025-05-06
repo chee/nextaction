@@ -1,7 +1,7 @@
 import {useDocument} from "solid-automerge"
-import {useUser} from "./user.ts"
+import {UserContext, useUser} from "./user.ts"
 import type {Home, HomeURL} from "@/domain/home.ts"
-import {type ActionRef} from "@/domain/action.ts"
+import {type ActionRef, type ActionURL} from "@/domain/action.ts"
 import {
 	isProjectRef,
 	newProject,
@@ -10,13 +10,14 @@ import {
 } from "@/domain/project.ts"
 import {useListViewModel} from "./mixins/list.ts"
 import type {AutomergeUrl, DocHandle} from "@automerge/automerge-repo"
-import {decode, decodeJSON} from "../infra/lib/compress.ts"
-import type {ActionViewModel} from "./action.ts"
+import {decodeJSON} from "../infra/lib/compress.ts"
 import repo, {curl} from "@/infra/sync/automerge-repo.ts"
 import {type Reference} from "@/domain/reference.ts"
 import {toast} from "@/ui/components/base/toast.tsx"
-import type {AreaViewModel} from "./area.ts"
-import type {ProjectViewModel} from "./project.ts"
+import mix from "../infra/lib/mix.ts"
+import {createContext} from "solid-js"
+import {useContext} from "solid-js"
+import ViewModelCache from "./cache.ts"
 
 declare global {
 	interface Window {
@@ -102,7 +103,6 @@ export async function moveBetweenParents({
 			index = doc.items.length
 		}
 		doc.items.splice(index, 0, {
-			ref: true,
 			type: itemType,
 			url: itemURL,
 		})
@@ -111,26 +111,22 @@ export async function moveBetweenParents({
 
 export function useHome() {
 	const user = useUser()
+
 	const [home, handle] = useDocument<Home>(() => user.homeURL, {repo})
 	self.home = handle
 
-	const list = useListViewModel<
-		ActionViewModel | AreaViewModel | ProjectViewModel
-	>(() => user.homeURL, "home")
+	const list = useListViewModel(() => user.homeURL, "home")
 
-	const inbox = useListViewModel<ActionViewModel, ActionRef>(
-		() => home()?.inbox,
-		"inbox"
-	)
+	const inbox = useListViewModel(() => home()?.inbox, "inbox")
 
-	return {
-		type: "home",
+	const vm = mix({
+		type: "home" as const,
 		list,
-		get flat() {
-			return list.flat
-		},
 		get keyed() {
 			return list.keyed
+		},
+		get flat() {
+			return list.flat
 		},
 		get url() {
 			return handle()?.url as HomeURL
@@ -174,5 +170,18 @@ export function useHome() {
 				inbox.addItemByRef(ref, inbox.items.length)
 			}
 		},
+	})
+
+	return vm
+}
+
+export type HomeViewModel = ReturnType<typeof useHome>
+export type InboxViewModel = HomeViewModel["inbox"]
+
+export function useHomeContext() {
+	const context = useContext(UserContext)
+	if (!context) {
+		throw new Error("useHomeContext must be used within a UserContext.Provider")
 	}
+	return context.home
 }

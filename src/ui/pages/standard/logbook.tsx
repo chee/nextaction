@@ -1,7 +1,7 @@
 import "./logbook.css"
 // import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome} from "@/viewmodel/home.ts"
+import {useHome, useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {type ProjectURL} from "@/domain/project.ts"
 import {type ActionURL} from "@/domain/action.ts"
@@ -27,7 +27,7 @@ import {ProjectItem} from "../../components/projects/project-item.tsx"
 
 // todo create a LogbookItem
 export default function Logbook() {
-	const home = useHome()
+	const home = useHomeContext()
 	const [wasRecentlyOpened, openAndHold] = useRecentlyRemoved()
 	const all = createMemo(() => [...home.flat, ...home.inbox.flat])
 	const filter = (item: (typeof home.list.items)[number]) =>

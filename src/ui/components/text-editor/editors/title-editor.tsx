@@ -1,7 +1,7 @@
 import {EditorView, type KeyBinding} from "@codemirror/view"
 import {EditorState, type Extension} from "@codemirror/state"
 import {Show} from "solid-js"
-import Editor from "@/ui/components/editor/editor.tsx"
+import Editor from "@/ui/components/text-editor/text-editor.tsx"
 import type {BembyModifiers, BembyModifier} from "bemby"
 
 export default function TitleEditor(props: {

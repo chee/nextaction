@@ -15,9 +15,9 @@ import type {Reference, ReferencePointer} from "../domain/reference.ts"
 export function useHeading(url: Accessor<HeadingURL>) {
 	const [heading, handle] = useDocument<Heading>(url, {repo: repo})
 	const titleable = useTitleableMixin(heading, handle)
-	const list = useListViewModel<ActionViewModel>(url, "heading")
+	const list = useListViewModel(url, "heading")
 
-	return mix(titleable, list, {
+	const vm = mix(titleable, list, {
 		type: "heading" as const,
 		get url() {
 			return handle()?.url as HeadingURL
@@ -50,6 +50,8 @@ export function useHeading(url: Accessor<HeadingURL>) {
 			}
 		},
 	})
+
+	return vm
 }
 
 export type HeadingViewModel = ReturnType<typeof useHeading>

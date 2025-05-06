@@ -1,7 +1,7 @@
 // import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import ActionList from "@/ui/components/actions/action-list.tsx"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome} from "@/viewmodel/home.ts"
+import {useHome, useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {isProject, type ProjectURL} from "@/domain/project.ts"
 import {isAction, type ActionURL} from "@/domain/action.ts"
@@ -25,7 +25,7 @@ import {
 import DevelopmentNote from "../../components/development-note.tsx"
 
 export default function Someday() {
-	const home = useHome()
+	const home = useHomeContext()
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
 
 	const selectableItemsFilter = (item: (typeof home.list.items)[number]) =>

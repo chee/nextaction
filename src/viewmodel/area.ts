@@ -10,13 +10,13 @@ import {useListViewModel} from "./mixins/list.ts"
 import {dedent} from "@qnighy/dedent"
 import repo from "../infra/sync/automerge-repo.ts"
 import type {Reference, ReferencePointer} from "../domain/reference.ts"
-
 export function useArea(url: Accessor<AreaURL>) {
 	const [area, handle] = useDocument<Area>(url, {repo: repo})
 	const titleable = useTitleableMixin(area, handle)
 	const notable = useNotableMixin(area, handle)
-	const list = useListViewModel<ActionViewModel | ProjectViewModel>(url, "area")
-	return mix(titleable, notable, list, {
+	const list = useListViewModel(url, "area")
+
+	const vm = mix(titleable, notable, list, {
 		type: "area" as const,
 		get icon() {
 			return area()?.icon ?? "🗃️"
@@ -61,6 +61,8 @@ export function useArea(url: Accessor<AreaURL>) {
 			}
 		},
 	})
+
+	return vm
 }
 
 export type AreaViewModel = ReturnType<typeof useArea>

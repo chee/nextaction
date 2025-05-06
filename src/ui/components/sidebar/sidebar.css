@@ -1,9 +1,10 @@
 .sidebar {
-	height: 100vh;
+	height: 100%;
 	display: flex;
 	flex-direction: column;
 	user-select: none;
 	min-width: 0;
+	overflow: scroll;
 }
 
 .sidebar__links {
@@ -11,13 +12,13 @@
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	height: 100%;
 	padding: var(--space-2);
 	padding-bottom: 0;
 	overflow: scroll;
 	gap: var(--space-3);
 	min-width: 0;
-	padding-bottom: var(--space-4);
+	overflow: scroll;
+	height: 100%;
 }
 
 :root {
@@ -33,13 +34,13 @@
 	display: flex;
 	min-width: 0;
 	flex-direction: column;
+	width: 100%;
 	&:empty {
 		display: none;
 	}
 	&.sidebar__section--default {
 		font-weight: 500;
 	}
-	width: 100%;
 }
 
 :root {
@@ -102,4 +103,9 @@
 	transform: skewX(4deg);
 	background: black;
 	color: white;
+}
+
+@media (max-width: 600px) {
+	:root {
+	}
 }

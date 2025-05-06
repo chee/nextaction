@@ -1,4 +1,4 @@
-import "./editor.css"
+import "./text-editor.css"
 import {
 	drawSelection,
 	EditorView,
@@ -53,6 +53,12 @@ export default function Editor(props: {
 		placeholderCompartment.of(placeholder(props.placeholder || "")),
 		themeCompartment.of(EditorView.theme(theme)),
 		keymapCompartment.of(keymap.of(makeKeymap())),
+
+		EditorView.contentAttributes.of({
+			autocorrect: "true",
+			spellcheck: "true",
+			autocapitalize: "true",
+		}),
 
 		readonly.of(EditorState.readOnly.of(isReadonly())),
 		editable.of(EditorView.editable.of(isEditable())),
@@ -111,9 +117,7 @@ export default function Editor(props: {
 		})
 	})
 
-	onMount(() => {
-		props.withView?.(view)
-	})
+	onMount(() => props.withView?.(view))
 
 	editor.addEventListener("keydown", event => event.stopImmediatePropagation())
 	return editor

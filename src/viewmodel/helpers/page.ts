@@ -3,11 +3,20 @@ import type {SelectionContext} from "@/infra/hooks/selection-context.ts"
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {debounce} from "radash"
 import type {ExpandableProps} from "../../ui/components/actions/action.tsx"
+import {createEffect} from "solid-js"
 
 export function useExpander<T extends AutomergeUrl>(
 	selection: SelectionContext
 ) {
 	const [expanded, setExpanded] = createSignal<T>()
+
+	createEffect(() => {
+		const selected = selection.selected()
+		const url = expanded()
+		if (selected.length && url && !selected.includes(url)) {
+			setExpanded()
+		}
+	})
 	return {
 		isExpanded: (url: T) => expanded() == url,
 		expanded,

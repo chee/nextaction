@@ -17,9 +17,7 @@ export function ProjectItem(
 	} & ProjectViewModel &
 		SelectableProps
 ) {
-	const [progress, numberOfOpenItems] = useProjectProgress(() =>
-		props.items.filter(isActionViewModel)
-	)
+	const [progress, numberOfOpenItems] = useProjectProgress(() => props.url)
 	const nav = useNavigate()
 	const dnd = useDragAndDrop()
 	return (

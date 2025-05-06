@@ -2,11 +2,7 @@
 import {createContext, createSignal, onCleanup} from "solid-js"
 import {useContext} from "solid-js"
 import {draggable} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {
-	updateDraggedItems,
-	type DragAndDropItem,
-	type DraggableContract,
-} from "./contract.ts"
+import {updateDraggedItems, type DragAndDropItem} from "./contract.ts"
 import type {SelectionContext} from "../hooks/selection-context.ts"
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {getParentURL, type ParentType} from "../parent-registry.ts"

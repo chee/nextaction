@@ -20,8 +20,8 @@
 	padding: var(--space-3);
 	background: var(--sidebar-fill-dark);
 	color: var(--sidebar-section-line);
-	margin-top: auto;
 	border-top: 1px solid var(--sidebar-footer-border-line);
+	margin-top: auto;
 	&.sidebar-footer--hidden {
 		display: none;
 	}

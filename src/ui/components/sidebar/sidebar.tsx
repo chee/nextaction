@@ -3,7 +3,7 @@ import {A, type AnchorProps} from "@solidjs/router"
 import {For, splitProps, Suspense} from "solid-js"
 import type {JSX} from "solid-js"
 import {getOwner} from "solid-js"
-import {useHome} from "@/viewmodel/home.ts"
+import {useHomeContext} from "@/viewmodel/home.ts"
 import {
 	createDropTarget,
 	type DropTargetContract,
@@ -11,36 +11,31 @@ import {
 import {isAreaViewModel, type AreaViewModel} from "@/viewmodel/area.ts"
 import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
 import bemby from "bemby"
-import {refer} from "@/domain/reference.ts"
 import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
-import {encode, encodeJSON, uint8arraytobase64} from "@/infra/lib/compress.ts"
+import {encodeJSON} from "@/infra/lib/compress.ts"
 import {toast} from "../base/toast.tsx"
-import {isDoable} from "../../../domain/generic/doable.ts"
-import {
-	useDoableMixin,
-	type AnyDoableViewModel,
-} from "../../../viewmodel/mixins/doable.ts"
+import {useDoableMixin} from "../../../viewmodel/mixins/doable.ts"
 import {getParentURL} from "../../../infra/parent-registry.ts"
 import {getType} from "../../../infra/type-registry.ts"
-import type {ActionRef} from "../../../domain/action.ts"
 import {
-	createDragAndDropContext,
-	createSimpleDraggable,
-} from "../../../infra/dnd/dnd-context.ts"
+	isAction,
+	type ActionRef,
+	type ActionURL,
+} from "../../../domain/action.ts"
+import {createSimpleDraggable} from "../../../infra/dnd/dnd-context.ts"
 import {useViewModel} from "../../../viewmodel/useviewmodel.ts"
 import type {ActionViewModel} from "../../../viewmodel/action.ts"
 import type {HeadingViewModel} from "../../../viewmodel/heading.ts"
 import DevelopmentNote from "../development-note.tsx"
-import {cbor} from "@automerge/automerge-repo"
-import {homedir} from "node:os"
-import {draggable} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
+import {isHeading} from "../../../domain/heading.ts"
+import {useMovements} from "../../../viewmodel/movements.ts"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
 export default function Sidebar() {
 	const owner = getOwner()
-	const home = useHome()
+	const home = useHomeContext()
 
 	return (
 		<div class="sidebar">
@@ -195,17 +190,9 @@ export default function Sidebar() {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
 									const vm = useViewModel(() => ({
-										type: item.type as
-											| "action"
-											| "area"
-											| "project"
-											| "heading",
+										type: item.type,
 										url: item.url,
-									})) as
-										| ActionViewModel
-										| AreaViewModel
-										| ProjectViewModel
-										| HeadingViewModel
+									}))
 									vm.delete()
 								}
 							},
@@ -291,50 +278,72 @@ function Sidelink(props: SidebarLinkProps) {
 
 // todo move to own file
 function SidebarProject(props: {project: ProjectViewModel}) {
-	const home = useHome()
+	const home = useHomeContext()
+	const movements = useMovements()
+
 	return (
-		<ContextMenu>
-			<ContextMenu.Trigger>
-				<Sidelink
-					ref={element => {
-						createSimpleDraggable(element, () => ({
-							type: "project",
-							url: props.project.url,
-						}))
-					}}
-					href={`/projects/${props.project.url}`}
-					icon={props.project.icon}>
-					{props.project.title}
-				</Sidelink>
-			</ContextMenu.Trigger>
-			<ContextMenu.Portal>
-				<ContextMenu.Content class="popmenu popmenu--sidebar">
-					<ContextMenu.Item
-						class="popmenu__item"
-						onSelect={() => {
-							const code = encodeJSON({
-								type: props.project.type,
-								url: props.project.url.replace(/.*:/, ""),
-							})
+		<Suspense>
+			<ContextMenu>
+				<ContextMenu.Trigger>
+					<Sidelink
+						ref={element => {
+							createSimpleDraggable(element, () => ({
+								type: "project",
+								url: props.project.url,
+							}))
+							createDropTarget(element, {
+								accepts(source) {
+									if (
+										source?.items?.every(
+											item => isHeading(item) || isAction(item)
+										)
+									)
+										return true
+									return false
+								},
+								drop(source) {
+									if (!source?.items) return
 
-							navigator.clipboard.writeText(code)
-
-							toast.show({
-								title: "Copied share link to clipboard",
-								body: "Send it to your friend to give them access to this project.",
-								modifiers: "copied-to-clipboard",
+									for (const item of source.items) {
+										movements.reparent(item.url, props.project.url)
+									}
+								},
 							})
-						}}>
-						Copy Share Code
-					</ContextMenu.Item>
-					<ContextMenu.Item
-						class="popmenu__item popmenu__item--danger"
-						onSelect={() => home.list.removeItemByRef(props.project)}>
-						Remove from Sidebar
-					</ContextMenu.Item>
-				</ContextMenu.Content>
-			</ContextMenu.Portal>
-		</ContextMenu>
+						}}
+						href={`/projects/${props.project.url}`}
+						icon={props.project.icon}>
+						{props.project.title}
+					</Sidelink>
+				</ContextMenu.Trigger>
+				<ContextMenu.Portal>
+					<ContextMenu.Content class="popmenu popmenu--sidebar">
+						<ContextMenu.Item
+							class="popmenu__item"
+							onSelect={() => {
+								const code = encodeJSON({
+									type: props.project.type,
+									url: props.project.url.replace(/.*:/, ""),
+								})
+
+								navigator.clipboard.writeText(code)
+
+								toast.show({
+									title: "Copied share link to clipboard",
+									body: "Send it to your friend to give them access to this project.",
+									modifiers: "copied-to-clipboard",
+								})
+							}}>
+							Copy Share Code
+						</ContextMenu.Item>
+						<ContextMenu.Item
+							class="popmenu__item popmenu__item--danger"
+							onSelect={() => home.list.removeItemByRef(props.project)}>
+							Remove from Sidebar
+						</ContextMenu.Item>
+					</ContextMenu.Content>
+				</ContextMenu.Portal>
+			</ContextMenu>
+		</Suspense>
 	)
 }
 

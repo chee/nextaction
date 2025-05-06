@@ -1,7 +1,7 @@
 import {For, Switch, Match, Show, createMemo, mapArray} from "solid-js"
 import {isAction, type ActionURL} from "../../../domain/action.ts"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome} from "../../../viewmodel/home.ts"
+import {useHome, useHomeContext} from "../../../viewmodel/home.ts"
 import {
 	useExpander,
 	useRecentlyRemoved,
@@ -29,7 +29,7 @@ import {GroupedProject} from "../../components/projects/grouped-project.tsx"
 import {isAreaViewModel, type AreaViewModel} from "../../../viewmodel/area.ts"
 
 export default function Anytime() {
-	const home = useHome()
+	const home = useHomeContext()
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
 
 	const selectableItemFilter = (item: (typeof home.list.items)[number]) =>

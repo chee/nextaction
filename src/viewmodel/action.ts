@@ -14,7 +14,7 @@ export function useAction(url: Accessor<ActionURL>) {
 	const titleable = useTitleableMixin(action, handle)
 	const doable = useDoableMixin(url)
 
-	return mix(doable, notable, titleable, {
+	const vm = mix(doable, notable, titleable, {
 		type: "action" as const,
 		get url() {
 			return handle()?.url as ActionURL
@@ -41,7 +41,6 @@ export function useAction(url: Accessor<ActionURL>) {
 			return {
 				type: "action" as const,
 				url: handle()?.url as ActionURL,
-				ref: true,
 			}
 		},
 		asPointer(above?: boolean): ReferencePointer<"action"> {
@@ -52,6 +51,8 @@ export function useAction(url: Accessor<ActionURL>) {
 			}
 		},
 	})
+
+	return vm
 }
 
 export type ActionViewModel = ReturnType<typeof useAction>

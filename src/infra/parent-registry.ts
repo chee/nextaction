@@ -1,20 +1,34 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {createStore} from "solid-js/store"
+import type {
+	AnyChildURL,
+	AnyParentURL,
+	ChildConceptParentMap,
+	ChildToValidParentTypes,
+	ConceptURLMap,
+} from "../concepts.ts"
 
-export type ParentType = "home" | "inbox" | "area" | "project" | "heading"
+import debug from "debug"
+const log = debug("nextaction:parent-registry")
 
 const [parentRegistry, updateParentRegistry] = createStore<
-	Record<AutomergeUrl, AutomergeUrl>
+	Record<AnyChildURL, AnyParentURL>
 >({})
 
-export function registerParent(url: AutomergeUrl, parent: AutomergeUrl) {
-	updateParentRegistry(url, parent)
+export function registerParent<C extends keyof ChildConceptParentMap>(
+	child: ConceptURLMap[C] | undefined,
+	parent: ConceptURLMap[ChildConceptParentMap[C]] | undefined
+) {
+	if (child && parent) updateParentRegistry(child, parent)
 }
 
-export function getParentURL(url: AutomergeUrl): AutomergeUrl {
-	return parentRegistry[url]
+export function getParentURL<C extends keyof ChildToValidParentTypes>(
+	url: ConceptURLMap[C]
+): ConceptURLMap[ChildToValidParentTypes[C]] {
+	const parent = parentRegistry[url as AnyChildURL]
+	if (!url || !parent) {
+		log("no parent found for", url)
+	}
+	return parent as ConceptURLMap[ChildToValidParentTypes[C]]
 }
 
 export {parentRegistry, updateParentRegistry}
-
-export type ParentRegistry = typeof parentRegistry

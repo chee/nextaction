@@ -5,6 +5,7 @@ import {type HomeURL, newHome} from "@/domain/home.ts"
 import repo, {curl} from "@/infra/sync/automerge-repo.ts"
 import {newInbox} from "@/domain/inbox.ts"
 import {useHome} from "@/viewmodel/home.ts"
+import {createContext} from "solid-js"
 
 export function useUser() {
 	const [userId] = useUserId()
@@ -50,4 +51,13 @@ export function createFirstTimeUser(name: string) {
 		})
 	)
 	setUserId(url)
+}
+
+export const UserContext = createContext<UserViewModel>()
+export const useUserContext = () => {
+	const context = UserContext
+	if (!context) {
+		throw new Error("useUserContext must be used within a UserProvider")
+	}
+	return context
 }

@@ -1,23 +1,22 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {ConceptName, ConceptURLMap} from "@/concepts.ts"
 import {createStore} from "solid-js/store"
 
-export type ItemType =
-	| "home"
-	| "inbox"
-	| "area"
-	| "project"
-	| "heading"
-	| "action"
-
-const [typeRegistry, updateTypeRegistry] = createStore<
-	Record<AutomergeUrl, ItemType>
->({})
-
-export function registerType(url: AutomergeUrl, type: ItemType) {
-	updateTypeRegistry(url, type)
+export type ConceptRegistry = {
+	[K in ConceptName as ConceptURLMap[K]]: K
 }
 
-export function getType(url: AutomergeUrl): ItemType {
+const [typeRegistry, updateTypeRegistry] = createStore<ConceptRegistry>({})
+
+export function registerType<T extends keyof ConceptRegistry>(
+	url: T | undefined,
+	type: ConceptRegistry[T]
+) {
+	if (url) updateTypeRegistry(url, type)
+}
+
+export function getType<T extends keyof ConceptRegistry>(
+	url: T
+): ConceptRegistry[T] {
 	return typeRegistry[url]
 }
 
