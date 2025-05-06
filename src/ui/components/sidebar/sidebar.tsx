@@ -2,7 +2,6 @@ import "./sidebar.css"
 import {A, type AnchorProps} from "@solidjs/router"
 import {For, splitProps, Suspense} from "solid-js"
 import type {JSX} from "solid-js"
-import {getOwner} from "solid-js"
 import {useHomeContext} from "@/viewmodel/home.ts"
 import {
 	createDropTarget,
@@ -15,26 +14,19 @@ import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
 import {encodeJSON} from "@/infra/lib/compress.ts"
 import {toast} from "../base/toast.tsx"
-import {useDoableMixin} from "../../../viewmodel/mixins/doable.ts"
-import {getParentURL} from "../../../infra/parent-registry.ts"
-import {getType} from "../../../infra/type-registry.ts"
-import {
-	isAction,
-	type ActionRef,
-	type ActionURL,
-} from "../../../domain/action.ts"
-import {createSimpleDraggable} from "../../../infra/dnd/dnd-context.ts"
-import {useViewModel} from "../../../viewmodel/useviewmodel.ts"
-import type {ActionViewModel} from "../../../viewmodel/action.ts"
-import type {HeadingViewModel} from "../../../viewmodel/heading.ts"
+import {useDoableMixin} from "@/viewmodel/mixins/doable.ts"
+import {getParentURL} from "@/infra/parent-registry.ts"
+import {getType} from "@/infra/type-registry.ts"
+import {isAction, type ActionRef, type ActionURL} from "@/domain/action.ts"
+import {createSimpleDraggable} from "@/infra/dnd/dnd-context.ts"
+import {useViewModel} from "@/viewmodel/useviewmodel.ts"
 import DevelopmentNote from "../development-note.tsx"
-import {isHeading} from "../../../domain/heading.ts"
-import {useMovements} from "../../../viewmodel/movements.ts"
+import {isHeading} from "@/domain/heading.ts"
+import {useMovements} from "@/viewmodel/movements.ts"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
 export default function Sidebar() {
-	const owner = getOwner()
 	const home = useHomeContext()
 
 	return (
@@ -58,6 +50,7 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
+									// @ts-expect-error sidebar
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
@@ -82,6 +75,7 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
+									// @ts-expect-error you know
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
@@ -106,6 +100,8 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
+									// @ts-expect-error this expect-error will be an
+									// error itself soon
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
@@ -130,6 +126,7 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
+									// @ts-expect-error fix this
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
@@ -156,7 +153,7 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
-									const parent = getParentURL(item.url)
+									const parent = getParentURL(item.url as ActionURL)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
@@ -184,7 +181,7 @@ export default function Sidebar() {
 							},
 							drop(payload) {
 								for (const item of payload.items) {
-									const parent = getParentURL(item.url)
+									const parent = getParentURL(item.url as ActionURL)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
@@ -305,7 +302,7 @@ function SidebarProject(props: {project: ProjectViewModel}) {
 									if (!source?.items) return
 
 									for (const item of source.items) {
-										movements.reparent(item.url, props.project.url)
+										movements.reparent(item.url as ActionURL, props.project.url)
 									}
 								},
 							})

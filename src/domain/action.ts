@@ -36,5 +36,5 @@ export function isAction(action: unknown): action is Action {
 }
 
 export function isActionRef(ref: unknown): ref is ActionRef {
-	return (ref as ActionRef).ref && (ref as ActionRef).type === "action"
+	return (ref as ActionRef).type === "action"
 }

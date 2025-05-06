@@ -55,5 +55,6 @@ export function useRecentlyRemoved<T extends AutomergeUrl = AutomergeUrl>(
 		fn()
 		hold(url)
 	}
+	// eslint-disable-next-line solid/reactivity
 	return [(url: T) => recentlyRemoved().includes(url), runAndHold] as const
 }

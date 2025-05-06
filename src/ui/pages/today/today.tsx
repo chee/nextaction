@@ -1,11 +1,11 @@
 // import Bar, {BarMenu, BarNewAction} from "@/ui/components/bar/bar.tsx"
-import {moveBetweenParents, useHome, useHomeContext} from "@/viewmodel/home.ts"
+import {useHomeContext} from "@/viewmodel/home.ts"
 import {
 	isClosed,
 	isToday,
 	parseIncomingWhen as magicWhen,
 } from "@/domain/generic/doable.ts"
-import {createRoot, createSignal, For, Match} from "solid-js"
+import {For, Match} from "solid-js"
 import {Switch} from "solid-js"
 import {isActionViewModel, type ActionViewModel} from "@/viewmodel/action.ts"
 import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
@@ -42,8 +42,8 @@ import {getParentURL} from "@/infra/parent-registry.ts"
 import {getType} from "@/infra/type-registry.ts"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
 import {onCleanup} from "solid-js"
-import type {ReferencePointer} from "@/domain/reference.ts"
 import DevelopmentNote from "../../components/development-note.tsx"
+import type {AreaURL} from "../../../domain/area.ts"
 
 export default function Today() {
 	const home = useHomeContext()
@@ -99,31 +99,31 @@ export default function Today() {
 					const clean = dropTargetForElements({
 						element,
 						onDrop(payload) {
-							const input = getInput(payload)
+							// const input = getInput(payload)
 							const dragged = getDraggedPayload(payload)
 							if (!dragged) return
 
-							const includesHeading = dragged.items.some(
-								i => i.type == "heading"
-							)
+							// const includesHeading = dragged.items.some(
+							// 	i => i.type == "heading"
+							// )
 
-							const {isAbove, dropTargetURL} = getDropTargetIndex({
-								element: element,
-								input,
-								items: todayURLs,
-								dragged,
-								isValidDropTarget: isValidDropTarget,
-							})
+							// const {isAbove, dropTargetURL} = getDropTargetIndex({
+							// 	element: element,
+							// 	input,
+							// 	items: todayURLs,
+							// 	dragged,
+							// 	isValidDropTarget: isValidDropTarget,
+							// })
 
-							const dropTargetType = getType(dropTargetURL) as
-								| "action"
-								| "project"
+							// const dropTargetType = getType(dropTargetURL) as
+							// | "action"
+							// | "project"
 
-							const dropTargetRef: ReferencePointer<"project" | "action"> = {
-								type: dropTargetType,
-								url: dropTargetURL,
-								above: isAbove,
-							}
+							// const dropTargetRef: ReferencePointer<"project" | "action"> = {
+							// type: dropTargetType,
+							// url: dropTargetURL,
+							// above: isAbove,
+							// }
 							// createRoot(() => {
 							// 	for (const [parentURL, groupedItems] of Object.entries(
 							// 		Object.groupBy(dragged.items, key => getParentURL(key.url))
@@ -318,7 +318,9 @@ function isValidDropTarget(
 	dragged: DraggableContract
 ) {
 	if (dragged.items.some(i => i.type == "project")) {
-		const dropParent = getParentURL(potentialDropTarget.url)
+		const dropParent = getParentURL(
+			potentialDropTarget.url as ProjectURL | ActionURL | AreaURL
+		)
 		const dropParentType = getType(dropParent)
 		if (dropParentType == "project") {
 			return false

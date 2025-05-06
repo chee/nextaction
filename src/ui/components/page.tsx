@@ -1,6 +1,5 @@
 import "../layouts/chrome.css"
 
-import Bar, {BarNewAction} from "@/ui/components/bar/bar.tsx"
 import {clsx} from "@nberlette/clsx"
 import type {JSX} from "solid-js"
 
@@ -11,9 +10,9 @@ export default function Page(props: {
 }) {
 	return (
 		<div class={clsx(props.name, "page-container")}>
-			<Bar>
+			{/* <Bar>
 				<BarNewAction />
-			</Bar>
+			</Bar> */}
 			<div class="page">
 				<h1 class="page-title">{props.title}</h1>
 				<main class="page-content">{props.children}</main>

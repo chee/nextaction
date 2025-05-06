@@ -1,7 +1,7 @@
 import {For, Switch, Match, Show, createMemo, mapArray} from "solid-js"
 import {isAction, type ActionURL} from "../../../domain/action.ts"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome, useHomeContext} from "../../../viewmodel/home.ts"
+import {useHomeContext} from "../../../viewmodel/home.ts"
 import {
 	useExpander,
 	useRecentlyRemoved,

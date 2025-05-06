@@ -32,5 +32,5 @@ export function isProject(project: unknown): project is Project {
 }
 
 export function isProjectRef(ref: unknown): ref is ProjectRef {
-	return (ref as ProjectRef).ref && (ref as ProjectRef).type === "project"
+	return (ref as ProjectRef).type === "project"
 }

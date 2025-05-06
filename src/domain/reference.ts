@@ -1,5 +1,4 @@
-import type {AnyRef, ConceptURLMap, TypeFromURL} from "../concepts.ts"
-import {getType} from "../infra/type-registry.ts"
+import type {AnyRef, ConceptURLMap} from "../concepts.ts"
 
 export type Reference<T extends keyof ConceptURLMap> = {
 	type: T
@@ -38,15 +37,7 @@ export function refer<T extends keyof ConceptURLMap>(
 ): Reference<T> {
 	return {type, url} as const
 }
-function referURL<U extends ConceptURLMap[keyof ConceptURLMap]>(
-	url: U
-): Reference<TypeFromURL<U>> {
-	const ref = {
-		type: getType(url) as TypeFromURL<U>,
-		url,
-	} satisfies Reference<TypeFromURL<U>>
-	return ref
-}
+
 function array<T>(item: T | T[]): T[] {
 	if (Array.isArray(item)) return item
 	return [item]
@@ -59,7 +50,7 @@ export function addReference<T extends AnyRef>(
 	index?: number | ReferencePointer<T["type"]>
 ) {
 	for (const url of array(urls)) {
-		const ref = refer(type, url)
+		const ref = refer(type, url as ConceptURLMap[typeof type])
 		addReferenceByRef(list, ref as T, index)
 	}
 }
@@ -97,7 +88,7 @@ export function removeReference<T extends AnyRef>(
 	urls: T["url"] | T["url"][]
 ) {
 	for (const url of array(urls)) {
-		const ref = refer(type, url)
+		const ref = refer(type, url as ConceptURLMap[typeof type])
 		removeReferenceByRef(list, ref as T)
 	}
 }
@@ -122,7 +113,7 @@ export function moveReference<T extends AnyRef>(
 	targetIndex: number
 ) {
 	const toInsert = array(urls)
-		.map(url => refer(type, url))
+		.map(url => refer(type, url as ConceptURLMap[typeof type]))
 		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
@@ -148,7 +139,7 @@ export function moveReferenceAfter<T extends AnyRef>(
 	offset = 1
 ) {
 	const newItems = array(urls)
-		.map(url => refer(type, url))
+		.map(url => refer(type, url as ConceptURLMap[typeof type]))
 		.filter(ref => includesReference(list, ref as T))
 		.sort(
 			(left, right) =>
@@ -164,7 +155,10 @@ export function moveReferenceAfter<T extends AnyRef>(
 		}
 	})
 
-	const targetRef = typeof target === "string" ? refer(type, target) : target
+	const targetRef =
+		typeof target === "string"
+			? refer(type, target as ConceptURLMap[typeof type])
+			: target
 	const index = indexOfReference(list, targetRef as T) + offset
 
 	if (index > list.length) {

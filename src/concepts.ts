@@ -11,6 +11,14 @@ import type {HeadingViewModel} from "./viewmodel/heading.ts"
 import type {HomeViewModel, InboxViewModel} from "./viewmodel/home.ts"
 import type {ProjectViewModel} from "./viewmodel/project.ts"
 
+export type ConceptName =
+	| "home"
+	| "inbox"
+	| "area"
+	| "project"
+	| "heading"
+	| "action"
+
 export type ConceptURLMap = {
 	home: HomeURL
 	inbox: InboxURL
@@ -19,8 +27,6 @@ export type ConceptURLMap = {
 	heading: HeadingURL
 	action: ActionURL
 }
-
-export type ConceptName = keyof ConceptURLMap
 
 export type ConceptModelMap = {
 	home: Home
@@ -49,32 +55,37 @@ export type ConceptReferenceMap = {
 	action: Reference<"action">
 }
 
-export type ParentConceptChildrenMap = {
-	home: ["area", "project", "heading", "action"]
-	inbox: ["action"]
-	area: ["project", "action"]
-	project: ["heading", "action"]
-	heading: ["action"]
-	action: []
+export const ParentConceptChildrenMap = {
+	home: ["area", "project", "heading", "action"] as const,
+	inbox: ["action"] as const,
+	area: ["project", "action"] as const,
+	project: ["heading", "action"] as const,
+	heading: ["action"] as const,
+	action: [] as const,
 }
+export type ParentConceptChildrenMap = typeof ParentConceptChildrenMap
 
-export type ChildConceptParentMap = {
-	area: "home"
-	project: "home" | "area"
-	heading: "home" | "area" | "project"
-	action: "home" | "inbox" | "area" | "project" | "heading"
+export const ChildConceptParentMap = {
+	area: ["home"] as const,
+	project: ["home", "area"] as const,
+	heading: ["home", "area", "project"] as const,
+	action: ["home", "inbox", "area", "project", "heading"] as const,
 }
+export type ChildConceptParentMap = typeof ChildConceptParentMap
 
-// export type TypeFromURL<U> = {
-// 	[K in keyof ConceptURLMap]: U extends ConceptURLMap[K] ? K : never
-// }[keyof ConceptURLMap]
-
-export type TypeFromURL<U> = Extract<
-	{
-		[K in keyof ConceptURLMap]: U extends ConceptURLMap[K] ? K : never
-	}[keyof ConceptURLMap],
-	ConceptName
->
+export type TypeFromURL<U> = U extends HomeURL
+	? "home"
+	: U extends InboxURL
+	? "inbox"
+	: U extends AreaURL
+	? "area"
+	: U extends ProjectURL
+	? "project"
+	: U extends HeadingURL
+	? "heading"
+	: U extends ActionURL
+	? "action"
+	: never
 export type AnyRef = ConceptReferenceMap[keyof ConceptReferenceMap]
 export type AnyConceptURL = ConceptURLMap[keyof ConceptURLMap]
 export type AnyConceptModel = ConceptModelMap[keyof ConceptModelMap]

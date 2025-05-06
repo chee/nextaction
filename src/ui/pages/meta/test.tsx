@@ -4,17 +4,13 @@ import type {AutomergeUrl} from "@automerge/automerge-repo"
 import "@/viewmodel/home.ts"
 import {RepoContext} from "solid-automerge"
 import {For} from "solid-js"
-import type {AreaViewModel} from "@/viewmodel/area.ts"
-import type {ActionViewModel} from "@/viewmodel/action.ts"
-import type {ProjectViewModel} from "@/viewmodel/project.ts"
-import type {HeadingViewModel} from "@/viewmodel/heading.ts"
 import {useHome} from "../../../viewmodel/home.ts"
 import {Suspense} from "solid-js"
 
 export default function Test() {
 	const location = useLocation()
 
-	const doc = createAsync(() =>
+	const _doc = createAsync(() =>
 		repo.find(location.query.url as AutomergeUrl).then(handle => handle.doc())
 	)
 
@@ -41,34 +37,34 @@ function Component() {
 	)
 }
 
-function Child(props: {
-	items: (
-		| AreaViewModel
-		| ActionViewModel
-		| ProjectViewModel
-		| HeadingViewModel
-	)[]
-}) {
-	return (
-		<div style={{"padding-left": "1em", "border-left": "2px solid cyan"}}>
-			<For each={props.items}>
-				{item => {
-					const desc = (
-						<div>
-							{item.type} {item.title}
-						</div>
-					)
-					if ("items" in item) {
-						return (
-							<>
-								{desc}
-								<Child items={item.items} />
-							</>
-						)
-					}
-					return <>{desc}</>
-				}}
-			</For>
-		</div>
-	)
-}
+// function Child(props: {
+// 	items: (
+// 		| AreaViewModel
+// 		| ActionViewModel
+// 		| ProjectViewModel
+// 		| HeadingViewModel
+// 	)[]
+// }) {
+// 	return (
+// 		<div style={{"padding-left": "1em", "border-left": "2px solid cyan"}}>
+// 			<For each={props.items}>
+// 				{item => {
+// 					const desc = (
+// 						<div>
+// 							{item.type} {item.title}
+// 						</div>
+// 					)
+// 					if ("items" in item) {
+// 						return (
+// 							<>
+// 								{desc}
+// 								<Child items={item.items} />
+// 							</>
+// 						)
+// 					}
+// 					return <>{desc}</>
+// 				}}
+// 			</For>
+// 		</div>
+// 	)
+// }

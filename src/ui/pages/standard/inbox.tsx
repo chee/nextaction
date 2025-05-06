@@ -6,7 +6,7 @@ import {
 	createSelectionContext,
 	type SelectionContext,
 } from "@/infra/hooks/selection-context.ts"
-import {useHome, useHomeContext} from "@/viewmodel/home.ts"
+import {useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {isClosed} from "@/domain/generic/doable.ts"
 import {useAction, type ActionViewModel} from "@/viewmodel/action.ts"
@@ -90,9 +90,17 @@ export default function Inbox() {
 							const urls = dragged.items.map(i => i.url)
 
 							if (isAbove) {
-								home.inbox.moveItemBefore("action", urls, dropTargetURL)
+								home.inbox.moveItemBefore(
+									"action",
+									urls as ActionURL[],
+									dropTargetURL
+								)
 							} else {
-								home.inbox.moveItemAfter("action", urls, dropTargetURL)
+								home.inbox.moveItemAfter(
+									"action",
+									urls as ActionURL[],
+									dropTargetURL
+								)
 							}
 						},
 						onDrag(payload) {

@@ -1,7 +1,7 @@
 // import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import ActionList from "@/ui/components/actions/action-list.tsx"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome, useHomeContext} from "@/viewmodel/home.ts"
+import {useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {isProject, type ProjectURL} from "@/domain/project.ts"
 import {isAction, type ActionURL} from "@/domain/action.ts"
@@ -19,7 +19,6 @@ import {TodayProject} from "../today/today-project.tsx"
 import {isAreaViewModel, type AreaViewModel} from "@/viewmodel/area.ts"
 import {
 	createDragAndDropContext,
-	DragAndDropContext,
 	DragAndDropProvider,
 } from "../../../infra/dnd/dnd-context.ts"
 import DevelopmentNote from "../../components/development-note.tsx"

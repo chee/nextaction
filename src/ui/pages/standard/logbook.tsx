@@ -1,7 +1,7 @@
 import "./logbook.css"
 // import Bar, {BarMenu, BarNewAction} from "../components/bar/bar.tsx"
 import {useSelectionHotkeys} from "./inbox.tsx"
-import {useHome, useHomeContext} from "@/viewmodel/home.ts"
+import {useHomeContext} from "@/viewmodel/home.ts"
 import {useExpander, useRecentlyRemoved} from "@/viewmodel/helpers/page.ts"
 import {type ProjectURL} from "@/domain/project.ts"
 import {type ActionURL} from "@/domain/action.ts"
@@ -9,7 +9,6 @@ import {isClosed, isDoable} from "@/domain/generic/doable.ts"
 import {isActionViewModel, type ActionViewModel} from "@/viewmodel/action.ts"
 import {isProjectViewModel, type ProjectViewModel} from "@/viewmodel/project.ts"
 import {createMemo, For, Switch, Match} from "solid-js"
-import flattenTree from "@/infra/lib/flattenTree.ts"
 import {
 	createSelectionContext,
 	getSelectionProps,

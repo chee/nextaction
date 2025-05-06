@@ -4,7 +4,6 @@ import {useNavigate} from "@solidjs/router"
 import {Show} from "solid-js"
 import {isClosed, isToday} from "@/domain/generic/doable.ts"
 import bemby, {type BembyModifiers, type BembyModifier} from "bemby"
-import {isActionViewModel} from "@/viewmodel/action.ts"
 import type {ProjectViewModel} from "@/viewmodel/project.ts"
 import NotesIcon from "@/ui/icons/notes.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
@@ -35,7 +34,7 @@ export function ProjectItem(
 				)
 			)}
 			ref={element => {
-				dnd.createDraggableListItem(element, props.url)
+				dnd.createDraggableListItem(element, () => props.url)
 			}}
 			role="listitem"
 			aria-current={props.selected}

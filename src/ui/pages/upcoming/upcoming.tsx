@@ -1,11 +1,7 @@
-import {mapArray} from "solid-js"
-import {isClosed, type Doable} from "../../../domain/generic/doable.ts"
+import {isClosed} from "../../../domain/generic/doable.ts"
 import type {ActionViewModel} from "../../../viewmodel/action.ts"
-import {
-	useExpander,
-	useRecentlyRemoved,
-} from "../../../viewmodel/helpers/page.ts"
-import {useHome, useHomeContext} from "../../../viewmodel/home.ts"
+import {useRecentlyRemoved} from "../../../viewmodel/helpers/page.ts"
+import {useHomeContext} from "../../../viewmodel/home.ts"
 import type {ProjectViewModel} from "../../../viewmodel/project.ts"
 import flattenTree from "../../../infra/lib/flattenTree.ts"
 import type {AnyDoableViewModel} from "../../../viewmodel/mixins/doable.ts"
@@ -17,7 +13,6 @@ import {
 	createDragAndDropContext,
 	DragAndDropProvider,
 } from "../../../infra/dnd/dnd-context.ts"
-import {createMemo} from "solid-js"
 import {createDateNow} from "@solid-primitives/date"
 
 /*
@@ -29,7 +24,7 @@ import {createDateNow} from "@solid-primitives/date"
 */
 
 export default function Upcoming() {
-	const [now] = createDateNow(60 * 1000)
+	const [_now] = createDateNow(60 * 1000)
 
 	const home = useHomeContext()
 	const [wasRecentlyClosed, recentlyClose] = useRecentlyRemoved()
@@ -41,6 +36,7 @@ export default function Upcoming() {
 
 	const selectableItemURLs = () =>
 		flattenTree(home.list.items)
+			// @ts-expect-error fix this some time
 			.filter(selectableItemFilter)
 			.map(u => u.url) as SelectableItemURL[]
 
@@ -48,14 +44,14 @@ export default function Upcoming() {
 		selectableItemURLs()
 	)
 
-	const toggleCompleted = (
+	const _toggleCompleted = (
 		item: ActionViewModel | ProjectViewModel,
 		force?: boolean
 	) => {
 		recentlyClose(() => item.toggleCompleted(force), item.url)
 	}
 
-	const toggleCanceled = (
+	const _toggleCanceled = (
 		item: ActionViewModel | ProjectViewModel,
 		force?: boolean
 	) => {
@@ -67,7 +63,7 @@ export default function Upcoming() {
 		selectableItemURLs,
 	})
 
-	const expander = useExpander<SelectableItemURL>(selection)
+	// const expander = useExpander<SelectableItemURL>(selection)
 
 	// useCompleteHotkeys({
 	// 	actions: () => home.upcoming.items.filter(selectableItemsFilter),
@@ -81,7 +77,7 @@ export default function Upcoming() {
 	return (
 		<DragAndDropProvider value={dnd}>
 			<div
-				ref={element => {
+				ref={_element => {
 					// dnd.createDraggableList(element)
 				}}
 				class="upcoming page-container page-container--built-in">

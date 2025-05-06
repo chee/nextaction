@@ -10,7 +10,6 @@ import type {ProjectViewModel} from "@/viewmodel/project.ts"
 import ActionList from "../actions/action-list.tsx"
 import {useProjectProgress} from "./use-project-progress.ts"
 import flattenTree from "@/infra/lib/flattenTree.ts"
-import Project from "../../pages/userland/project/project.tsx"
 
 export function GroupedProject(props: {
 	project: ProjectViewModel
