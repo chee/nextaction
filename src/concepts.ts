@@ -1,16 +1,15 @@
-import type {ActionURL, Action} from "::domain/action.ts"
-import type {Area, AreaURL} from "::domain/area.ts"
-import type {HeadingURL, Heading} from "::domain/heading.ts"
-import type {Home, HomeURL} from "::domain/home.ts"
-import type {Inbox, InboxURL} from "::domain/inbox.ts"
-import type {ProjectURL, Project} from "::domain/project.ts"
-import type {Reference} from "::domain/reference.ts"
-import type {ActionViewModel} from "::viewmodel/action.ts"
-import type {AreaViewModel} from "::viewmodel/area.ts"
-import type {HeadingViewModel} from "::viewmodel/heading.ts"
-import type {HomeViewModel, InboxViewModel} from "::viewmodel/home.ts"
-import type {ProjectViewModel} from "::viewmodel/project.ts"
-import {X} from "../output/assets/index-DX-pBdC7.js"
+import type {ActionShape, ActionURL} from "::shapes/action.ts"
+import type {AreaShape, AreaURL} from "::shapes/area.ts"
+import type {HeadingShape, HeadingURL} from "::shapes/heading.ts"
+import type {HomeShape, HomeURL} from "::shapes/home.ts"
+import type {InboxShape, InboxURL} from "::shapes/inbox.ts"
+import type {ProjectShape, ProjectURL} from "::shapes/project.ts"
+import type {Reference} from "::shapes/reference.ts"
+import type {Action} from "::domain/entities/useAction.ts"
+import type {Area} from "::domain/entities/useArea.ts"
+import type {Heading} from "::domain/entities/useHeading.ts"
+import type {Home, Inbox} from "::domain/entities/useHome.ts"
+import type {Project} from "::domain/entities/useProject.ts"
 
 export type ConceptName =
 	| "home"
@@ -43,22 +42,23 @@ export type ConceptURLFromType<U> = U extends "home"
 	? ActionURL
 	: never
 
-export type ConceptModelMap = {
-	home: Home
+export type ConceptShapeMap = {
+	home: HomeShape
+	inbox: InboxShape
+	area: AreaShape
+	project: ProjectShape
+	heading: HeadingShape
+	action: ActionShape
+}
+
+export type ConceptEntityMap = {
+	// todo
+	home: Home["list"]
 	inbox: Inbox
 	area: Area
 	project: Project
 	heading: Heading
 	action: Action
-}
-
-export type ConceptViewModelMap = {
-	home: HomeViewModel["list"]
-	inbox: InboxViewModel
-	area: AreaViewModel
-	project: ProjectViewModel
-	heading: HeadingViewModel
-	action: ActionViewModel
 }
 
 export type ConceptReferenceMap = {
@@ -113,23 +113,23 @@ export type TypeFromURL<U> = U extends HomeURL
 	: never
 export type AnyRef = ConceptReferenceMap[keyof ConceptReferenceMap]
 export type AnyConceptURL = ConceptURLMap[keyof ConceptURLMap]
-export type AnyConceptModel = ConceptModelMap[keyof ConceptModelMap]
-export type AnyConceptViewModel = ConceptViewModelMap[keyof ConceptViewModelMap]
+export type AnyConceptModel = ConceptShapeMap[keyof ConceptShapeMap]
+export type AnyConcept = ConceptEntityMap[keyof ConceptEntityMap]
 
 export type AnyParentType = "home" | "inbox" | "area" | "project" | "heading"
 export type AnyParentURL = ConceptURLMap[AnyParentType]
-export type AnyParentModel = ConceptModelMap[AnyParentType]
-export type AnyParentViewModel = ConceptViewModelMap[AnyParentType]
+export type AnyParentModel = ConceptShapeMap[AnyParentType]
+export type AnyParent = ConceptEntityMap[AnyParentType]
 export type AnyParentRef = ConceptReferenceMap[AnyParentType]
 export type AnyChildType = "area" | "project" | "heading" | "action"
 export type AnyChildURL = ConceptURLMap[AnyChildType]
-export type AnyChildModel = ConceptModelMap[AnyChildType]
-export type AnyChildViewModel = ConceptViewModelMap[AnyChildType]
+export type AnyChildModel = ConceptShapeMap[AnyChildType]
+export type AnyChild = ConceptEntityMap[AnyChildType]
 export type AnyChildRef = ConceptReferenceMap[AnyChildType]
 export type AnyDoableType = "action" | "project"
 export type AnyDoableURL = ConceptURLMap[AnyDoableType]
-export type AnyDoableModel = ConceptModelMap[AnyDoableType]
-export type AnyDoableViewModel = ConceptViewModelMap[AnyDoableType]
+export type AnyDoableModel = ConceptShapeMap[AnyDoableType]
+export type AnyDoable = ConceptEntityMap[AnyDoableType]
 export type AnyDoableRef = ConceptReferenceMap[AnyDoableType]
 
 export type ChildTypesFor<T extends keyof ParentConceptChildrenMap> =
@@ -140,8 +140,8 @@ export type ChildURLsFor<T extends keyof ParentConceptChildrenMap> =
 
 export type ChildRefsFor<T extends keyof ParentConceptChildrenMap> =
 	ConceptReferenceMap[ChildTypesFor<T>]
-export type ChildViewModelsFor<T extends keyof ParentConceptChildrenMap> =
-	ConceptViewModelMap[ChildTypesFor<T>]
+export type ChildEntitiesFor<T extends keyof ParentConceptChildrenMap> =
+	ConceptEntityMap[ChildTypesFor<T>]
 
 export type FlatChildTypesFor<T extends keyof FlatChildrenMap> =
 	FlatChildrenMap[T][number]
@@ -149,12 +149,12 @@ export type FlatChildURLsFor<T extends keyof FlatChildrenMap> =
 	ConceptURLMap[FlatChildTypesFor<T>]
 export type FlatChildRefsFor<T extends keyof FlatChildrenMap> =
 	ConceptReferenceMap[FlatChildTypesFor<T>]
-export type FlatChildViewModelsFor<T extends keyof FlatChildrenMap> =
-	ConceptViewModelMap[FlatChildTypesFor<T>]
+export type FlatChildEntitiesFor<T extends keyof FlatChildrenMap> =
+	ConceptEntityMap[FlatChildTypesFor<T>]
 
-export type ViewModelsOfChildren<U> =
+export type EntitiesOfChildren<U> =
 	TypeFromURL<U> extends keyof ParentConceptChildrenMap
-		? ConceptViewModelMap[ParentConceptChildrenMap[TypeFromURL<U>][number]]
+		? ConceptEntityMap[ParentConceptChildrenMap[TypeFromURL<U>][number]]
 		: never
 
 export type RefsOfChildren<U> =

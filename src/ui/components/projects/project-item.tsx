@@ -2,13 +2,12 @@ import "./project-item.css"
 import {clsx} from "@nberlette/clsx"
 import {useNavigate} from "@solidjs/router"
 import {Show} from "solid-js"
-import {isClosed, isToday} from "::domain/generic/doable.ts"
 import bemby, {type BembyModifiers, type BembyModifier} from "bemby"
-import type {ProjectViewModel} from "::viewmodel/project.ts"
 import NotesIcon from "::ui/icons/notes.tsx"
-import {useProjectProgress} from "./use-project-progress.ts"
-import type {SelectableProps} from "../actions/action.tsx"
-import {useDragAndDrop} from "::infra/dnd/dnd-context.ts"
+import type {Project} from "::domain/entities/useProject.ts"
+import type {SelectableProps} from "::domain/state/useSelection.ts"
+import {useDragAndDrop} from "::domain/dnd/dnd-context.ts"
+import {isClosed, isToday} from "::shapes/mixins/doable.ts"
 
 export function ProgressPie(props: {progress: number}) {
 	return <div class="progress-pie" style={{"--progress": props.progress}} />
@@ -17,10 +16,9 @@ export function ProgressPie(props: {progress: number}) {
 export function ProjectItem(
 	props: {
 		modifiers?: BembyModifiers | BembyModifier
-	} & ProjectViewModel &
+	} & Project &
 		SelectableProps
 ) {
-	const [progress, numberOfOpenItems] = useProjectProgress(() => props.url)
 	const nav = useNavigate()
 	const dnd = useDragAndDrop()
 	return (
@@ -62,7 +60,7 @@ export function ProjectItem(
 				{/* todo debug & magic project checkbox */}
 				{/* <Checkbox {...props} /> */}
 				<span class="project-item__progress">
-					<ProgressPie progress={progress()} />
+					<ProgressPie progress={props.progress} />
 				</span>
 				<h3 id={`${props.url}-title`} class="project-item__title">
 					<span class="project-item__title-icon">{props.icon}</span>
@@ -77,8 +75,8 @@ export function ProjectItem(
 				<div class="project-item__indicators">
 					<span
 						class="project-item__count"
-						aria-label={`Number of open items: ${numberOfOpenItems()}`}>
-						{numberOfOpenItems()}
+						aria-label={`Number of open items: ${4}`}>
+						{4}
 					</span>
 					<Show when={props.notes.trim()}>
 						<NotesIcon />

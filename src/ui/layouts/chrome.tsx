@@ -10,10 +10,10 @@ import bemby from "bemby"
 import {useIsRouting} from "@solidjs/router"
 import {createEffect} from "solid-js"
 import {onMount} from "solid-js"
-import {UserContext, useUser} from "::viewmodel/user.ts"
+import {UserContext, useUser} from "::domain/entities/useUser.ts"
 import {createMediaQuery} from "@solid-primitives/media"
-import {CommandRegistryProvider} from "../commands/commands.tsx"
-import Bar from "::components/bar/bar.tsx"
+import {CommandRegistryProvider} from "::domain/commands/commands.tsx"
+import Bar from "../components/bar/bar.tsx"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
 

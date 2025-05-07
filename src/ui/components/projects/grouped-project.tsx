@@ -2,36 +2,33 @@ import "./grouped-project.css"
 import {A} from "@solidjs/router"
 import {createMemo, Show} from "solid-js"
 
-import {type ActionURL} from "::domain/action.ts"
-import type {SelectionContext} from "::infra/hooks/selection-context.ts"
-import {type ActionViewModel, isActionViewModel} from "::viewmodel/action.ts"
-import type {Expander} from "::viewmodel/helpers/page.ts"
-import type {ProjectViewModel} from "::viewmodel/project.ts"
+import {isAction, type Action} from "::domain/entities/useAction.ts"
 import ActionList from "../actions/action-list.tsx"
-import {useProjectProgress} from "./use-project-progress.ts"
-import flattenTree from "::infra/lib/flattenTree.ts"
 import {ProgressPie} from "./project-item.tsx"
+import type {Project} from "::domain/entities/useProject.ts"
+import type {Selection} from "::domain/state/useSelection.ts"
+import type {ActionURL} from "::shapes/action.ts"
+import type {Expander} from "::domain/state/useExpander.ts"
+import flattenTree from "::core/util/flattenTree.ts"
 
 export function GroupedProject(props: {
-	project: ProjectViewModel
-	selection: SelectionContext<ActionURL>
-	expander: Expander<ActionURL>
-	filter: (item: ActionViewModel) => boolean
-	toggleActionCompleted: (item: ActionViewModel, force?: boolean) => void
-	toggleActionCanceled: (item: ActionViewModel, force?: boolean) => void
+	project: Project
+	selection: Selection<ActionURL>
+	expander: Expander<"action">
+	filter: (item: Action) => boolean
+	toggleActionCompleted: (item: Action, force?: boolean) => void
+	toggleActionCanceled: (item: Action, force?: boolean) => void
 }) {
 	const actions = createMemo(() =>
-		flattenTree(props.project.items).filter(isActionViewModel)
+		flattenTree(props.project.items).filter(isAction)
 	)
-
-	const [progress] = useProjectProgress(() => props.project.url)
 
 	return (
 		<Show when={actions().filter(props.filter).length > 0}>
 			<div class="grouped-project">
 				<header class="grouped-project__header">
 					<div class="grouped-project__progress">
-						<ProgressPie progress={progress()} />
+						<ProgressPie progress={props.project.progress} />
 					</div>
 					<A
 						class="grouped-project__title"

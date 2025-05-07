@@ -1,44 +1,34 @@
 import "./action.css"
-import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
+import bemby, {
+	type BembyModifier,
+	type BembyModifiers,
+} from "../../util/bemby.ts"
 import {createSignal, Match, Show, Switch} from "solid-js"
-import {type ActionViewModel} from "::viewmodel/action.ts"
 import NotesIcon from "::ui/icons/notes.tsx"
 import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
 import TitleEditor from "::ui/components/text-editor/editors/title-editor.tsx"
 import debug from "debug"
-import {modshift} from "::infra/lib/hotkeys.ts"
-import Checkbox from "::ui/components/actions/checkbox.tsx"
-import {isToday} from "::domain/generic/doable.ts"
+import ActionCheckbox from "../checkbox/action-checkbox.tsx"
 const log = debug("nextaction:action")
 import useClickOutside from "solid-click-outside"
 import {createEffect} from "solid-js"
 import {clsx} from "@nberlette/clsx"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {useDragAndDrop} from "::infra/dnd/dnd-context.ts"
 import {Suspense} from "solid-js"
+import type {Action} from "::domain/entities/useAction.ts"
+import {useDragAndDrop} from "::domain/dnd/dnd-context.ts"
+import type {SelectableProps} from "::domain/state/useSelection.ts"
+import type {ExpandableProps} from "::domain/state/useExpander.ts"
+import {isToday} from "::shapes/mixins/doable.ts"
+import {modshift} from "::ui/util/hotkeys.ts"
 
-// todo move to generic types
-export type SelectableProps = {
-	selected: boolean
-	select(): void
-	addSelected(): void
-	addSelectedRange(): void
-	removeSelected(): void
-}
-
-export type ExpandableProps = {
-	expanded: boolean
-	expand(): void
-	collapse(): void
-}
-
-export default function Action(
+export default function ActionItem(
 	props: {
 		class?: string
 		modifiers?: BembyModifiers | BembyModifier
 	} & SelectableProps &
 		ExpandableProps &
-		ActionViewModel
+		Action
 ) {
 	const [dismissible, setDismissible] = createSignal<HTMLElement>()
 	createEffect(() => {
@@ -115,7 +105,7 @@ export default function Action(
 					<pre class="action__debug">{props.url}</pre>
 				</Show>
 				<header class="action__header">
-					<Checkbox {...props} />
+					<ActionCheckbox {...props} />
 					<time
 						class="state-changed state-changed--action"
 						dateTime={props.stateChanged?.toISOString()}>
@@ -149,6 +139,12 @@ export default function Action(
 												anchor: view.state.doc.length,
 											},
 										})
+										setTimeout(() => {
+											view.contentDOM.scrollIntoView({
+												behavior: "instant",
+												block: "center",
+											})
+										}, 4)
 									}}
 								/>
 							</Match>
@@ -172,12 +168,6 @@ export default function Action(
 								blur={() => props.collapse()}
 								doc={props.notes}
 								syncExtension={props.notesSyncExtension}
-								withView={view =>
-									view.contentDOM.scrollIntoView({
-										behavior: "smooth",
-										block: "nearest",
-									})
-								}
 							/>
 						</Show>
 					</article>

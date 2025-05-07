@@ -1,13 +1,13 @@
 import "./sidebar-footer.css"
 import {DropdownMenu} from "@kobalte/core/dropdown-menu"
 import {Button} from "@kobalte/core/button"
-import {useHomeContext} from "::viewmodel/home.ts"
+import {useHomeContext} from "::domain/entities/useHome.ts"
 import {toast} from "::ui/components/base/toast.tsx"
 import BigPlus from "::ui/icons/big-plus.tsx"
 import PreferencesIcon from "::ui/icons/preferences.tsx"
 import {useNavigate} from "@solidjs/router"
-import {encodeJSON} from "::infra/lib/compress.ts"
-import {useUserId} from "::infra/storage/user-id.ts"
+import {encodeJSON} from "::core/util/compress.ts"
+import {useUserId} from "::domain/identity/user-id.ts"
 
 export default function SidebarFooter() {
 	const home = useHomeContext()
@@ -26,7 +26,7 @@ export default function SidebarFooter() {
 					<DropdownMenu.Content class="popmenu popmenu--new-list">
 						<DropdownMenu.Item
 							class="popmenu__item"
-							onClick={() => {
+							onSelect={() => {
 								const url = home.createProject()
 								nav(`/projects/${url}`, {state: {isNewProject: true}})
 							}}>
@@ -43,8 +43,8 @@ export default function SidebarFooter() {
 						<DropdownMenu.Item
 							class="popmenu__item"
 							onClick={() => {
-								const url = home.createArea()
-								nav(`/areas/${url}`, {state: {isNewArea: true}})
+								// const url = home.createArea()
+								// nav(`/areas/${url}`, {state: {isNewArea: true}})
 							}}>
 							<div class="sidebar-footer-new-list-choice">
 								<span class="sidebar-footer-new-list-choice__title">
@@ -58,8 +58,8 @@ export default function SidebarFooter() {
 						</DropdownMenu.Item>
 						<DropdownMenu.Item
 							class="popmenu__item"
-							onClick={() => {
-								const string = window.prompt(
+							onSelect={() => {
+								const string = self.prompt(
 									"Paste the project/area link your friend sent you"
 								)
 								if (string) {

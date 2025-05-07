@@ -2,11 +2,9 @@ import "./bar.css"
 import type {JSX} from "solid-js"
 import {Button, type ButtonRootProps} from "@kobalte/core/button"
 import type {PolymorphicProps} from "@kobalte/core"
-import {DropdownMenu} from "@kobalte/core/dropdown-menu"
 import BigPlus from "::ui/icons/big-plus.tsx"
-import {useCommandRegistry} from "../../commands/commands.tsx"
-import type {BembyModifier} from "bemby"
-import bemby from "bemby"
+import {useCommandRegistry} from "::domain/commands/commands.tsx"
+import bemby, {type BembyModifier} from "bemby"
 import {Show} from "solid-js"
 
 export default function Bar(props: {modifiers?: BembyModifier}) {
