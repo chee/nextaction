@@ -18,11 +18,9 @@ export default function Chrome(props: {children?: JSX.Element; repo?: Repo}) {
 	})
 	return (
 		<RepoContext.Provider value={props.repo ?? defaultRepo}>
-			<div class="app">
-				{props.children}
-				<ToastRegion />
-				<ServiceWorker />
-			</div>
+			{props.children}
+			<ToastRegion />
+			<ServiceWorker />
 		</RepoContext.Provider>
 	)
 }

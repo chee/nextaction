@@ -59,7 +59,6 @@
 
 .action__editor {
 	/* transition: max-height 2.24s ease-in-out; */
-	overflow: hidden;
 	padding-inline: var(--action-inline-padding);
 	transition-property: padding, transform;
 	transition-duration: var(--action-trans-duration);

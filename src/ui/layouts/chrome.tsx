@@ -48,12 +48,17 @@ export default function Chrome(props: {children?: JSX.Element}) {
 	const expandSidebar = () => {
 		const context = resizableContext()
 		const preferred = preferredSidebarSize()
+		if (preferred <= 0) {
+			setPreferredSidebarSize(0.2)
+		}
 		context?.setSizes([preferred, context.sizes()[1]])
 	}
 
 	const collapseSidebar = () => {
 		const context = resizableContext()
-		setPreferredSidebarSize(currentSidebarSize() ?? 0.2)
+		setPreferredSidebarSize(currentSidebarSize() || 0.2)
+
+		context?.collapse(0)
 		context?.setSizes([0, context.sizes()[1]])
 	}
 

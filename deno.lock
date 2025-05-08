@@ -54,7 +54,9 @@
     "npm:solid-click-outside@^0.0.1": "0.0.1_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-command-palette@1": "1.0.0_fuse.js@7.1.0_solid-js@1.9.6__seroval@1.3.0_solid-transition-group@0.3.0__solid-js@1.9.6___seroval@1.3.0_tinykeys@3.0.0",
     "npm:solid-dismissible@~0.1.1": "0.1.1_solid-js@1.9.6__seroval@1.3.0",
+    "npm:solid-focus-trap@~0.1.9": "0.1.9_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-js@^1.9.6": "1.9.6_seroval@1.3.0",
+    "npm:solid-prevent-scroll@~0.1.10": "0.1.10_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-transition-group@0.3": "0.3.0_solid-js@1.9.6__seroval@1.3.0",
     "npm:sortablejs@^1.15.6": "1.15.6",
     "npm:temporal-polyfill@0.3": "0.3.0",
@@ -62,6 +64,7 @@
     "npm:ts-toolbelt@^9.6.0": "9.6.0",
     "npm:typescript-eslint@^8.32.0": "8.32.0_eslint@9.26.0_typescript@5.8.3_@typescript-eslint+parser@8.32.0__eslint@9.26.0__typescript@5.8.3",
     "npm:typescript@^5.8.3": "5.8.3",
+    "npm:vh-check@^2.0.5": "2.0.5",
     "npm:vite-plugin-pwa@1": "1.0.0_vite@6.3.5__picomatch@4.0.2_workbox-build@7.3.0__ajv@8.17.1__@babel+core@7.27.1__rollup@2.79.2_workbox-window@7.3.0_@types+node@22.12.0",
     "npm:vite-plugin-solid@^2.11.6": "2.11.6_solid-js@1.9.6__seroval@1.3.0_vite@6.3.5__picomatch@4.0.2_@babel+core@7.27.1_@types+node@22.12.0",
     "npm:vite-plugin-wasm@^3.4.1": "3.4.1_vite@6.3.5__picomatch@4.0.2_@types+node@22.12.0",
@@ -4713,6 +4716,9 @@
     "vary@1.1.2": {
       "integrity": "sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg=="
     },
+    "vh-check@2.0.5": {
+      "integrity": "sha512-vHtIYWt9uLl2P2tLlatVpMwv9+ezuJCtMNjUVIpzd5Pa/dJXN8AtqkKmVRcNSlmXyCjkCkbMQX/Vs9axmdlfgg=="
+    },
     "vite-node@3.1.3": {
       "integrity": "sha512-uHV4plJ2IxCl4u1up1FQRrqclylKAogbtBfOTwcuJ28xFi+89PZ57BRh+naIRvH70HPwxy5QHYzg1OrEaC7AbA==",
       "dependencies": [
@@ -5246,7 +5252,9 @@
       "npm:solid-click-outside@^0.0.1",
       "npm:solid-command-palette@1",
       "npm:solid-dismissible@~0.1.1",
+      "npm:solid-focus-trap@~0.1.9",
       "npm:solid-js@^1.9.6",
+      "npm:solid-prevent-scroll@~0.1.10",
       "npm:solid-transition-group@0.3",
       "npm:sortablejs@^1.15.6",
       "npm:temporal-polyfill@0.3",
@@ -5254,6 +5262,7 @@
       "npm:ts-toolbelt@^9.6.0",
       "npm:typescript-eslint@^8.32.0",
       "npm:typescript@^5.8.3",
+      "npm:vh-check@^2.0.5",
       "npm:vite-plugin-pwa@1",
       "npm:vite-plugin-solid@^2.11.6",
       "npm:vite-plugin-wasm@^3.4.1",

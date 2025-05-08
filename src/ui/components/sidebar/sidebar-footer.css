@@ -16,10 +16,11 @@
 
 .sidebar-footer {
 	min-height: var(--sidebar-footer-height);
-	overflow: hidden;
+	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
+	margin-top: auto;
 	gap: var(--space-2);
 	padding: var(--footer-padding);
 	padding-bottom: calc(var(--footer-padding) + env(safe-area-inset-bottom));

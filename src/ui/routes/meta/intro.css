@@ -3,7 +3,7 @@
 	flex-direction: column;
 	justify-content: center;
 	align-items: center;
-	height: 100vh;
+
 	padding: 1rem;
 	background: var(--sunglow);
 }
@@ -17,9 +17,7 @@
 	background: var(--card-fill);
 	border-radius: 1rem;
 	padding: var(--space-4);
-	box-shadow:
-		2px 2px 0px var(--card-line),
-		4px 4px 0px var(--card-line),
+	box-shadow: 2px 2px 0px var(--card-line), 4px 4px 0px var(--card-line),
 		-1px -1px 0px var(--card-line);
 	border: 1px solid var(--card-line);
 	text-align: center;

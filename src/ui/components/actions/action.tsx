@@ -150,7 +150,7 @@ export default function ActionItem(
 												block: "center",
 											})
 											view.focus()
-										}, 20)
+										}, 200)
 									}}
 								/>
 							</Match>

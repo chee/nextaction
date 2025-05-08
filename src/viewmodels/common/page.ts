@@ -1,6 +1,5 @@
 import type {
 	AnyParentType,
-	AnyParentURL,
 	ChildEntitiesFor,
 	FlatChildEntitiesFor,
 	FlatChildTypesFor,
@@ -15,6 +14,15 @@ import {useExpander} from "../selection/useExpander.ts"
 import {useHotkeys} from "::ui/hotkeys/useHotkeys.ts"
 import {useSelectionHotkeys} from "::ui/hotkeys/useSelectionHotkeys.ts"
 import type {ActionURL} from "::shapes/action.ts"
+import {getParentURL} from "::registries/parent-registry.ts"
+import type {HeadingURL} from "::shapes/heading.ts"
+import {useHomeContext} from "::domain/useHome.ts"
+import {useModelAfterDark} from "::domain/useModel.ts"
+import type {Heading} from "::domain/useHeading.ts"
+import type {Project} from "::domain/useProject.ts"
+import type {Area} from "::domain/useArea.ts"
+import {getType} from "::registries/type-registry.ts"
+import {useAction} from "::domain/useAction.ts"
 
 export function usePageContext<T extends AnyParentType>({
 	items,
@@ -55,7 +63,34 @@ export function usePageContext<T extends AnyParentType>({
 		isStaged,
 		stage,
 		selection,
-		expander,
+		expander: {
+			...expander,
+			// todo this doesn't belong here
+			collapse() {
+				const expanded = expander.expanded()
+				expander.collapse()
+				if (isEmptyAction(expanded)) {
+					const parentURL = getParentURL(expanded)
+					if (parentURL) {
+						const parentType = getType(parentURL)
+						if (parentType == "inbox") {
+							useHomeContext().inbox.removeItem("action", expanded)
+						} else if (parentType == "home") {
+							useHomeContext().list.removeItem("action", expanded)
+						} else {
+							const parent = useModelAfterDark(parentURL) as
+								| Heading
+								| Project
+								| Area
+
+							if (parent) {
+								parent.removeItem("action", expanded)
+							}
+						}
+					}
+				}
+			},
+		},
 		dnd,
 		selectableItems,
 		selectableItemURLs,
@@ -65,4 +100,17 @@ export function usePageContext<T extends AnyParentType>({
 			return items()
 		},
 	}
+}
+
+function isEmptyAction(
+	url: ActionURL | HeadingURL | undefined
+): url is ActionURL {
+	if (!url) return false
+	const type = getType(url)
+	if (type != "action") return false
+	const action = useAction(() => url as ActionURL)
+	if (action.title.trim() || action.when || action.notes.trim()) {
+		return false
+	}
+	return true
 }

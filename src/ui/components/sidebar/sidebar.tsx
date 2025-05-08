@@ -10,7 +10,6 @@ import {toast} from "../base/toast.tsx"
 import {createMediaQuery} from "@solid-primitives/media"
 import {useDoableMixin} from "::domain/mixins/doable.ts"
 import type {ActionRef, ActionURL} from "::shapes/action.ts"
-import DevelopmentNote from "../development-note.tsx"
 import {encodeJSON} from "::core/util/compress.ts"
 import {useModel, useModelAfterDark} from "::domain/useModel.ts"
 import type {AnyParentType, ChildURLsFor} from ":concepts:"
@@ -247,17 +246,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					)}
 				</For>
 			</div>
-			<DevelopmentNote
-				problems={[
-					// todo before spain
-					"Keyboard shortcuts have been disabled",
-					// todo before spain
-					"Upcoming does not exist",
-					"Trash does not exist",
-					"Areas do not work",
-					"There are no settings",
-				]}
-			/>
+
 			<SidebarFooter />
 		</div>
 	)

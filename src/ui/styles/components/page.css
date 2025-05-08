@@ -16,10 +16,8 @@
 	flex-direction: column;
 	gap: var(--space-3);
 	padding-block: var(--space-1);
-	height: 100%;
 	width: 100%;
 	margin-inline: auto;
-	overflow: scroll;
 	container: page / inline-size;
 }
 
@@ -28,7 +26,6 @@
 	display: flex;
 	flex-direction: column;
 	margin: auto;
-
 	padding-bottom: 1em;
 	container: page-content / inline-size;
 	padding-inline: var(--space-6);

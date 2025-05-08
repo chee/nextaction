@@ -91,5 +91,5 @@ render(
 			</Route>
 		</Router>
 	),
-	document.getElementById("app")!
+	document.body!
 )
