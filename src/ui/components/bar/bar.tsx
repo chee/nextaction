@@ -27,15 +27,19 @@ export default function Bar(props: {modifiers?: BembyModifier}) {
 		{preventDefault: () => false}
 	)
 
-	useHotkeys("ctrl+shift+n", event => {
+	useHotkeys("cmd+ctrl+n", () => {
 		commandRegistry.exe("new-action")
-	})
-	useHotkeys("backspace", () => {
-		commandRegistry.exe("delete")
 	})
 	useHotkeys("cmd+ctrl+h", () => {
 		commandRegistry.exe("new-heading")
 	})
+	useHotkeys("cmd+ctrl+p", () => {
+		commandRegistry.exe("new-project")
+	})
+	useHotkeys("backspace", () => {
+		commandRegistry.exe("delete")
+	})
+
 	useHotkeys("cmd+k", () => {
 		commandRegistry.exe("complete")
 	})
@@ -58,10 +62,7 @@ export default function Bar(props: {modifiers?: BembyModifier}) {
 					onClick={() => {
 						commandRegistry.exe("delete")
 					}}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="icon"
-						viewBox="0 0 24 24">
+					<svg class="icon" viewBox="0 0 24 24">
 						<g fill="none" stroke="currentColor" stroke-width="1.5">
 							<path
 								stroke-linecap="round"
@@ -107,13 +108,34 @@ export default function Bar(props: {modifiers?: BembyModifier}) {
 					onClick={() => {
 						commandRegistry.exe("new-heading")
 					}}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="icon"
-						viewBox="0 0 24 24">
+					<svg class="icon" viewBox="0 0 24 24">
 						<path
 							fill="currentColor"
 							d="M18 4h1V2H5v2zm3 3.5H3v-2h18zM23 9v13H1V9zm-2 2H3v9h18z"
+						/>
+					</svg>
+				</Button>
+			</Show>
+			<Show when={commandRegistry.has("new-project")}>
+				<Button
+					class="button"
+					aria-label="New Project"
+					style={{
+						rotate: "30deg",
+						"margin-left": "var(--space-1)",
+						"margin-right": "var(--space-1)",
+						padding: 0,
+						height: "1rem",
+						width: "2rem",
+						background: "pink",
+					}}
+					onClick={() => {
+						commandRegistry.exe("new-project")
+					}}>
+					<svg class="icon" viewBox="4 4 16 16">
+						<path
+							fill="currentColor"
+							d="M11 17h2v-4h4v-2h-4V7h-2v4H7v2h4zm-6 4q-.825 0-1.412-.587T3 19V5q0-.825.588-1.412T5 3h14q.825 0 1.413.588T21 5v14q0 .825-.587 1.413T19 21z"
 						/>
 					</svg>
 				</Button>

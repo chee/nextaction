@@ -103,3 +103,15 @@
 	background: black;
 	color: white;
 }
+
+.sidebar-area {
+	border-radius: 4px;
+}
+
+.sidebar-area__title {
+	font-weight: 600;
+	color: var(--text);
+	display: flex;
+	align-items: center;
+	gap: var(--space-2);
+}

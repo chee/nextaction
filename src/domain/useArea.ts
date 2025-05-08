@@ -38,6 +38,9 @@ export function useArea(url: Accessor<AreaURL>, repo = defaultRepo): Area {
 				area.deleted = true
 			})
 		},
+		get deleted() {
+			return area()?.deleted ?? false
+		},
 		toString() {
 			return dedent`\
 				# ${area()?.icon ?? ""} ${titleable.title}
@@ -70,6 +73,7 @@ export interface Area extends TitleableMixin, NotableMixin, List<"area"> {
 	icon: string
 	url: AreaURL
 	delete(): void
+	deleted: boolean
 	toString(): string
 	asReference(): Reference<"area">
 	asPointer(above?: boolean): ReferencePointer<"area">

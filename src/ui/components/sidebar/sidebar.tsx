@@ -3,7 +3,7 @@ import {A, type AnchorProps} from "@solidjs/router"
 import {For, Show, splitProps} from "solid-js"
 import type {JSX} from "solid-js"
 
-import bemby from "bemby"
+import bemby, {type BembyModifier} from "bemby"
 import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
 import {toast} from "../base/toast.tsx"
@@ -256,18 +256,23 @@ interface SidebarLinkProps extends AnchorProps {
 	icon: JSX.Element
 
 	droptarget?: DropTargetContract<AnyParentType>
+	modifiers?: BembyModifier
 }
 
 // todo move
 const isMobile = createMediaQuery("(max-width: 600px)")
 
 function Sidelink(props: SidebarLinkProps) {
-	const [sidebarProps, anchorProps] = splitProps(props, ["icon", "droptarget"])
+	const [sidebarProps, anchorProps] = splitProps(props, [
+		"icon",
+		"droptarget",
+		"modifiers",
+	])
 
 	return (
 		<Show when={sidebarProps.icon}>
 			<A
-				class="sidebar-link"
+				class={bemby("sidebar-link", sidebarProps.modifiers)}
 				onClick={event => {
 					if (isMobile()) {
 						event.target.dispatchEvent(
@@ -292,7 +297,7 @@ function Sidelink(props: SidebarLinkProps) {
 }
 
 // todo move to own file
-function SidebarProject(props: {project: Project}) {
+function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 	const home = useHomeContext()
 	const movements = useMovements()
 
@@ -300,6 +305,7 @@ function SidebarProject(props: {project: Project}) {
 		<ContextMenu>
 			<ContextMenu.Trigger>
 				<Sidelink
+					modifiers={props.modifiers}
 					ref={element => {
 						createSimpleDraggable(element, () => ({
 							type: "project",
@@ -364,8 +370,18 @@ function SidebarProject(props: {project: Project}) {
 
 function SidebarArea(props: {area: Area}) {
 	return (
-		<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
-			{props.area.title}
-		</Sidelink>
+		<div class="sidebar-area">
+			<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
+				<h3 class="sidebar-area__title">{props.area.title}</h3>
+			</Sidelink>
+			<For
+				each={
+					props.area.items.filter(
+						project => isProject(project) && !project.deleted
+					) as Project[]
+				}>
+				{project => <SidebarProject project={project} modifiers="in-area" />}
+			</For>
+		</div>
 	)
 }

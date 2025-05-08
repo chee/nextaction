@@ -6,13 +6,15 @@ import {createAction, type ActionURL} from "::shapes/action.ts"
 import type {ActionExpander, Expander} from "../selection/useExpander.ts"
 import {useModelAfterDark} from "::domain/useModel.ts"
 import {useAction, type Action} from "::domain/useAction.ts"
-import type {ProjectURL} from "::shapes/project.ts"
+import {createProject, type ProjectURL} from "::shapes/project.ts"
 import {createHeading, HeadingURL} from "::shapes/heading.ts"
 import {getType} from "::registries/type-registry.ts"
 import {referAfterDark, type ReferencePointer} from "::shapes/reference.ts"
 import {useProject, type Project} from "::domain/useProject.ts"
 import type {Heading} from "::domain/useHeading.ts"
 import {isDoable} from "::shapes/mixins/doable.ts"
+import {useArea} from "::domain/useArea.ts"
+import type {AreaURL} from "::shapes/area.ts"
 
 export function createNewActionCommand(payload: {
 	fallbackURL: AnyParentURL
@@ -57,6 +59,42 @@ export function createNewActionCommand(payload: {
 				redo() {
 					const action = useAction(() => url)
 					parent.addItemByRef(action.asReference(), index)
+				},
+			}
+		},
+	})
+}
+
+export function createNewProjectInAreaCommand(payload: {
+	areaURL: AreaURL
+	selection: SelectionContext<AnyChildURL>
+	template?: Parameters<typeof createProject>[0]
+}) {
+	return createCommand({
+		id: "new-project",
+		label: "New Project",
+		shortcut: "cmd+ctrl+p",
+		exe() {
+			const bottom = payload.selection.lastSelected()
+
+			const url = createProject(payload.template)
+
+			const area = useArea(() => payload.areaURL)
+			area.addItem(
+				"project",
+				url,
+				bottom == null ? 0 : useModelAfterDark(bottom).asReference()
+			)
+			const index = payload.selection.bottomSelectedIndex()
+
+			return {
+				undo() {
+					const project = useProject(() => url)
+					area.removeItemByRef(project.asReference())
+				},
+				redo() {
+					const project = useProject(() => url)
+					area.addItemByRef(project.asReference(), index)
 				},
 			}
 		},

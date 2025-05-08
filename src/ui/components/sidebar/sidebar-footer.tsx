@@ -8,6 +8,7 @@ import {useNavigate} from "@solidjs/router"
 import {encodeJSON} from "::core/util/compress.ts"
 import {useUserId} from "::domain/identity/user-id.ts"
 import {useHomeContext} from "::domain/useHome.ts"
+import {createArea} from "::shapes/area.ts"
 
 export default function SidebarFooter() {
 	const home = useHomeContext()
@@ -43,10 +44,9 @@ export default function SidebarFooter() {
 						<DropdownMenu.Item
 							class="popmenu__item"
 							onClick={() => {
-								// const url = home.createArea()
-								// nav(`/areas/${url}`, {state: {isNewArea: true}})
+								const url = createArea()
+								nav(`/areas/${url}`, {state: {isNewArea: true}})
 							}}>
-							{/*}
 							<div class="sidebar-footer-new-list-choice">
 								<span class="sidebar-footer-new-list-choice__title">
 									<span class="sidebar-footer-new-list-choice__icon">🗃️</span>{" "}
@@ -55,7 +55,7 @@ export default function SidebarFooter() {
 								<p class="sidebar-footer-new-list-choice__description">
 									A group of projects and actions for an area of your life
 								</p>
-							</div>*/}
+							</div>
 						</DropdownMenu.Item>
 						<DropdownMenu.Item
 							class="popmenu__item"

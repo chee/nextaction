@@ -28,13 +28,13 @@ export function createAreaShape(area?: Partial<AreaShape>): AreaShape {
 }
 
 export function createArea(
-	area: Parameters<typeof createAreaShape>[0]
+	area?: Parameters<typeof createAreaShape>[0]
 ): AreaURL {
 	return curl<AreaURL>(createAreaShape(area))
 }
 
 export function createAreaRef(
-	area: Parameters<typeof createAreaShape>[0]
+	area?: Parameters<typeof createAreaShape>[0]
 ): AreaRef {
 	return {
 		type: "area",
