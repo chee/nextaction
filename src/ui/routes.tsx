@@ -12,10 +12,7 @@ render(
 	() => (
 		<Router root={App}>
 			<Route path="/share" component={() => "not implemented"} />
-			<Route
-				path="/test"
-				component={lazy(() => import("./routes/meta/test.tsx"))}
-			/>
+
 			<Route
 				path="/"
 				component={lazy(() => import("./routes/meta/intro.tsx"))}
