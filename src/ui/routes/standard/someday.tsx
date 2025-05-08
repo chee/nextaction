@@ -129,7 +129,6 @@ export default function SomedayView() {
 						</For>
 					</main>
 				</div>
-				<DevelopmentNote problems="Drag and drop doesn't yet reörder items on the Today page" />
 			</div>
 		</DragAndDropProvider>
 	)

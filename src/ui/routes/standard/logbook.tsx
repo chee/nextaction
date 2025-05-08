@@ -89,7 +89,6 @@ export default function LogbookView() {
 						</For>
 					</main>
 				</div>
-				<DevelopmentNote problems="Drag and drop doesn't yet reörder items on the Logbook" />
 			</div>
 		</DragAndDropProvider>
 	)
