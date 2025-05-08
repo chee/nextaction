@@ -324,10 +324,10 @@ function ProjectHeading(
 								view.focus()
 								setTimeout(() => {
 									view.dom.scrollIntoView({
-										behavior: "instant",
+										behavior: "smooth",
 										block: "center",
 									})
-								}, 20)
+								}, 140)
 								createEffect(() => {
 									if (!props.expanded) {
 										view.dom.blur()

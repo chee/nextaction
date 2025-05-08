@@ -7,13 +7,13 @@
 .page-container {
 	display: flex;
 	flex-direction: column;
-	height: 100%;
 	width: 100%;
 }
 
 .page {
 	display: flex;
 	flex-direction: column;
+
 	gap: var(--space-3);
 	padding-block: var(--space-1);
 	width: 100%;
@@ -22,8 +22,8 @@
 }
 
 .page-content {
-	flex: 1;
 	display: flex;
+	justify-content: flex-start;
 	flex-direction: column;
 	margin: auto;
 	padding-bottom: 1em;

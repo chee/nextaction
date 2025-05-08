@@ -146,11 +146,11 @@ export default function ActionItem(
 										})
 										setTimeout(() => {
 											view.contentDOM.scrollIntoView({
-												behavior: "instant",
+												behavior: "smooth",
 												block: "center",
 											})
 											view.focus()
-										}, 200)
+										}, 150)
 									}}
 								/>
 							</Match>

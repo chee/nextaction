@@ -15,8 +15,7 @@
 }
 
 .sidebar-footer {
-	min-height: var(--sidebar-footer-height);
-	flex-shrink: 0;
+	height: var(--sidebar-footer-height);
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
