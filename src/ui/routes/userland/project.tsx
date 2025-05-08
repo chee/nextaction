@@ -322,7 +322,12 @@ function ProjectHeading(
 							readonly={() => !props.expanded}
 							withView={view => {
 								view.focus()
-								view.dom.scrollIntoView({behavior: "instant"})
+								setTimeout(() => {
+									view.dom.scrollIntoView({
+										behavior: "instant",
+										block: "center",
+									})
+								}, 20)
 								createEffect(() => {
 									if (!props.expanded) {
 										view.dom.blur()
