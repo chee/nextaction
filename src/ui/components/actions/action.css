@@ -7,7 +7,7 @@
 		var(--action-fill),
 		var(--action-line) 5%
 	);
-	--action-inline-padding: var(--space-3);
+
 	--action-trans-duration: 0.24s;
 }
 
@@ -15,6 +15,7 @@
 	display: flex;
 	flex-direction: column;
 	padding-block: var(--space-2);
+	padding-inline: var(--space-2);
 	min-height: 1em;
 	border-radius: 8px;
 	transition-property: min-height, max-height, height, margin, border-radius,
@@ -42,13 +43,12 @@
 	min-height: 8em;
 	background: var(--page-fill);
 	border: 1px solid var(--primary-dark);
-	border-radius: 8px;
+	border-radius: 3px;
 	box-shadow: 0 1px 2px
-		color-mix(in oklab, var(--primary-dark), transparent 80%);
-	margin-inline: -0.5rem;
-	padding: 1em;
+		color-mix(in oklab, var(--primary-dark), transparent 60%);
+	padding: 1rem;
 	margin-bottom: 2em;
-	margin-top: 1em;
+	margin-top: 1rem;
 }
 
 .action:not([aria-expanded="true"]) {

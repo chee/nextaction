@@ -21,6 +21,12 @@
 	align-items: center;
 	transition: border-color 0.1s ease-out, color 0.1s ease-out,
 		background-color 0.1s ease-out;
+	&.ghost {
+		--fill: transparent;
+		--border-color: transparent;
+		--text-color: color-mix(in oklab, var(--text), transparent 50%);
+		box-shadow: none;
+	}
 	&:hover {
 		--border-color: var(--text);
 		--text-color: var(--text);

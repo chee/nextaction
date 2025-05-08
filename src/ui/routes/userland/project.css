@@ -27,7 +27,7 @@
 	align-items: center;
 	width: 100%;
 	font-weight: 700;
-	padding-inline: var(--action-inline-padding);
+	padding-inline: var(--space-2);
 	user-select: none;
 	border-radius: 7px;
 	border: 2px solid transparent;
@@ -93,8 +93,8 @@
 }
 
 .project-heading-container {
-	margin-left: var(--space-2);
 	margin-top: var(--space-10);
+
 	--project-heading-container-line: color-mix(
 		in oklab,
 		var(--primary-dark),
@@ -108,12 +108,12 @@
 	--project-heading-radius: 7px;
 	border-radius: var(--project-heading-radius);
 	border: 1px solid var(--project-heading-container-line);
-	border-radius: 7px;
+	border-radius: 5px;
 	transition: border-color 0.2 ease-out;
 }
 
 .project-heading-container + .action {
-	margin-top: var(--space-10);
+	margin-top: var(--space-8);
 }
 
 .text-editor:has(+ .project-heading-container) + .project-heading-container {

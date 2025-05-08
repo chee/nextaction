@@ -126,14 +126,12 @@ export default function Chrome(props: {children?: JSX.Element}) {
 									})}
 									as="aside"
 									collapsible>
-									<div>
+									{/* <div>
 										<Button
 											title="hide sidebar"
 											onClick={() => collapseSidebar()}
-											class="hard button chrome__sidebar-control chrome__sidebar-control--collapse">
-											<SidebarCollapseIcon />
-										</Button>
-									</div>
+											class="chrome__sidebar-control chrome__sidebar-control--collapse"></Button>
+									</div> */}
 									<Sidebar collapse={() => collapseSidebar()} />
 								</Resizable.Panel>
 								<Resizable.Handle
@@ -157,8 +155,29 @@ export default function Chrome(props: {children?: JSX.Element}) {
 													onDragEnter={() => expandSidebar()}
 													title="show sidebar"
 													onClick={() => expandSidebar()}
-													class="button chrome__sidebar-control chrome__sidebar-control--expand">
-													<SidebarExpandIcon />
+													class="chrome__sidebar-control chrome__sidebar-control--expand">
+													<svg
+														xmlns="http://www.w3.org/2000/svg"
+														width="24"
+														height="24"
+														viewBox="0 0 24 24">
+														<path
+															fill="none"
+															stroke="currentColor"
+															stroke-dasharray="12"
+															stroke-dashoffset="12"
+															stroke-linecap="round"
+															stroke-linejoin="round"
+															stroke-width="2"
+															d="M8 12l7 -7M8 12l7 7">
+															<animate
+																fill="freeze"
+																attributeName="stroke-dashoffset"
+																dur="0.3s"
+																values="12;0"
+															/>
+														</path>
+													</svg>
 												</Button>
 											</Show>
 										</div>

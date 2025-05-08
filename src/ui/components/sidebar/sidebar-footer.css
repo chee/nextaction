@@ -15,17 +15,22 @@
 }
 
 .sidebar-footer {
-	height: var(--sidebar-footer-height);
+	min-height: var(--sidebar-footer-height);
 	overflow: hidden;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
 	gap: var(--space-2);
 	padding: var(--footer-padding);
+	padding-bottom: calc(var(--footer-padding) + env(safe-area-inset-bottom));
 	background: var(--sidebar-fill-dark);
 	color: var(--sidebar-section-line);
 	border-top: 1px solid var(--sidebar-footer-border-line);
 	margin-top: auto;
+	box-shadow: 0 -1px 1px color-mix(in oklab, var(--sidebar-footer-border-line), var(
+					--sidebar-line
+				)
+				10%);
 	&.sidebar-footer--hidden {
 		display: none;
 	}
