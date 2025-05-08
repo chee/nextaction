@@ -151,6 +151,13 @@ export default function Chrome(props: {children?: JSX.Element}) {
 											setPreferredSidebarSize(current)
 										}
 									}}
+									onDblClick={() => {
+										if (sidebarIsCollapsed()) {
+											expandSidebar()
+										} else {
+											collapseSidebar()
+										}
+									}}
 								/>
 								<Resizable.Panel class="chrome__main">
 									<header class="chrome__header">

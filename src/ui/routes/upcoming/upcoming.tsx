@@ -102,15 +102,6 @@ export default function UpcomingView() {
 		)
 	}) as () => Record<string, (Action | Project)[]>
 
-	createEffect(() => {
-		Object.entries(grouped()).map(([key, value]) => {
-			console.log(
-				key,
-				value.map(i => i.title)
-			)
-		})
-	})
-
 	return (
 		<DragAndDropProvider value={upcoming.dnd}>
 			<div

@@ -4,6 +4,7 @@ import {lazy} from "solid-js"
 import {render} from "solid-js/web"
 import {Route, Router} from "@solidjs/router"
 import App from "./layouts/app.tsx"
+import "./styles/themes/themes.ts"
 
 // todo
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Periodic_Background_Synchronization_API#browser_compatibility

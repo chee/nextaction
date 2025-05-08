@@ -4,10 +4,12 @@
 	width: 100%;
 	transition: background 0.4s;
 	position: relative;
+	background: var(--page-fill);
 }
 
 :root {
 	--sidebar-fill: var(--sunglow);
+	--sidebar-grabby-fill: var(--sidebar-divider-line);
 }
 
 .chrome__sidebar {
@@ -23,13 +25,30 @@
 	}
 	+ .chrome__handle {
 		padding: 0;
-		&::after {
+		position: relative;
+		&::before {
+			background: transparent;
 			content: "";
 			position: absolute;
-			top: -50%;
-			left: -50%;
-			width: 200%;
-			height: 200%;
+			top: 50%;
+			translate: 0 -100%;
+			left: 3px;
+			width: 10px;
+			height: 40px;
+			border-radius: 50px;
+			transition: background-color 0.2s;
+		}
+		&:hover::before {
+			background: var(--sidebar-grabby-fill);
+		}
+		&::after {
+			background: transparent;
+			content: "";
+			position: absolute;
+			top: 0;
+			left: -10px;
+			width: 20px;
+			height: 100%;
 		}
 	}
 }
@@ -66,6 +85,16 @@
 .chrome__handle {
 	border-left: 1px solid var(--sidebar-divider-line);
 	background: transparent;
+	position: relative;
+	&::after {
+		content: "";
+		display: block;
+		width: 20px;
+		left: -10px;
+		height: 100%;
+		position: absolute;
+		background: var(--sidebar-divider-line);
+	}
 }
 
 .chrome__main {
