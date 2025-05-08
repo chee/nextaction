@@ -17,8 +17,8 @@
 	padding-block: var(--space-2);
 	min-height: 1em;
 	border-radius: 8px;
-	transition-property: background, min-height, max-height, height, margin,
-		border-radius, padding, transform, opacity;
+	transition-property: min-height, max-height, height, margin, border-radius,
+		padding, transform, opacity;
 
 	transition-duration: var(--action-trans-duration);
 
@@ -162,7 +162,7 @@
 	background: var(--action-fill--mousing);
 }
 
-.page:has(.action[aria-expanded="true"]) [aria-expanded="false"] {
+.page:has(.action[aria-expanded="true"]) .action[aria-expanded="false"] {
 	opacity: 0.5;
 }
 

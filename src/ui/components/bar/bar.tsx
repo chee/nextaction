@@ -3,48 +3,60 @@ import type {JSX} from "solid-js"
 import {Button, type ButtonRootProps} from "@kobalte/core/button"
 import type {PolymorphicProps} from "@kobalte/core"
 import BigPlus from "::ui/icons/big-plus.tsx"
-import {useCommandRegistry} from "::domain/commands/commands.tsx"
 import bemby, {type BembyModifier} from "bemby"
 import {Show} from "solid-js"
-
+import {
+	redo,
+	undo,
+	useCommandRegistry,
+} from "::viewmodels/commands/commands.tsx"
+import {useHotkeys} from "../../hotkeys/useHotkeys.ts"
 export default function Bar(props: {modifiers?: BembyModifier}) {
 	const commandRegistry = useCommandRegistry()
+
+	useHotkeys(
+		"space",
+		event => {
+			if (event.target instanceof HTMLButtonElement) {
+				// don't trigger the space key if the button is focused
+				return
+			}
+			event.preventDefault()
+			commandRegistry.exe("new-action")
+		},
+		{preventDefault: () => false}
+	)
+
+	useHotkeys("ctrl+shift+n", event => {
+		commandRegistry.exe("new-action")
+	})
+	useHotkeys("backspace", () => {
+		commandRegistry.exe("delete")
+	})
+	useHotkeys("cmd+ctrl+h", () => {
+		commandRegistry.exe("new-heading")
+	})
+	useHotkeys("cmd+k", () => {
+		commandRegistry.exe("complete")
+	})
+	useHotkeys("cmd+alt+k", () => {
+		commandRegistry.exe("cancel")
+	})
+	useHotkeys("cmd+z", () => {
+		undo()
+	})
+	useHotkeys("cmd+shift+z", () => {
+		redo()
+	})
+
 	return (
 		<nav class={bemby("bar", props.modifiers)}>
-			<Show when={commandRegistry.commands["new-action"]}>
-				<Button
-					class="button"
-					aria-label="New action"
-					onClick={() => {
-						commandRegistry.exe(commandRegistry.commands["new-action"])
-					}}>
-					<BigPlus />
-				</Button>
-			</Show>
-			<Show when={commandRegistry.commands["new-heading"]}>
-				<Button
-					class="button"
-					aria-label="New Heading"
-					onClick={() => {
-						commandRegistry.exe(commandRegistry.commands["new-heading"])
-					}}>
-					<svg
-						xmlns="http://www.w3.org/2000/svg"
-						class="icon"
-						viewBox="0 0 24 24">
-						<path
-							fill="currentColor"
-							d="M18 4h1V2H5v2zm3 3.5H3v-2h18zM23 9v13H1V9zm-2 2H3v9h18z"
-						/>
-					</svg>
-				</Button>
-			</Show>
-			<Show when={commandRegistry.commands["delete"]}>
+			<Show when={commandRegistry.has("delete")}>
 				<Button
 					class="button"
 					aria-label="Delete item"
 					onClick={() => {
-						commandRegistry.exe(commandRegistry.commands["delete"])
+						commandRegistry.exe("delete")
 					}}>
 					<svg
 						xmlns="http://www.w3.org/2000/svg"
@@ -60,12 +72,12 @@ export default function Bar(props: {modifiers?: BembyModifier}) {
 					</svg>
 				</Button>
 			</Show>
-			<Show when={commandRegistry.commands["schedule"]}>
+			<Show when={commandRegistry.has("schedule")}>
 				<Button
 					class="button"
 					aria-label="schedule item"
 					onClick={() => {
-						commandRegistry.exe(commandRegistry.commands["schedule"])
+						commandRegistry.exe("schedule")
 					}}>
 					<svg viewBox="0 0 24 24" class="icon">
 						<g fill="none">
@@ -86,6 +98,35 @@ export default function Bar(props: {modifiers?: BembyModifier}) {
 							/>
 						</g>
 					</svg>
+				</Button>
+			</Show>
+			<Show when={commandRegistry.has("new-heading")}>
+				<Button
+					class="button"
+					aria-label="New Heading"
+					onClick={() => {
+						commandRegistry.exe("new-heading")
+					}}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						class="icon"
+						viewBox="0 0 24 24">
+						<path
+							fill="currentColor"
+							d="M18 4h1V2H5v2zm3 3.5H3v-2h18zM23 9v13H1V9zm-2 2H3v9h18z"
+						/>
+					</svg>
+				</Button>
+			</Show>
+			<Show when={commandRegistry.has("new-action")}>
+				<Button
+					class="button"
+					aria-label="New action"
+					aria-keyshortcuts="space"
+					onClick={() => {
+						commandRegistry.exe("new-action")
+					}}>
+					<BigPlus />
 				</Button>
 			</Show>
 		</nav>

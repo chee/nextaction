@@ -1,8 +1,5 @@
 import "./action.css"
-import bemby, {
-	type BembyModifier,
-	type BembyModifiers,
-} from "../../util/bemby.ts"
+import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
 import {createSignal, Match, Show, Switch} from "solid-js"
 import NotesIcon from "::ui/icons/notes.tsx"
 import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
@@ -14,13 +11,13 @@ import useClickOutside from "solid-click-outside"
 import {createEffect} from "solid-js"
 import {clsx} from "@nberlette/clsx"
 import {dropTargetForElements} from "@atlaskit/pragmatic-drag-and-drop/element/adapter"
-import {Suspense} from "solid-js"
-import type {Action} from "::domain/entities/useAction.ts"
-import {useDragAndDrop} from "::domain/dnd/dnd-context.ts"
-import type {SelectableProps} from "::domain/state/useSelection.ts"
-import type {ExpandableProps} from "::domain/state/useExpander.ts"
+import {type SelectableProps} from "::viewmodels/selection/useSelection.ts"
+import type {ExpandableProps} from "::viewmodels/selection/useExpander.ts"
+import type {Action} from "::domain/useAction.ts"
+import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
 import {isToday} from "::shapes/mixins/doable.ts"
-import {modshift} from "::ui/util/hotkeys.ts"
+import {modshift} from "../../hotkeys/useHotkeys.ts"
+import When from "../when/when.tsx"
 
 export default function ActionItem(
 	props: {
@@ -41,8 +38,15 @@ export default function ActionItem(
 
 	const dnd = useDragAndDrop()
 
+	let el: HTMLElement | undefined
+	createEffect(() => {
+		if (props.selected && el) {
+			el.scrollIntoView({behavior: "instant", block: "nearest"})
+		}
+	})
+
 	return (
-		<Suspense>
+		<>
 			<article
 				tabIndex={0}
 				ref={element => {
@@ -50,6 +54,7 @@ export default function ActionItem(
 					dnd.createDraggableListItem(element, () => props.url)
 					// todo
 					dropTargetForElements({element})
+					el = element
 				}}
 				class={clsx(
 					bemby(
@@ -144,6 +149,7 @@ export default function ActionItem(
 												behavior: "instant",
 												block: "center",
 											})
+											view.focus()
 										}, 4)
 									}}
 								/>
@@ -171,10 +177,14 @@ export default function ActionItem(
 							/>
 						</Show>
 					</article>
-					<footer class="action__expanded-footer" />
+					<Show when={props.expanded}>
+						<footer class="action__expanded-footer">
+							<When {...props} />
+						</footer>
+					</Show>
 				</section>
 				<footer class="action__collapsed-footer" />
 			</article>
-		</Suspense>
+		</>
 	)
 }

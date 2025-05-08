@@ -2,7 +2,9 @@ import {type Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
 import {
 	DoableShape,
+	isCanceled,
 	isClosed,
+	isCompleted,
 	setWhenFromFancy,
 	toggleCanceled,
 	toggleCompleted,
@@ -26,6 +28,12 @@ export function useDoableMixin(
 		},
 		get closed() {
 			return Boolean(item() && isClosed(item()!))
+		},
+		get completed() {
+			return isCompleted(item()!)
+		},
+		get canceled() {
+			return isCanceled(item()!)
 		},
 		toggleCompleted(force?: boolean) {
 			handle()?.change(item => toggleCompleted(item, force))
@@ -61,6 +69,8 @@ export interface Doable {
 	readonly stateChanged: Date | null
 	readonly state: DoableShape["state"]
 	readonly closed: boolean
+	readonly completed: boolean
+	readonly canceled: boolean
 	toggleCompleted(force?: boolean): void
 	toggleCanceled(force?: boolean): void
 	readonly when: DoableShape["when"]

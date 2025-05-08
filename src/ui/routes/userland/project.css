@@ -1,0 +1,186 @@
+:root {
+	--project-header-line: var(--primary-dark);
+	--project-header-line--placeholder: color-mix(
+		in oklab,
+		var(--project-header-line),
+		transparent 40%
+	);
+
+	--project-header-fill: transparent;
+	--project-header-fill--selected: var(--selected-fill);
+	--project-header-fill--editing: color-mix(
+		in oklab,
+		var(--project-header-fill--selected),
+		transparent 50%
+	);
+}
+
+.text-editor--notes.text-editor--project {
+	min-height: 5em;
+	padding-bottom: var(--space-2);
+}
+
+.project-heading {
+	background: var(--project-header-fill);
+	color: var(--project-header-line);
+	display: flex;
+	align-items: center;
+	width: 100%;
+	font-weight: 700;
+	padding-inline: var(--action-inline-padding);
+	user-select: none;
+	border-radius: 7px;
+	border: 2px solid transparent;
+	position: relative;
+	/* margin-bottom: var(--space-2); */
+
+	/* &::after {
+		content: "";
+		position: absolute;
+		left: 0;
+		bottom: -2px;
+		height: 1px;
+		width: calc(100% - var(--space-9));
+		left: calc(var(--space-2) + 2px);
+		background: var(--project-header-fill--selected);
+	} */
+
+	&[aria-expanded="true"] {
+		padding: 0;
+	}
+}
+
+.project-heading__title {
+	flex: 1;
+	display: flex;
+	align-items: center;
+	overflow: hidden;
+	width: 100%;
+}
+
+.project-heading__title-static {
+	padding-block: var(--space-1);
+}
+
+.text-editor--project-heading {
+	--text-editor-text-color: var(--project-header-line);
+	--text-editor-placeholder-color: var(--project-header-line--placeholder);
+	border-radius: 11px;
+	width: 100%;
+}
+
+.project-heading {
+	position: relative;
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.project-heading:not(.project-heading--clicks) {
+	.click-catcher {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		z-index: 1;
+	}
+}
+
+.project-heading--clicks {
+	.click-catcher {
+		pointer-events: none;
+	}
+}
+
+.project-heading-container {
+	margin-left: var(--space-2);
+	margin-top: var(--space-10);
+	--project-heading-container-line: color-mix(
+		in oklab,
+		var(--primary-dark),
+		transparent 70%
+	);
+	--project-heading-container-line--selected: color-mix(
+		in oklab,
+		var(--primary-dark),
+		transparent 10%
+	);
+	--project-heading-radius: 7px;
+	border-radius: var(--project-heading-radius);
+	border: 1px solid var(--project-heading-container-line);
+	border-radius: 7px;
+	transition: border-color 0.2 ease-out;
+}
+
+.project-heading-container + .action {
+	margin-top: var(--space-10);
+}
+
+.text-editor:has(+ .project-heading-container) + .project-heading-container {
+	margin-top: 0;
+}
+
+.project-heading-container:has(.project-heading[aria-current="true"])
+	.project-heading {
+	background: var(--project-header-fill--selected);
+}
+
+.project-heading-container:has(
+		.project-heading:focus-within,
+		.project-heading--editing
+	) {
+	background: var(--page-fill);
+	border: 1px solid var(--project-heading-container-line--selected);
+}
+
+.project-heading-container:has([aria-current="true"]) {
+	border: 1px solid var(--project-heading-container-line--selected);
+}
+
+.action-list--in-heading {
+	padding: 0;
+
+	border-radius: var(--project-heading-radius);
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+
+	.action {
+		border-radius: 0;
+		&:last-of-type {
+			border-bottom-left-radius: var(--project-heading-radius);
+			border-bottom-right-radius: var(--project-heading-radius);
+		}
+	}
+}
+
+.project-heading-container:has(.project-heading[data-droptarget]) {
+	position: relative;
+	&::before {
+		position: absolute;
+		content: "";
+		display: block;
+		left: 0;
+		right: 0;
+		background: var(--drop-target-indicator-fill);
+		height: var(--drop-target-indicator-height);
+		width: var(--drop-target-indicator-width);
+	}
+	&:has([data-droptarget="above"]) {
+		&::before {
+			top: -8px;
+		}
+	}
+	&:has([data-droptarget="below"]) {
+		&::before {
+			bottom: 8px;
+		}
+	}
+}
+
+.project-heading-container:has(.project-heading[data-droptarget="on"]) {
+	&::before {
+		display: none;
+	}
+	background: var(--project-header-fill--selected);
+	box-shadow: 0 0 2px 2px var(--primary-dark);
+}

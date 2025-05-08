@@ -3,8 +3,8 @@
 	height: 1.8rem;
 	border-radius: 7px;
 	background-color: var(--color-background);
-	transition-property: background, min-height, max-height, height, margin,
-		border-radius, padding, transform;
+	transition-property: min-height, max-height, height, margin, border-radius,
+		padding, transform;
 
 	transition-duration: var(--action-trans-duration);
 

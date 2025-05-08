@@ -1,6 +1,5 @@
 {
-	"editor.fontFamily": "Fantasque Sans Mono, hack, iosevka, Menlo, Monaco, 'Courier New', monospace",
-	"workbench.colorTheme": "Sweet Dracula",
+	"workbench.colorTheme": "Gruvbox Dark Hard",
 	"workbench.productIconTheme": "fluent-icons",
 	"deno.codeLens.implementations": true,
 	"deno.codeLens.references": true,

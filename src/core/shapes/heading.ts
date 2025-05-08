@@ -1,6 +1,7 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {Reference} from "::shapes/reference.ts"
 import type {ActionRef} from "./action.ts"
+import {curl} from "../sync/automerge.ts"
 
 export type HeadingURL = AutomergeUrl & {type: "heading"}
 export type HeadingRef = Reference<"heading">
@@ -23,7 +24,21 @@ export function createHeadingShape(
 	}
 }
 
-export function isHeading(heading: unknown): heading is HeadingShape {
+export function createHeading(
+	heading: Parameters<typeof createHeadingShape>[0]
+): HeadingURL {
+	return curl<HeadingURL>(createHeadingShape(heading))
+}
+export function createHeadingRef(
+	heading: Parameters<typeof createHeadingShape>[0]
+): HeadingRef {
+	return {
+		type: "heading",
+		url: curl<HeadingURL>(createHeadingShape(heading)),
+	}
+}
+
+export function isHeadingShape(heading: unknown): heading is HeadingShape {
 	return (heading as HeadingShape).type === "heading"
 }
 

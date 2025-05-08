@@ -13,6 +13,10 @@
 	padding-inline: var(--space-2);
 	display: flex;
 	gap: var(--space-4);
-	align-items: center;
-	justify-content: flex-end;
+}
+
+@media screen and (max-width: 500px) {
+	.bar {
+		gap: var(--space-2);
+	}
 }

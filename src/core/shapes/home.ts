@@ -1,10 +1,11 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import type {InboxURL} from "./inbox.ts"
+import {createInbox, createInboxShape, type InboxURL} from "./inbox.ts"
 import type {ProjectRef} from "./project.ts"
 import type {DropboxURL} from "./dropbox.ts"
 import type {AreaRef} from "./area.ts"
 import type {ActionRef} from "./action.ts"
 import type {Tag} from "./tag.ts"
+import {curl} from "../sync/automerge.ts"
 
 export type HomeURL = AutomergeUrl & {type: "home"}
 
@@ -33,4 +34,17 @@ export function createHomeShape(
 		tags: [],
 		...home,
 	}
+}
+
+export function createHome(home?: Partial<HomeShape>): HomeURL {
+	return curl<HomeURL>(
+		createHomeShape({
+			...home,
+			inbox: createInbox(),
+		})
+	)
+}
+
+export function isHomeShape(home: unknown): home is HomeShape {
+	return (home as HomeShape).type === "home"
 }

@@ -2,6 +2,7 @@ import type {AutomergeUrl} from "@automerge/automerge-repo"
 import type {Reference} from "::shapes/reference.ts"
 import type {ProjectRef} from "./project.ts"
 import type {ActionRef} from "./action.ts"
+import {curl} from "../sync/automerge.ts"
 
 export type AreaURL = AutomergeUrl & {type: "area"}
 export type AreaRef = Reference<"area">
@@ -23,6 +24,21 @@ export function createAreaShape(area?: Partial<AreaShape>): AreaShape {
 		notes: "",
 		items: [],
 		...area,
+	}
+}
+
+export function createArea(
+	area: Parameters<typeof createAreaShape>[0]
+): AreaURL {
+	return curl<AreaURL>(createAreaShape(area))
+}
+
+export function createAreaRef(
+	area: Parameters<typeof createAreaShape>[0]
+): AreaRef {
+	return {
+		type: "area",
+		url: curl<AreaURL>(createAreaShape(area)),
 	}
 }
 

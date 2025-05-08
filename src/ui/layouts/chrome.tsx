@@ -5,27 +5,24 @@ import {createSignal, type JSX, Show} from "solid-js"
 import Resizable, {ContextValue as ResizableContext} from "@corvu/resizable"
 import {makePersisted} from "@solid-primitives/storage"
 import {Button} from "@kobalte/core/button"
-// todo move to a special media.ts
 import bemby from "bemby"
 import {useIsRouting} from "@solidjs/router"
 import {createEffect} from "solid-js"
 import {onMount} from "solid-js"
-import {UserContext, useUser} from "::domain/entities/useUser.ts"
 import {createMediaQuery} from "@solid-primitives/media"
-import {CommandRegistryProvider} from "::domain/commands/commands.tsx"
 import Bar from "../components/bar/bar.tsx"
+import {UserContext, useUser} from "::domain/useUser.ts"
+import {
+	CommandRegistryProvider,
+	redo,
+	undo,
+	useCanUndo,
+} from "::viewmodels/commands/commands.tsx"
+import {createEventListener} from "@solid-primitives/event-listener"
+import {clsx} from "@nberlette/clsx"
+import {ReactiveSet} from "@solid-primitives/set"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
-
-// todo a global handler for drops
-// drop targets should set drop data that has methods:
-//   - accepts(item: {type: string}): boolean
-//   - drop(item): void
-// onDrop we do location.current.dropTargets[0].drop(source.data.item)
-// and this can all be done from monitorElements
-// and similar for monitorExternal
-// define drop action and droptarget actions right on the element,
-// and separate that from the drop logic
 
 export default function Chrome(props: {children?: JSX.Element}) {
 	const user = useUser()
@@ -48,7 +45,6 @@ export default function Chrome(props: {children?: JSX.Element}) {
 		return resizableContext()?.sizes()[0]
 	}
 
-	// todo get remember sidebar size code from littlebook
 	const expandSidebar = () => {
 		const context = resizableContext()
 		const preferred = preferredSidebarSize()
@@ -82,22 +78,46 @@ export default function Chrome(props: {children?: JSX.Element}) {
 			setFirstLoad(false)
 		})
 	})
+	const [canUndo, canRedo] = useCanUndo()
+
+	const inputDevices = new ReactiveSet<string>([])
+	const coarse = createMediaQuery("(pointer: coarse)")
+	const touch = () => inputDevices.has("touch") || coarse()
+	const upstairs = () => !touch() && !isMobile()
+
+	createEventListener(
+		self,
+		"pointerdown",
+		event => {
+			inputDevices.add(event.pointerType)
+		},
+		{
+			passive: true,
+		}
+	)
+	createEventListener(self, "keydown", () => inputDevices.add("keyboard"), {
+		passive: true,
+	})
 
 	return (
-		<CommandRegistryProvider>
-			<UserContext.Provider value={user}>
+		<UserContext.Provider value={user}>
+			<CommandRegistryProvider>
 				<Resizable
-					class={bemby("chrome", {
-						mobile: isMobile(),
-						desktop: !isMobile(),
-						"showing-sidebar": !sidebarIsCollapsed(),
-						"not-showing-sidebar": sidebarIsCollapsed(),
-						"first-load": firstLoad(),
-					})}
+					class={clsx(
+						bemby("chrome", {
+							mobile: isMobile(),
+							desktop: !isMobile(),
+							"showing-sidebar": !sidebarIsCollapsed(),
+							"not-showing-sidebar": sidebarIsCollapsed(),
+							"first-load": firstLoad(),
+						}),
+						bemby("input-device", ...inputDevices)
+					)}
 					sizes={sizes() ?? [0.2, 0.8]}
 					onSizesChange={setSizes}>
 					{() => {
 						setResizableContext(Resizable.useContext())
+
 						return (
 							<>
 								<Resizable.Panel
@@ -142,19 +162,68 @@ export default function Chrome(props: {children?: JSX.Element}) {
 												</Button>
 											</Show>
 										</div>
-										<div class="chrome__header-right" />
+										<div class="chrome__header-right">
+											<Show when={upstairs()}>
+												<Bar modifiers="desktop" />
+											</Show>
+										</div>
 									</header>
 									<div class="chrome__content">{props.children}</div>
-									<footer class="chrome__footer">
-										<Bar modifiers="mobile" />
-									</footer>
+									<Show when={!upstairs()}>
+										<footer class="chrome__footer">
+											<section class="chrome__footer-left">
+												<Show when={canUndo()}>
+													<Button
+														class="button"
+														aria-label="Undo"
+														onClick={() => undo()}>
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															width="14"
+															height="14"
+															style={{"margin-right": "var(--space-2"}}
+															viewBox="0 0 24 24">
+															<path
+																fill="currentColor"
+																d="M7 19v-2h7.1q1.575 0 2.738-1T18 13.5T16.838 11T14.1 10H7.8l2.6 2.6L9 14L4 9l5-5l1.4 1.4L7.8 8h6.3q2.425 0 4.163 1.575T20 13.5t-1.737 3.925T14.1 19z"
+															/>
+														</svg>
+														{/* ↩ */}
+														<span class="undo-redo__text">Undo</span>
+													</Button>
+												</Show>
+												<Show when={canRedo()}>
+													<Button
+														class="button"
+														aria-label="Redo"
+														onClick={() => redo()}>
+														<svg
+															xmlns="http://www.w3.org/2000/svg"
+															width="14"
+															height="14"
+															style={{"margin-right": "var(--space-2"}}
+															viewBox="0 0 24 24">
+															<path
+																fill="currentColor"
+																d="M9.9 19q-2.425 0-4.163-1.575T4 13.5t1.738-3.925T9.9 8h6.3l-2.6-2.6L15 4l5 5l-5 5l-1.4-1.4l2.6-2.6H9.9q-1.575 0-2.738 1T6 13.5T7.163 16T9.9 17H17v2z"
+															/>
+														</svg>
+														{/*↪*/}
+														<span class="undo-redo__text">Redo</span>
+													</Button>
+												</Show>
+											</section>
+
+											<Bar modifiers="mobile" />
+										</footer>
+									</Show>
 								</Resizable.Panel>
 							</>
 						)
 					}}
 				</Resizable>
-			</UserContext.Provider>
-		</CommandRegistryProvider>
+			</CommandRegistryProvider>
+		</UserContext.Provider>
 	)
 }
 

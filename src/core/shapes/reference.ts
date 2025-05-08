@@ -1,4 +1,5 @@
 import type {AnyRef, ConceptName, ConceptURLMap} from ":concepts:"
+import {getType} from "::registries/type-registry.ts"
 
 export type Reference<T extends ConceptName> = {
 	type: T
@@ -36,6 +37,12 @@ export function refer<T extends ConceptName>(
 	url: ConceptURLMap[T]
 ): Reference<T> {
 	return {type, url} as const
+}
+
+export function referAfterDark<T extends ConceptName>(
+	url: ConceptURLMap[T]
+): Reference<T> {
+	return {type: getType(url) as unknown as T, url} as const
 }
 
 export function point<T extends ConceptName>(

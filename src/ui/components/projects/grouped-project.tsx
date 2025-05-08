@@ -2,19 +2,19 @@ import "./grouped-project.css"
 import {A} from "@solidjs/router"
 import {createMemo, Show} from "solid-js"
 
-import {isAction, type Action} from "::domain/entities/useAction.ts"
 import ActionList from "../actions/action-list.tsx"
 import {ProgressPie} from "./project-item.tsx"
-import type {Project} from "::domain/entities/useProject.ts"
-import type {Selection} from "::domain/state/useSelection.ts"
-import type {ActionURL} from "::shapes/action.ts"
-import type {Expander} from "::domain/state/useExpander.ts"
 import flattenTree from "::core/util/flattenTree.ts"
+import type {Project} from "::domain/useProject.ts"
+import type {ActionURL} from "::shapes/action.ts"
+import type {SelectionContext} from "::viewmodels/selection/useSelection.ts"
+import type {ActionExpander} from "::viewmodels/selection/useExpander.ts"
+import {isAction, type Action} from "::domain/useAction.ts"
 
 export function GroupedProject(props: {
 	project: Project
-	selection: Selection<ActionURL>
-	expander: Expander<"action">
+	selection: SelectionContext<ActionURL>
+	expander: ActionExpander
 	filter: (item: Action) => boolean
 	toggleActionCompleted: (item: Action, force?: boolean) => void
 	toggleActionCanceled: (item: Action, force?: boolean) => void

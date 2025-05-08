@@ -1,6 +1,6 @@
 :root {
 	--drop-target-indicator-fill: var(--sky);
-	--drop-target-indicator-height: 2px;
+	--drop-target-indicator-height: 4px;
 	--drop-target-indicator-width: 100cqw;
 }
 

@@ -96,6 +96,13 @@
 	display: flex;
 	flex-direction: row;
 	color: var(--sidebar-line);
+	/* position: fixed; */
+	/* top: 0; */
+	/* left: 0; */
+	/* right: 0; */
+	/* height: 3rem; */
+	/* background: var(--page-fill); */
+	/* z-index: 9999999; */
 }
 
 .chrome__header-right {
@@ -160,8 +167,34 @@
 .chrome--desktop .bar--mobile {
 	display: none;
 }
-/*
-.chrome__footer:has(.bar:empty) {
+
+.chrome__footer-left {
+	margin-right: auto;
 	display: none;
+	gap: var(--space-2);
 }
- */
+
+.input-device--touch {
+	.chrome__footer-left {
+		display: flex;
+	}
+	.bar--desktop {
+		display: none;
+	}
+
+	.bar--mobile {
+		display: flex;
+	}
+}
+
+@media screen and (max-width: 600px) {
+	.chrome__footer-left {
+		display: flex;
+	}
+}
+
+@media screen and (max-width: 500px) {
+	.undo-redo__text {
+		font-size: 14px;
+	}
+}

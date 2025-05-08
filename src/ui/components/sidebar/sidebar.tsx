@@ -8,25 +8,25 @@ import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
 import {toast} from "../base/toast.tsx"
 import {createMediaQuery} from "@solid-primitives/media"
-import {useHomeContext} from "::domain/entities/useHome.ts"
 import {useDoableMixin} from "::domain/mixins/doable.ts"
-import {getType} from "::domain/registries/type-registry.ts"
 import type {ActionRef, ActionURL} from "::shapes/action.ts"
-import {isProject, type Project} from "::domain/entities/useProject.ts"
-import {isArea, type Area} from "::domain/entities/useArea.ts"
 import DevelopmentNote from "../development-note.tsx"
+import {encodeJSON} from "::core/util/compress.ts"
+import {useModel, useModelAfterDark} from "::domain/useModel.ts"
+import type {AnyParentType, ChildURLsFor} from ":concepts:"
+import {useHomeContext} from "::domain/useHome.ts"
+import {getParentURL} from "::registries/parent-registry.ts"
+import {getType} from "::registries/type-registry.ts"
 import {
 	createDropTarget,
 	type DropTargetContract,
-} from "::domain/dnd/contract.ts"
-import {useMovements} from "::domain/state/useMovements.ts"
-import {createSimpleDraggable} from "::domain/dnd/dnd-context.ts"
-import {isHeading} from "::domain/entities/useHeading.ts"
-import {isAction} from "::domain/entities/useAction.ts"
-import {encodeJSON} from "::core/util/compress.ts"
-import {useEntity} from "::domain/useDomainEntity.ts"
-import {getParentURL} from "::domain/registries/parent-registry.ts"
-import type {AnyParentType, ChildURLsFor} from ":concepts:"
+} from "::viewmodels/dnd/contract.ts"
+import {useMovements} from "::domain/movements/useMovements.ts"
+import {isProject, type Project} from "::domain/useProject.ts"
+import {createSimpleDraggable} from "::viewmodels/dnd/dnd-context.ts"
+import {isHeading} from "::domain/useHeading.ts"
+import {isAction} from "::domain/useAction.ts"
+import {isArea, type Area} from "::domain/useArea.ts"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
@@ -62,10 +62,10 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useDoableMixin(
+									const doable = useDoableMixin(
 										() => item.url as ChildURLsFor<"area">
 									)
-									entity.setWhen("today")
+									doable.setWhen("today")
 								}
 							},
 						}}>
@@ -88,10 +88,10 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useDoableMixin(
+									const doable = useDoableMixin(
 										() => item.url as ChildURLsFor<"area">
 									)
-									entity.setWhen("tomorrow")
+									doable.setWhen("tomorrow")
 								}
 							},
 						}}>
@@ -114,8 +114,8 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useDoableMixin(() => item.url as ActionURL)
-									entity.setWhen(undefined)
+									const doable = useDoableMixin(() => item.url as ActionURL)
+									doable.setWhen(undefined)
 								}
 							},
 						}}>
@@ -138,8 +138,8 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useDoableMixin(() => item.url as ActionURL)
-									entity.setWhen("someday")
+									const doable = useDoableMixin(() => item.url as ActionURL)
+									doable.setWhen("someday")
 								}
 							},
 						}}>
@@ -164,8 +164,8 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useDoableMixin(() => item.url as ActionURL)
-									entity.toggleCompleted(true)
+									const doable = useDoableMixin(() => item.url as ActionURL)
+									doable.toggleCompleted(true)
 								}
 							},
 						}}>
@@ -174,6 +174,27 @@ export default function Sidebar(props: {collapse: () => void}) {
 					<Sidelink
 						href="/trash"
 						icon="🚮"
+						onDblClick={event => {
+							if (event.altKey) {
+								console.log("empty trash")
+								for (const item of home.flat) {
+									if (item.deleted || item.archives) {
+										const parent = getParentURL(item.url as ActionURL)
+										const parentType = getType(parent)
+										if (parentType === "inbox") {
+											home.inbox.hasItem(item.type, item.url)
+											home.inbox.removeItem(item.type, item.url)
+										} else if (parentType == "home") {
+											home.list.removeItem(item.type, item.url)
+										} else {
+											const model = useModelAfterDark(parent)
+											console.log(model)
+											model.removeItem(item.type, item.url)
+										}
+									}
+								}
+							}
+						}}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -192,11 +213,11 @@ export default function Sidebar(props: {collapse: () => void}) {
 									if (parentType === "inbox") {
 										home.adoptActionFromInbox(item as ActionRef)
 									}
-									const entity = useEntity(() => ({
+									const model = useModel(() => ({
 										type: item.type,
 										url: item.url,
 									}))
-									entity.delete()
+									model.delete()
 								}
 							},
 						}}>

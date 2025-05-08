@@ -1,6 +1,6 @@
 import {createSignal} from "solid-js"
 import {makePersisted} from "@solid-primitives/storage"
-import type {UserURL} from "::core/shapes/user.ts"
+import type {UserURL} from "::shapes/user.ts"
 
 useUserId.key = "nextaction:user-id"
 

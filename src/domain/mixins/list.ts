@@ -10,12 +10,7 @@ import {
 	type ReferencePointer,
 	addReferenceByRef,
 } from "::shapes/reference.ts"
-import {useEntity} from "../useDomainEntity.ts"
-import {registerParent} from "::domain/registries/parent-registry.ts"
-import {
-	registerType,
-	type ConceptRegistry,
-} from "::domain/registries/type-registry.ts"
+import {useModel} from "../useModel.ts"
 import {createEffect} from "solid-js"
 import flattenTree from "::core/util/flattenTree.ts"
 import {createMemo} from "solid-js"
@@ -26,9 +21,11 @@ import type {
 	ChildTypesFor,
 	ChildRefsFor,
 	ChildEntitiesFor,
-	ConceptEntityMap,
+	ConceptModelMap,
 } from ":concepts:"
 import defaultRepo from "::core/sync/automerge.ts"
+import {registerType, type ConceptRegistry} from "::registries/type-registry.ts"
+import {registerParent} from "::registries/parent-registry.ts"
 
 export function useListMixin<
 	T extends AnyParentType,
@@ -66,23 +63,16 @@ export function useListMixin<
 
 	const items = mapArray(
 		() => list()?.items,
-		ref => {
-			try {
-				return useEntity(() => ref)
-			} catch (error) {
-				console.error({error})
-				return []
-			}
-		}
+		ref => useModel(ref)
 	) as Accessor<Item[]>
 
 	// todo ? https://primitives.solidjs.community/package/keyed/
 	type KeyedEntities = {
-		[K in ConceptName as ConceptURLMap[K]]: ConceptEntityMap[K]
+		[K in ConceptName as ConceptURLMap[K]]: ConceptModelMap[K]
 	}
-
+	const flat = createMemo(() => flattenTree(items()))
 	const keyed = createMemo(() => {
-		return items().reduce((acc, item) => {
+		return flat().reduce((acc, item) => {
 			acc[item.url] = item
 			return acc
 		}, {} as KeyedEntities)
@@ -99,7 +89,7 @@ export function useListMixin<
 			return itemURLs()
 		},
 		get flat() {
-			return flattenTree(items())
+			return flat()
 		},
 		get keyed() {
 			return keyed()
@@ -177,7 +167,7 @@ export interface List<
 	readonly itemURLs: ChildRefsFor<T>["url"][]
 	readonly flat: ChildEntitiesFor<T>[]
 	readonly keyed: {
-		[K in ConceptName as ConceptURLMap[K]]: ConceptEntityMap[K]
+		[K in ConceptName as ConceptURLMap[K]]: ConceptModelMap[K]
 	}
 	readonly addItem: <I extends ChildTypesFor<T>>(
 		type: I,

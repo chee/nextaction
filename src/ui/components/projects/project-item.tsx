@@ -4,10 +4,10 @@ import {useNavigate} from "@solidjs/router"
 import {Show} from "solid-js"
 import bemby, {type BembyModifiers, type BembyModifier} from "bemby"
 import NotesIcon from "::ui/icons/notes.tsx"
-import type {Project} from "::domain/entities/useProject.ts"
-import type {SelectableProps} from "::domain/state/useSelection.ts"
-import {useDragAndDrop} from "::domain/dnd/dnd-context.ts"
 import {isClosed, isToday} from "::shapes/mixins/doable.ts"
+import type {Project} from "::domain/useProject.ts"
+import type {SelectableProps} from "::viewmodels/selection/useSelection.ts"
+import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
 
 export function ProgressPie(props: {progress: number}) {
 	return <div class="progress-pie" style={{"--progress": props.progress}} />

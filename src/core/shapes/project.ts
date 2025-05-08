@@ -3,6 +3,7 @@ import type {DoableShape} from "./mixins/doable.ts"
 import type {Reference} from "./reference.ts"
 import type {HeadingRef} from "./heading.ts"
 import type {ActionRef} from "./action.ts"
+import {curl} from "../sync/automerge.ts"
 
 export type ProjectURL = AutomergeUrl & {type: "project"}
 export type ProjectRef = Reference<"project">
@@ -26,6 +27,20 @@ export function createProjectShape(
 		state: "open",
 		items: [],
 		...project,
+	}
+}
+export function createProject(
+	project: Parameters<typeof createProjectShape>[0]
+): ProjectURL {
+	return curl<ProjectURL>(createProjectShape(project))
+}
+
+export function createProjectRef(
+	project: Parameters<typeof createProjectShape>[0]
+): ProjectRef {
+	return {
+		type: "project",
+		url: createProject(project),
 	}
 }
 

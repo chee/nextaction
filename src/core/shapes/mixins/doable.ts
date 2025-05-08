@@ -1,3 +1,5 @@
+import type {ConceptName} from ":concepts:"
+
 export type DoableShape = {
 	priority?: "!" | "!!" | "!!!"
 	when?: Date | "someday" | null
@@ -45,14 +47,24 @@ export function isSomeday(thing: WhenableShape): boolean {
 	return thing.when == "someday"
 }
 
-export function isAnytime(thing: WhenableShape): boolean {
-	return !thing.when || isToday(thing)
+export function isAnytime(thing: WhenableShape & {type: ConceptName}): boolean {
+	return thing.type == "action" && (!thing.when || isToday(thing))
 }
 
 function midnightify(date: Date): Date {
 	const midnight = new Date(date)
 	midnight.setHours(23, 59, 59, 999)
 	return midnight
+}
+
+export function isYesterday(thing: WhenableShape): boolean {
+	if (!thing.when) return false
+	if (thing.when == "someday") return false
+	const yesterday = new Date()
+	yesterday.setDate(yesterday.getDate() - 1)
+	yesterday.setHours(23, 59, 59, 999)
+	const when = thing.when
+	return when.getTime() <= yesterday.getTime()
 }
 
 export function isToday(thing: WhenableShape): boolean {
@@ -194,7 +206,7 @@ export function parseIncomingWhen(
 
 export function setWhenFromFancy(
 	thing: DoableShape,
-	date: "someday" | "today" | "tomorrow" | string | undefined | Date
+	date: "someday" | "today" | "tomorrow" | string | undefined | Date | null
 ) {
 	if (!date) {
 		delete thing.when

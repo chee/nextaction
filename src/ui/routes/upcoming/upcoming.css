@@ -1,0 +1,44 @@
+.upcoming-day {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+	margin-bottom: var(--space-8);
+	padding-bottom: var(--space-8);
+}
+
+.upcoming-day__title {
+	font-size: var(--font-size-6);
+	font-weight: 500;
+	color: color-mix(in oklab, var(--primary-dark), var(--text) 50%);
+	margin-left: var(--action-inline-padding);
+	position: relative;
+	&::before {
+		content: "";
+		display: block;
+		position: absolute;
+		height: 1px;
+		width: 100%;
+		/* background: var(--page-divider-line); */
+		background: color-mix(in oklab, var(--primary-dark), transparent 60%);
+		top: 0.625rem;
+		left: 1.75rem;
+		z-index: -1;
+	}
+}
+
+.upcoming-day__date {
+	font-size: var(--font-size-3);
+	font-weight: 500;
+	color: var(--text);
+	background: var(--page-fill);
+	z-index: 1;
+	display: inline-block;
+	text-align: left;
+	padding-right: 0.5rem;
+	color: color-mix(in oklab, var(--primary-dark), var(--text) 60%);
+}
+
+.upcoming-day__name {
+	background: var(--page-fill);
+	padding-right: 0.75rem;
+}

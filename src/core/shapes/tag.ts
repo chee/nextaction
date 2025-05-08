@@ -1,4 +1,5 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
+import {curl} from "../sync/automerge.ts"
 
 export type TagURL = AutomergeUrl & {type: "tag"}
 export type Tag = {
@@ -11,7 +12,7 @@ export type Tag = {
 
 export function createTagShape(tag?: Partial<Tag>): Tag {
 	return {
-		type: "tag",
+		type: "tag" as const,
 		title: "",
 		items: {},
 		...tag,

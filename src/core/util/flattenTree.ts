@@ -18,7 +18,7 @@ export function flatfilter<T extends object>(
 		list.push(item)
 
 		if ("items" in item && Array.isArray(item.items)) {
-			list.push(...flattenTree(item.items))
+			list.push(...flatfilter(item.items, filter))
 		}
 
 		return list

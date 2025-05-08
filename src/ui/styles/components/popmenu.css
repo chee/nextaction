@@ -15,7 +15,8 @@
 	outline: none;
 	transform-origin: var(--kb-menu-content-transform-origin);
 	animation: contentHide 50ms ease-in forwards;
-	&[data-expanded] {
+	&[data-expanded],
+	&[data-open] {
 		animation: contentShow 50ms ease-out;
 	}
 }

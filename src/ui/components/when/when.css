@@ -1,0 +1,127 @@
+.when-calendar {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	gap: 0.5rem;
+	border-spacing: 0.5em;
+	font-family: var(--family-sans);
+	font-weight: 500;
+	min-height: 14rem;
+	table {
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		thead {
+			margin-bottom: auto;
+		}
+	}
+	tr {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 0.25em;
+	}
+	[role="gridcell"] {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 1.75em;
+		width: 1.75em;
+		border-radius: 8px;
+		border: 2px solid transparent;
+		font-weight: 600;
+		&:hover {
+			background: var(--primary-dark);
+		}
+		&[aria-selected="true"] {
+			border-color: var(--primary-dark);
+		}
+		&[aria-selected="true"]:hover {
+			border-color: var(--white);
+			background: var(--primary-dark);
+		}
+		&[tabindex="0"] {
+			border-color: var(--white);
+		}
+	}
+	[aria-disabled="true"] {
+		opacity: 0;
+	}
+}
+
+.when-calendar__nav {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.when-calendar__daynames {
+	opacity: 0.5;
+	margin-bottom: auto;
+}
+
+.x-button {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	background: var(--page-fill);
+	opacity: 0;
+	margin-left: auto;
+	&:hover {
+		background: var(--page-dirk-gently);
+		opacity: 1;
+	}
+	svg {
+		width: 0.75em;
+		height: 0.75em;
+	}
+	height: calc(1.5rem - 1.5px);
+	width: 1.5rem;
+}
+
+.when-button {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background: var(--page-fill);
+	border: 1px solid transparent;
+	height: 1.5em;
+	padding-block: var(--space-1);
+	padding-inline: 0;
+	border-radius: 3px;
+	white-space: nowrap;
+	font-weight: 500;
+	margin-left: 2px;
+	margin-bottom: 2px;
+
+	&:focus {
+		opacity: 1;
+
+		border-color: var(--text);
+	}
+
+	&:hover {
+		border: 1px solid var(--page-dirk-gently);
+		box-shadow: 0 1px 2px
+			color-mix(in oklab, var(--page-dirk-gently), transparent 20%);
+		.x-button {
+			opacity: 0.25;
+			&:hover {
+				opacity: 0.75;
+			}
+		}
+	}
+	&:active {
+		background: var(--primary-light);
+	}
+
+	span {
+		padding-inline: var(--space-2);
+	}
+}
+
+.when-button--placeholder {
+	opacity: 0.25;
+	&:hover {
+		opacity: 1;
+	}
+}

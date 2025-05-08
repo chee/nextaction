@@ -2,14 +2,14 @@ import "./action-list.css"
 import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
 import {Suspense} from "solid-js"
 import {For} from "solid-js"
-import {type Action} from "::domain/entities/useAction.ts"
 import ActionItem from "::ui/components/actions/action.tsx"
-import type {Selection} from "::domain/state/useSelection.ts"
+import type {Action} from "::domain/useAction.ts"
+import type {SelectionContext} from "::viewmodels/selection/useSelection.ts"
 
 export default function ActionList(props: {
 	modifiers?: BembyModifier | BembyModifiers
 	actions: Action[]
-	selection: Selection
+	selection: SelectionContext
 	isSelected(url: string): boolean
 	isExpanded(url: string): boolean
 	expand(url: string): void

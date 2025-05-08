@@ -1,6 +1,7 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
 import {parseIncomingWhen, type DoableShape} from "::shapes/mixins/doable.ts"
 import {type Reference} from "::shapes/reference.ts"
+import {curl} from "../sync/automerge.ts"
 
 export type ActionURL = AutomergeUrl & {type: "action"}
 export type ActionRef = Reference<"action">
@@ -30,6 +31,21 @@ export function createActionShape(
 		checklist: [] as string[],
 		state: "open",
 		...action,
+	}
+}
+
+export function createAction(
+	action?: Parameters<typeof createActionShape>[0]
+): ActionURL {
+	return curl<ActionURL>(createActionShape(action)) as ActionURL
+}
+
+export function createActionRef(
+	action?: Parameters<typeof createActionShape>[0]
+): ActionRef {
+	return {
+		type: "action",
+		url: curl<ActionURL>(createActionShape(action)),
 	}
 }
 

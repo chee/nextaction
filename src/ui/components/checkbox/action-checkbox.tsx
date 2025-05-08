@@ -4,8 +4,15 @@ import {Show, Switch} from "solid-js"
 import {Match} from "solid-js"
 import {ContextMenu} from "@kobalte/core/context-menu"
 import {createSignal} from "solid-js"
-import type {Action} from "::domain/entities/useAction.ts"
-import {modshift} from "::ui/util/hotkeys.ts"
+import type {Action} from "::domain/useAction.ts"
+import {modshift} from "../../hotkeys/useHotkeys.ts"
+import {
+	exe,
+	pushHistoryEntry,
+	useCommand,
+	useCommandRegistry,
+} from "::viewmodels/commands/commands.tsx"
+import type {SelectableProps} from "::viewmodels/selection/useSelection.ts"
 
 function Tick() {
 	return (
@@ -48,9 +55,10 @@ function Cross() {
 	)
 }
 
-export default function ActionCheckbox(props: Action) {
+export default function ActionCheckbox(props: Action & SelectableProps) {
 	const closed = () => ["canceled", "completed"].includes(props.state)
 	const [mousing, setMousing] = createSignal(false)
+
 	return (
 		<ContextMenu>
 			<ContextMenu.Trigger>
@@ -76,10 +84,27 @@ export default function ActionCheckbox(props: Action) {
 						)
 					}}
 					onClick={event => {
+						const isClosed = !closed()
 						if (event.altKey) {
-							props.toggleCanceled(!closed())
+							props.toggleCanceled(isClosed)
+							pushHistoryEntry({
+								undo() {
+									props.toggleCanceled(!isClosed)
+								},
+								redo() {
+									props.toggleCanceled(isClosed)
+								},
+							})
 						} else if (!modshift(event)) {
-							props.toggleCompleted(!closed())
+							props.toggleCompleted(isClosed)
+							pushHistoryEntry({
+								undo() {
+									props.toggleCompleted(!isClosed)
+								},
+								redo() {
+									props.toggleCompleted(isClosed)
+								},
+							})
 						}
 					}}
 					onDblClick={event => {
