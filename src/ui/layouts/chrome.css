@@ -100,7 +100,6 @@
 }
 
 .chrome__header {
-	padding-top: env(safe-area-inset-top);
 	display: flex;
 	justify-content: flex-start;
 	align-items: flex-start;
@@ -118,6 +117,7 @@
 
 .chrome__header-right {
 	margin-left: auto;
+	padding: var(--space-2);
 }
 
 :root {
