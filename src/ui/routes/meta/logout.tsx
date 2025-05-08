@@ -1,8 +1,8 @@
-import {useUserId} from "::domain/storage/user-id.ts"
 import "./logout.css"
 import {redirect, useNavigate} from "@solidjs/router"
 import {encodeJSON} from "::core/util/compress.ts"
 import {toast} from "../../components/base/toast.tsx"
+import {useUserId} from "::domain/identity/user-id.ts"
 
 export default function LogoutPage() {
 	const [userId, setUserId, deleteUserId] = useUserId()
