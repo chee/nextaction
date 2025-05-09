@@ -1,4 +1,14 @@
 .inline-when {
+	[aria-expanded="true"] & {
+		display: none;
+	}
+	.today &,
+	.upcoming & {
+		display: none;
+	}
+}
+
+.inline-when__label {
 	display: flex;
 	flex-direction: column;
 	justify-content: flex-start;

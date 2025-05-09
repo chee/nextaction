@@ -8,13 +8,15 @@ export default function InlineWhen(props: {when: Doable["when"]}) {
 	const when = () => props.when as Date
 
 	return (
-		<Show when={when() && when() instanceof Date}>
-			<Show
-				when={dates.isToday(when())}
-				fallback={<span class="inline-when">{short(when())}</span>}>
-				{icons.today}
+		<span class="inline-when">
+			<Show when={when() && when() instanceof Date}>
+				<Show
+					when={dates.isToday(when())}
+					fallback={<span class="inline-when__label">{short(when())}</span>}>
+					{icons.today}
+				</Show>
 			</Show>
-		</Show>
+		</span>
 	)
 }
 
