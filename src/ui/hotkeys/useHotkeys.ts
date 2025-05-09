@@ -92,7 +92,9 @@ export function useHotkeys(
 	function onkeydown(event: KeyboardEvent) {
 		if (
 			event.target instanceof HTMLButtonElement ||
-			event.target instanceof HTMLInputElement
+			event.target instanceof HTMLInputElement ||
+			event.target instanceof HTMLTextAreaElement ||
+			(event.target as HTMLElement).nodeName?.includes("-")
 		) {
 			// don't trigger the space key if the button is focused
 			return
@@ -113,7 +115,8 @@ export function useHotkeys(
 		if (
 			event.target instanceof HTMLButtonElement ||
 			event.target instanceof HTMLInputElement ||
-			event.target instanceof HTMLTextAreaElement
+			event.target instanceof HTMLTextAreaElement ||
+			(event.target as HTMLElement).nodeName?.includes("-")
 		) {
 			// don't trigger the space key if the button is focused
 			return
