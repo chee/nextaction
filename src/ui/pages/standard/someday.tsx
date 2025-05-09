@@ -17,6 +17,7 @@ import {
 	createDeleteCommand,
 	createNewActionCommand,
 } from "::viewmodels/commands/standard.ts"
+import {icons} from "../../styles/themes/themes.ts"
 
 export default function SomedayView() {
 	const home = useHomeContext()
