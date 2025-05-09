@@ -28,6 +28,12 @@ const [icons, setIcons] = makePersisted(createStore(defaultIcons), {
 	name: "nextaction:icons",
 })
 
+for (const [key, value] of Object.entries(defaultIcons)) {
+	if (!(key in icons)) {
+		setIcons(key, value)
+	}
+}
+
 export {icons, colors}
 
 const query = new URLSearchParams(self.location.search)
