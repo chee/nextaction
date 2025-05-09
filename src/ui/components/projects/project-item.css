@@ -40,14 +40,21 @@
 }
 
 .progress-pie {
-	height: var(--checkbox-size);
-	width: var(--checkbox-size);
+	height: calc(var(--checkbox-size) - 4px);
+	width: calc(var(--checkbox-size) - 4px);
+	margin-left: 3px;
 	border-radius: 50%;
-	border: 1px solid var(--primary-dark);
+	outline: 2px solid var(--primary-dark);
+	outline-offset: 1px;
 	background: conic-gradient(
 		var(--primary-dark) calc(var(--progress) * 1%),
 		white 0
 	);
+}
+
+.progress-pie--dashed {
+	outline-style: dashed;
+	opacity: 0.75;
 }
 
 .project-item__header {

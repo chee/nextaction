@@ -1,0 +1,18 @@
+.inline-when {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-start;
+	align-items: center;
+	--color: color-mix(in oklab, var(--page-dark), var(--primary-dark) 5%);
+	background: color-mix(in oklab, var(--color), transparent 60%);
+	padding: var(--space-05) var(--space-2);
+	border-radius: 7px;
+	font-weight: 500;
+	[aria-expanded="true"] & {
+		display: none;
+	}
+	.today &,
+	.upcoming & {
+		display: none;
+	}
+}

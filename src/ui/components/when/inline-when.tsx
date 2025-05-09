@@ -1,17 +1,16 @@
+import "./inline-when.css"
 import type {Doable} from "::domain/mixins/doable.ts"
-import {Switch} from "solid-js"
-import {Match} from "solid-js"
 import {Show} from "solid-js"
 import * as dates from "date-fns"
 
 export default function InlineWhen(props: {when: Doable["when"]}) {
-	const when = props.when as Date
+	const when = () => props.when as Date
 
 	return (
-		<Show when={when && when instanceof Date}>
+		<Show when={when() && when() instanceof Date}>
 			<Show
-				when={dates.isToday(when)}
-				fallback={<span class="inline-when">{short(when)}👁️</span>}>
+				when={dates.isToday(when())}
+				fallback={<span class="inline-when">{short(when())}</span>}>
 				👁️
 			</Show>
 		</Show>

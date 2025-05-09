@@ -8,9 +8,18 @@ import {isClosed, isToday} from "::shapes/mixins/doable.ts"
 import type {Project} from "::domain/useProject.ts"
 import type {SelectableProps} from "::viewmodels/selection/useSelection.ts"
 import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
+import InlineWhen from "../when/inline-when.tsx"
 
-export function ProgressPie(props: {progress: number}) {
-	return <div class="progress-pie" style={{"--progress": props.progress}} />
+export function ProgressPie(props: {
+	progress: number
+	modifiers?: BembyModifier
+}) {
+	return (
+		<div
+			class={bemby("progress-pie", props.modifiers)}
+			style={{"--progress": props.progress}}
+		/>
+	)
 }
 
 export function ProjectItem(
@@ -31,6 +40,7 @@ export function ProjectItem(
 						current: props.selected,
 						closed: isClosed(props),
 						today: isToday(props),
+						someday: props.when === "someday",
 					},
 					props.state
 				)
@@ -60,8 +70,14 @@ export function ProjectItem(
 				{/* todo debug & magic project checkbox */}
 				{/* <Checkbox {...props} /> */}
 				<span class="project-item__progress">
-					<ProgressPie progress={props.progress} />
+					<ProgressPie
+						progress={props.progress}
+						modifiers={{
+							dashed: props.when == "someday",
+						}}
+					/>
 				</span>
+				<InlineWhen when={props.when} />
 				<h3 id={`${props.url}-title`} class="project-item__title">
 					<span class="project-item__title-icon">{props.icon}</span>
 					<Show

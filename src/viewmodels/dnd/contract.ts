@@ -17,6 +17,7 @@ import type {
 import {refer} from "::shapes/reference.ts"
 import {getType} from "::registries/type-registry.ts"
 import {getParentURL} from "::registries/parent-registry.ts"
+import {getOwner, runWithOwner} from "solid-js"
 
 export type DragAndDropItem<ItemType extends AnyChildType> = {
 	type: ItemType
@@ -101,6 +102,7 @@ export function createDropTarget<T extends AnyParentType>(
 	element: HTMLElement,
 	contract: DropTargetContract<T>
 ) {
+	const owner = getOwner()
 	return onCleanup(
 		dropTargetForElements({
 			canDrop(payload) {
@@ -120,7 +122,9 @@ export function createDropTarget<T extends AnyParentType>(
 				delete (payload.self.element as HTMLElement).dataset.droptarget
 				delete payload.source.element.dataset.droptarget
 				if (!contract) return
-				manageDrop(payload, contract)
+				runWithOwner(owner, () => {
+					manageDrop(payload, contract)
+				})
 			},
 		})
 	)

@@ -18,6 +18,7 @@ import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
 import {isToday} from "::shapes/mixins/doable.ts"
 import {modshift} from "../../hotkeys/useHotkeys.ts"
 import When from "../when/when.tsx"
+import InlineWhen from "../when/inline-when.tsx"
 
 export default function ActionItem(
 	props: {
@@ -111,6 +112,7 @@ export default function ActionItem(
 				</Show>
 				<header class="action__header">
 					<ActionCheckbox {...props} />
+					<InlineWhen when={props.when} />
 					<time
 						class="state-changed state-changed--action"
 						dateTime={props.stateChanged?.toISOString()}>
