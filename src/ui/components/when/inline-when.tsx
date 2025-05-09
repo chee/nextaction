@@ -2,6 +2,7 @@ import "./inline-when.css"
 import type {Doable} from "::domain/mixins/doable.ts"
 import {Show} from "solid-js"
 import * as dates from "date-fns"
+import {icons} from "../../styles/themes/themes.ts"
 
 export default function InlineWhen(props: {when: Doable["when"]}) {
 	const when = () => props.when as Date
@@ -11,7 +12,7 @@ export default function InlineWhen(props: {when: Doable["when"]}) {
 			<Show
 				when={dates.isToday(when())}
 				fallback={<span class="inline-when">{short(when())}</span>}>
-				👁️
+				{icons.today}
 			</Show>
 		</Show>
 	)

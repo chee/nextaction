@@ -7,6 +7,7 @@ import {createStore} from "solid-js/store"
 const [theme, setTheme] = makePersisted(createSignal(""), {
 	name: "nextaction:theme",
 })
+
 const [colors, setColors] = makePersisted(
 	createStore({} as Record<string, string>),
 	{
@@ -14,13 +15,34 @@ const [colors, setColors] = makePersisted(
 	}
 )
 
+const defaultIcons = {
+	today: "⭐",
+	upcoming: "📆",
+	anytime: "📄",
+	someday: "📦",
+	logbook: "✅",
+	trash: "🚮",
+} as Record<string, string>
+
+const [icons, setIcons] = makePersisted(createStore(defaultIcons), {
+	name: "nextaction:icons",
+})
+
+export {icons, colors}
+
 const query = new URLSearchParams(self.location.search)
 
 if (query.has("theme")) {
 	setTheme(query.get("theme")!)
 	query.delete("theme")
 }
+
 for (const [key, value] of query.entries()) {
+	if (key in defaultIcons) {
+		// todo move to a util func
+		const single = [...new Intl.Segmenter().segment(value)]?.[0]?.segment
+		setIcons(key, single)
+	}
 	setColors(key, value)
 }
 

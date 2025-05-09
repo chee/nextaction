@@ -5,6 +5,7 @@ import {Index, Match, Show, Switch} from "solid-js"
 import {isToday, isTomorrow, isYesterday} from "::shapes/mixins/doable.ts"
 import type {Action} from "::domain/useAction.ts"
 import bemby from "bemby"
+import {icons} from "../../styles/themes/themes.ts"
 
 export default function When(action: Action) {
 	const reset = (
@@ -72,16 +73,16 @@ export default function When(action: Action) {
 											fallback={
 												<span class="when-button__fallback">When</span>
 											}>
-											<span>🛫 Someday</span>
+											<span>{icons.someday} Someday</span>
 											{reset}
 										</Show>
 									}>
 									<Switch>
 										<Match when={isToday({when: calendar.value})}>
-											<span>👁️ Today</span>
+											<span>{icons.today} Today</span>
 										</Match>
 										<Match when={isTomorrow({when: calendar.value})}>
-											<span>📆 Tomorrow</span>
+											<span>{icons.upcoming} Tomorrow</span>
 										</Match>
 										<Match
 											when={
@@ -91,7 +92,7 @@ export default function When(action: Action) {
 													5 * 24 * 60 * 60 * 1000
 											}>
 											<span>
-												📆{" "}
+												{icons.upcoming}{" "}
 												{calendar.value!.toLocaleDateString(undefined, {
 													weekday: "long",
 												})}
@@ -103,7 +104,7 @@ export default function When(action: Action) {
 												new Date().getFullYear()
 											}>
 											<span>
-												📆{" "}
+												{icons.upcoming}{" "}
 												{calendar.value!.toLocaleDateString(undefined, {
 													weekday: "short",
 													day: "numeric",
@@ -114,7 +115,7 @@ export default function When(action: Action) {
 
 										<Match when={calendar.value}>
 											<span>
-												📆{" "}
+												{icons.upcoming}{" "}
 												{calendar.value!.toLocaleDateString(undefined, {
 													day: "numeric",
 													month: "short",
@@ -165,7 +166,7 @@ export default function When(action: Action) {
 																			<Show
 																				when={isToday({when: day()})}
 																				fallback={day().getDate()}>
-																				👁️
+																				{icons.today}
 																			</Show>
 																		</Calendar.CellTrigger>
 																	</Calendar.Cell>

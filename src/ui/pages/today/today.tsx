@@ -8,14 +8,14 @@ import {isProject, type Project} from "::domain/useProject.ts"
 import {TodayProject} from "./today-project.tsx"
 import type {ProjectURL} from "::shapes/project.ts"
 import {isArea, type Area} from "::domain/useArea.ts"
-import DevelopmentNote from "../../components/development-note.tsx"
 import type {SelectionContext} from "::viewmodels/selection/useSelection.ts"
 import {useCommandRegistry} from "::viewmodels/commands/commands.tsx"
 import {createNewActionCommand} from "::viewmodels/commands/standard.ts"
 import {useHomeContext} from "::domain/useHome.ts"
 import {parseIncomingWhen} from "::shapes/mixins/doable.ts"
 import {createEffect} from "solid-js"
-import {createDeleteCommand} from "../../../viewmodels/commands/standard.js"
+import {createDeleteCommand} from "::viewmodels/commands/standard.ts"
+import {icons} from "../../styles/themes/themes.ts"
 
 export default function Today() {
 	const today = useTodayViewModel()
@@ -50,7 +50,7 @@ export default function Today() {
 				}}>
 				<div class="page">
 					<h1 class="page-title">
-						<div class="page-title__icon">👁️</div>
+						<div class="page-title__icon">{icons.today}</div>
 						<span class="page-title__title">Today</span>
 					</h1>
 					<main class="page-content">

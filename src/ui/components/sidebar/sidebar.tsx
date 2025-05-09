@@ -26,6 +26,7 @@ import {createSimpleDraggable} from "::viewmodels/dnd/dnd-context.ts"
 import {isHeading} from "::domain/useHeading.ts"
 import {isAction} from "::domain/useAction.ts"
 import {isArea, type Area} from "::domain/useArea.ts"
+import {icons} from "../../styles/themes/themes.js"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
@@ -46,7 +47,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 				<nav class="sidebar__section sidebar__section--default sidebar__section--views">
 					<Sidelink
 						href="/today"
-						icon="👁️"
+						icon={icons.today}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -72,7 +73,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/upcoming"
-						icon="📅"
+						icon={icons.upcoming}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -98,7 +99,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/anytime"
-						icon="💆‍♀️"
+						icon={icons.anytime}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -122,7 +123,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/someday"
-						icon="🛫"
+						icon={icons.someday}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -148,7 +149,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 				<nav class="sidebar__section sidebar__section--default sidebar__section--archive">
 					<Sidelink
 						href="/logbook"
-						icon="✅"
+						icon={icons.logbook}
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -172,7 +173,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/trash"
-						icon="🚮"
+						icon={icons.trash}
 						onDblClick={event => {
 							if (event.altKey) {
 								console.log("empty trash")

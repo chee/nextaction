@@ -57,7 +57,7 @@ export default function LogbookView() {
 				ref={element => dnd.createDraggableList(element)}>
 				<div class="page">
 					<h1 class="page-title">
-						<div class="page-title__icon">✅</div>
+						<div class="page-title__icon">{icons.logbook}</div>
 						<span class="page-title__title">Logbook</span>
 					</h1>
 
