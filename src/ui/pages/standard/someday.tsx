@@ -85,7 +85,7 @@ export default function SomedayView() {
 									{/* todo this might not be right */}
 									<Match when={isArea(item)}>
 										<Show
-											when={(item as Area).items.filter(someday.filter).length}>
+											when={(item as Area).flat.filter(someday.filter).length}>
 											<Switch>
 												<Match when={isProject(item)}>
 													<TodayProject
@@ -112,17 +112,6 @@ export default function SomedayView() {
 												</Match>
 											</Switch>
 										</Show>
-										<h3>{item.title}</h3>
-										<ActionList
-											actions={(item as Area).items
-												.filter(isAction)
-												.filter(someday.filter)}
-											selection={someday.selection}
-											isSelected={someday.selection.isSelected}
-											{...someday.expander}
-											toggleCanceled={() => {}}
-											toggleCompleted={() => {}}
-										/>
 									</Match>
 								</Switch>
 							)}
