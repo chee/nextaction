@@ -55,7 +55,7 @@ export default function SomedayView() {
 				ref={element => someday.dnd.createDraggableList(element)}>
 				<div class="page">
 					<h1 class="page-title">
-						<div class="page-title__icon">🎁</div>
+						<div class="page-title__icon">🛫</div>
 						<span class="page-title__title">Someday</span>
 					</h1>
 

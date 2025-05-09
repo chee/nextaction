@@ -15,12 +15,13 @@ import type {Heading} from "::domain/useHeading.ts"
 import {isDoable} from "::shapes/mixins/doable.ts"
 import {useArea} from "::domain/useArea.ts"
 import type {AreaURL} from "::shapes/area.ts"
+import {access, type MaybeAccessor} from "@solid-primitives/utils"
 
 export function createNewActionCommand(payload: {
 	fallbackURL: AnyParentURL
 	selection: SelectionContext<AnyChildURL>
 	expander: ActionExpander
-	template?: Parameters<typeof createAction>[0]
+	template?: MaybeAccessor<Parameters<typeof createAction>[0] | undefined>
 }) {
 	return createCommand({
 		id: "new-action",
@@ -39,7 +40,7 @@ export function createNewActionCommand(payload: {
 				}
 			}
 
-			const url = createAction(payload.template)
+			const url = createAction(access(payload.template))
 
 			const parent = useModelAfterDark(targetParentURL)
 			parent.addItem(
@@ -68,7 +69,7 @@ export function createNewActionCommand(payload: {
 export function createNewProjectInAreaCommand(payload: {
 	areaURL: AreaURL
 	selection: SelectionContext<AnyChildURL>
-	template?: Parameters<typeof createProject>[0]
+	template?: MaybeAccessor<Parameters<typeof createProject>[0]>
 }) {
 	return createCommand({
 		id: "new-project",
@@ -77,7 +78,7 @@ export function createNewProjectInAreaCommand(payload: {
 		exe() {
 			const bottom = payload.selection.lastSelected()
 
-			const url = createProject(payload.template)
+			const url = createProject(access(payload.template))
 
 			const area = useArea(() => payload.areaURL)
 			area.addItem(
@@ -105,7 +106,7 @@ export function createNewHeadingCommand(payload: {
 	projectURL: ProjectURL
 	selection: SelectionContext<ActionURL | HeadingURL>
 	expander: Expander<"heading" | "action">
-	template?: Parameters<typeof createHeading>[0]
+	template?: MaybeAccessor<Parameters<typeof createHeading>[0]>
 }) {
 	const parent = useProject(() => payload.projectURL)
 	return createCommand({
@@ -128,7 +129,7 @@ export function createNewHeadingCommand(payload: {
 					| ReferencePointer<"action">
 			}
 
-			const url = createHeading(payload.template)
+			const url = createHeading(access(payload.template))
 
 			parent.addItem(
 				"heading",

@@ -17,6 +17,8 @@
 .sidebar-footer {
 	height: var(--sidebar-footer-height);
 	display: flex;
+	/* hide lil buttons on w thin */
+	overflow: hidden;
 	justify-content: space-between;
 	align-items: center;
 	margin-top: auto;
@@ -76,6 +78,7 @@
 	container-type: inline-size;
 }
 
+/* Hide the optional text on small screens */
 @container (width < 13.7ch) {
 	.sidebar-footer__optional-text {
 		display: none !important;

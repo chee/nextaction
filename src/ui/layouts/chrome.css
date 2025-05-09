@@ -19,7 +19,6 @@
 	background: var(--sidebar-fill);
 	color: var(--sidebar-line);
 	min-width: 0;
-	transition: flex-basis 0.14s ease-out;
 	&[data-collapsed] {
 		overflow: hidden;
 	}
@@ -52,10 +51,13 @@
 		}
 	}
 }
-
-.chrome--first-load .chrome__sidebar,
-.chrome__sidebar--manually-resizing {
-	transition: none;
+.chrome__sidebar,
+.chrome__main {
+	transition: width 0.14s ease-out, flex-basis 0.14s ease-out;
+	.chrome--first-load &,
+	.chrome--manually-resizing & {
+		transition: none;
+	}
 }
 
 :root {
@@ -109,6 +111,7 @@
 	overflow: scroll;
 	display: flex;
 	flex-direction: column;
+	height: 100%;
 }
 
 .chrome__header {
@@ -152,10 +155,12 @@
 		.sidebar {
 			width: 100%;
 		}
-		flex-basis: unset !important;
+		flex-basis: 100% !important;
 	}
 	.chrome__main {
-		display: none;
+		width: 0%;
+		overflow: hidden;
+		flex-basis: 0 !important;
 	}
 }
 

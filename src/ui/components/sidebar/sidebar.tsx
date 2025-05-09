@@ -46,7 +46,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 				<nav class="sidebar__section sidebar__section--default sidebar__section--views">
 					<Sidelink
 						href="/today"
-						icon="✨"
+						icon="👁️"
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -98,7 +98,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/anytime"
-						icon="🌻"
+						icon="💆‍♀️"
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -122,7 +122,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 					</Sidelink>
 					<Sidelink
 						href="/someday"
-						icon="🎁"
+						icon="🛫"
 						droptarget={{
 							accepts(source) {
 								if (!source?.items) return false
@@ -369,11 +369,27 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 }
 
 function SidebarArea(props: {area: Area}) {
+	const home = useHomeContext()
 	return (
 		<div class="sidebar-area">
-			<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
-				<h3 class="sidebar-area__title">{props.area.title}</h3>
-			</Sidelink>
+			<ContextMenu>
+				<ContextMenu.Trigger>
+					<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
+						<h3 class="sidebar-area__title">{props.area.title}</h3>
+					</Sidelink>
+				</ContextMenu.Trigger>
+				<ContextMenu.Portal>
+					<ContextMenu.Content class="popmenu popmenu--sidebar">
+						<ContextMenu.Item
+							class="popmenu__item popmenu__item--danger"
+							onSelect={() => {
+								home.list.removeItemByRef(props.area)
+							}}>
+							Remove from Sidebar
+						</ContextMenu.Item>
+					</ContextMenu.Content>
+				</ContextMenu.Portal>
+			</ContextMenu>
 			<For
 				each={
 					props.area.items.filter(

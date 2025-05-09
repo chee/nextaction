@@ -72,13 +72,13 @@ export default function When(action: Action) {
 											fallback={
 												<span class="when-button__fallback">When</span>
 											}>
-											<span>🎁 Someday</span>
+											<span>🛫 Someday</span>
 											{reset}
 										</Show>
 									}>
 									<Switch>
 										<Match when={isToday({when: calendar.value})}>
-											<span>✨ Today</span>
+											<span>👁️ Today</span>
 										</Match>
 										<Match when={isTomorrow({when: calendar.value})}>
 											<span>📆 Tomorrow</span>
@@ -165,7 +165,7 @@ export default function When(action: Action) {
 																			<Show
 																				when={isToday({when: day()})}
 																				fallback={day().getDate()}>
-																				✨
+																				👁️
 																			</Show>
 																		</Calendar.CellTrigger>
 																	</Calendar.Cell>

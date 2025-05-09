@@ -11,6 +11,7 @@ import {
 	getInput,
 	updateDraggedItems,
 	type DragAndDropItem,
+	type DraggableContract,
 } from "./contract.ts"
 import type {
 	AnyChild,
@@ -20,13 +21,21 @@ import type {
 } from ":concepts:"
 import {getParentURL} from "::registries/parent-registry.ts"
 import {getType} from "::registries/type-registry.ts"
-import type {GlobalSelectionContext} from "../selection/useSelection.ts"
+import type {SelectionContext} from "../selection/useSelection.ts"
 import type {Reference} from "::shapes/reference.ts"
 import {useMovements} from "::domain/movements/useMovements.ts"
 
 export type DragAndDropContext = {
 	createDraggableListItem(element: HTMLElement, item: () => string): void
-	createDraggableList(element: HTMLElement): void
+	createDraggableList(
+		element: HTMLElement,
+		options: {
+			postprocess?: <T extends AnyChildType>(
+				contract: DraggableContract<T>
+			) => void
+			itemsSelector?: string
+		}
+	): void
 	get active(): boolean
 }
 
@@ -60,7 +69,10 @@ export function createDragAndDropContext<P extends AnyParentType>(
 		get active() {
 			return active()
 		},
-		createDraggableList(element: HTMLElement) {
+		createDraggableList(
+			element: HTMLElement,
+			{postprocess = () => {}, itemsSelector = "[draggable]"} = {}
+		) {
 			onCleanup(
 				dropTargetForElements({
 					element,
@@ -73,13 +85,23 @@ export function createDragAndDropContext<P extends AnyParentType>(
 							input,
 							items: selection.all,
 							dragged,
+							itemsSelector,
 						})
+						if (!dropTargetURL) {
+							console.warn("No drop target URL found")
+							element.querySelectorAll(itemsSelector).forEach(e => {
+								delete (e as HTMLElement).dataset.droptarget
+							})
+							return
+						}
 						movements.drop(
 							dragged.items.map(i => i.url),
 							// @ts-expect-error todo
 							dropTargetURL,
 							position
 						)
+
+						postprocess(dragged)
 					},
 					onDrag(payload) {
 						const dragged = getDraggedPayload(payload)
@@ -92,6 +114,7 @@ export function createDragAndDropContext<P extends AnyParentType>(
 							input,
 							items: selection.all,
 							dragged,
+							itemsSelector,
 						})
 
 						if (dropTargetElement) {
@@ -99,7 +122,7 @@ export function createDragAndDropContext<P extends AnyParentType>(
 						}
 					},
 					onDragLeave() {
-						element.querySelectorAll("[draggable]").forEach(e => {
+						element.querySelectorAll(itemsSelector).forEach(e => {
 							delete (e as HTMLElement).dataset.droptarget
 						})
 					},

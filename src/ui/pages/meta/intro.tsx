@@ -57,7 +57,7 @@ export default function Intro() {
 								}
 							}
 						}}>
-						no! join existing space 🌻
+						no! join existing space 💆‍♀️
 					</Button>
 				</div>
 			</div>

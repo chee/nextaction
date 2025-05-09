@@ -16,78 +16,78 @@ render(
 
 			<Route
 				path="/"
-				component={lazy(() => import("./routes/meta/intro.tsx"))}
+				component={lazy(() => import("./pages/meta/intro.tsx"))}
 			/>
 			<Route component={lazy(() => import("./layouts/chrome.tsx"))}>
 				<Route
 					path="/today"
-					component={lazy(() => import("./routes/today/today.tsx"))}
+					component={lazy(() => import("./pages/today/today.tsx"))}
 				/>
 				<Route
 					path="/inbox"
-					component={lazy(() => import("./routes/standard/inbox.tsx"))}
+					component={lazy(() => import("./pages/standard/inbox.tsx"))}
 				/>
 				<Route
 					path="/dropbox/:dropboxId"
-					component={lazy(() => import("./routes/userland/dropbox.tsx"))}
+					component={lazy(() => import("./pages/userland/dropbox.tsx"))}
 				/>
 
 				<Route
 					path="/upcoming"
-					component={lazy(() => import("./routes/upcoming/upcoming.tsx"))}
+					component={lazy(() => import("./pages/upcoming/upcoming.tsx"))}
 				/>
 				<Route
 					path="/anytime"
-					component={lazy(() => import("./routes/standard/anytime.tsx"))}
+					component={lazy(() => import("./pages/standard/anytime.tsx"))}
 				/>
 				<Route
 					path="/someday"
-					component={lazy(() => import("./routes/standard/someday.tsx"))}
+					component={lazy(() => import("./pages/standard/someday.tsx"))}
 				/>
 
 				<Route
 					path="/logbook"
-					component={lazy(() => import("./routes/standard/logbook.tsx"))}
+					component={lazy(() => import("./pages/standard/logbook.tsx"))}
 				/>
 
 				<Route
 					path="/trash"
-					component={lazy(() => import("./routes/standard/trash.tsx"))}
+					component={lazy(() => import("./pages/standard/trash.tsx"))}
 				/>
 
 				<Route
 					path="/tags"
-					component={lazy(() => import("./routes/userland/tag-manager.tsx"))}
+					component={lazy(() => import("./pages/userland/tag-manager.tsx"))}
 				/>
 				<Route
 					path="/search"
-					component={lazy(() => import("./routes/meta/search.tsx"))}
+					component={lazy(() => import("./pages/meta/search.tsx"))}
 				/>
 				<Route
 					path="/settings"
-					component={lazy(() => import("./routes/meta/settings.tsx"))}
+					component={lazy(() => import("./pages/meta/settings.tsx"))}
 				/>
 
 				<Route
 					path="/tags/:tagId"
-					component={lazy(() => import("./routes/userland/tag.tsx"))}
+					component={lazy(() => import("./pages/userland/tag.tsx"))}
 				/>
 				<Route
 					path="/areas/:areaId"
-					component={lazy(() => import("./routes/userland/area.tsx"))}
+					component={lazy(() => import("./pages/userland/area.tsx"))}
 				/>
 				<Route
 					path="/projects/:projectId"
-					component={lazy(() => import("./routes/userland/project.tsx"))}
+					component={lazy(() => import("./pages/userland/project.tsx"))}
 				/>
 				<Route
 					path="/logout"
-					component={lazy(() => import("./routes/meta/logout.tsx"))}
+					component={lazy(() => import("./pages/meta/logout.tsx"))}
 				/>
 
 				<Route
 					path="/*"
-					component={lazy(() => import("./routes/meta/404.tsx"))}
+					component={lazy(() => import("./pages/meta/404.tsx"))}
 				/>
 			</Route>
 		</Router>

@@ -41,7 +41,7 @@ export default function SidebarFooter() {
 								</p>
 							</div>
 						</DropdownMenu.Item>
-						<DropdownMenu.Item
+						{/* <DropdownMenu.Item
 							class="popmenu__item"
 							onClick={() => {
 								const url = createArea()
@@ -56,7 +56,7 @@ export default function SidebarFooter() {
 									A group of projects and actions for an area of your life
 								</p>
 							</div>
-						</DropdownMenu.Item>
+						</DropdownMenu.Item> */}
 						<DropdownMenu.Item
 							class="popmenu__item"
 							onSelect={() => {

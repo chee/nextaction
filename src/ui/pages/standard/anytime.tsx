@@ -56,7 +56,7 @@ export default function AnytimeView() {
 					class="page anytime"
 					ref={element => dnd.createDraggableList(element)}>
 					<h1 class="page-title">
-						<div class="page-title__icon">🌻</div>
+						<div class="page-title__icon">💆‍♀️</div>
 						<span class="page-title__title">Anytime</span>
 					</h1>
 					<main class="page-content">

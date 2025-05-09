@@ -50,7 +50,7 @@ export default function Today() {
 				}}>
 				<div class="page">
 					<h1 class="page-title">
-						<div class="page-title__icon">✨</div>
+						<div class="page-title__icon">👁️</div>
 						<span class="page-title__title">Today</span>
 					</h1>
 					<main class="page-content">

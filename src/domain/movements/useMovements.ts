@@ -25,6 +25,10 @@ export function useMovements() {
 
 			index?: ReferencePointer<AnyChildType> | number
 		) {
+			if (!targetParentURL) {
+				console.error(`error: no target parent when reparenting ${itemURL}`)
+				return
+			}
 			const itemType = getType(itemURL) as unknown as T
 			const oldParentURL = getParentURL(itemURL)
 			const itemEntity = useModel(() => ({
@@ -66,14 +70,42 @@ export function useMovements() {
 				)
 				return
 			}
-			const newParentEntity = useModel({
-				type: targetParentType,
-				url: targetParentURL,
-			} as AreaRef) as Area
-			newParentEntity.addItemByRef(
-				itemEntity.asReference() as ActionRef,
-				index as ReferencePointer<"action">
-			)
+			try {
+				const newParentEntity = useModel({
+					type: targetParentType,
+					url: targetParentURL,
+				} as AreaRef) as Area
+				newParentEntity.addItemByRef(
+					itemEntity.asReference() as ActionRef,
+					index as ReferencePointer<"action">
+				)
+			} catch (e) {
+				console.error("error reparenting", {
+					oldParentType,
+					oldParentURL,
+					oldIndex,
+					itemType,
+					targetParentType,
+					targetParentURL,
+				})
+				if (oldParentType == "home" && itemEntity.type != "heading") {
+					oldIndex = home.list.itemURLs.indexOf(itemURL as ActionURL)
+					home.list.addItemByRef(itemEntity.asReference())
+				} else if (oldParentType == "inbox") {
+					oldIndex = home.inbox.itemURLs.indexOf(itemURL as ActionURL)
+					home.inbox.addItemByRef(itemEntity.asReference() as ActionRef)
+				} else {
+					const oldParentURL = getParentURL(itemURL) as AreaURL
+					const oldParentType = getType(oldParentURL) as "area"
+					const oldParentModel = useModel(() => ({
+						type: oldParentType,
+						url: oldParentURL,
+					}))
+					oldIndex = oldParentModel.itemURLs.indexOf(itemURL as ActionURL)
+					oldParentModel.addItemByRef(itemEntity.asReference() as ActionRef)
+				}
+				throw e
+			}
 			// deno-lint-ignore no-this-alias
 			const movements = this
 

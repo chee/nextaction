@@ -21,6 +21,8 @@ import {
 import {createEventListener} from "@solid-primitives/event-listener"
 import {clsx} from "@nberlette/clsx"
 import {ReactiveSet} from "@solid-primitives/set"
+import {ErrorBoundary} from "solid-js"
+import {on} from "node:events"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
 
@@ -34,6 +36,7 @@ export default function Chrome(props: {children?: JSX.Element}) {
 		// eslint-disable-next-line solid/reactivity
 		createSignal(0.2)
 	)
+	const [sidebarElement, setSidebarElement] = createSignal<HTMLElement>()
 
 	const [manuallyDragging, setManuallyResizing] = createSignal(false)
 
@@ -45,13 +48,39 @@ export default function Chrome(props: {children?: JSX.Element}) {
 		return resizableContext()?.sizes()[0]
 	}
 
+	function onSizesChange(sizes: number[]) {
+		setSizes(sizes)
+	}
+
+	function onHandleDragStart() {
+		setManuallyResizing(true)
+	}
+
+	function onHandleDragEnd() {
+		setManuallyResizing(false)
+		const current = currentSidebarSize()
+		if (typeof current == "number" && current > 0) {
+			const el = sidebarElement()
+			if (el) {
+				const rect = el.getBoundingClientRect()
+				const width = rect.width
+				if (width < 160) {
+					collapseSidebar()
+				} else {
+					setPreferredSidebarSize(current)
+				}
+			}
+		}
+	}
+
 	const expandSidebar = () => {
 		const context = resizableContext()
 		const preferred = preferredSidebarSize()
 		if (preferred <= 0) {
 			setPreferredSidebarSize(0.2)
 		}
-		context?.setSizes([preferred, context.sizes()[1]])
+
+		context?.setSizes([preferred, 1 - preferred])
 	}
 
 	const collapseSidebar = () => {
@@ -59,7 +88,7 @@ export default function Chrome(props: {children?: JSX.Element}) {
 		setPreferredSidebarSize(currentSidebarSize() || 0.2)
 
 		context?.collapse(0)
-		context?.setSizes([0, context.sizes()[1]])
+		context?.setSizes([0, 1])
 	}
 
 	const isRouting = useIsRouting()
@@ -107,152 +136,152 @@ export default function Chrome(props: {children?: JSX.Element}) {
 	return (
 		<UserContext.Provider value={user}>
 			<CommandRegistryProvider>
-				<Resizable
-					class={clsx(
-						bemby("chrome", {
-							mobile: isMobile(),
-							desktop: !isMobile(),
-							"showing-sidebar": !sidebarIsCollapsed(),
-							"not-showing-sidebar": sidebarIsCollapsed(),
-							"first-load": firstLoad(),
-						}),
-						bemby("input-device", ...inputDevices)
-					)}
-					sizes={sizes() ?? [0.2, 0.8]}
-					onSizesChange={setSizes}>
-					{() => {
-						setResizableContext(Resizable.useContext())
+				<ErrorBoundary
+					fallback={(error, reset) => {
+						setSizes([0.2, 0.8])
+						setPreferredSidebarSize(0.2)
+						reset()
+						throw error
+					}}>
+					<Resizable
+						class={clsx(
+							bemby("chrome", {
+								mobile: isMobile(),
+								desktop: !isMobile(),
+								"showing-sidebar": !sidebarIsCollapsed(),
+								"not-showing-sidebar": sidebarIsCollapsed(),
+								"first-load": firstLoad(),
+								"manually-resizing": manuallyDragging(),
+							}),
+							bemby("input-device", ...inputDevices)
+						)}
+						sizes={sizes() ?? [0.2, 0.8]}
+						onSizesChange={onSizesChange}>
+						{() => {
+							setResizableContext(Resizable.useContext())
 
-						return (
-							<>
-								<Resizable.Panel
-									class={bemby("chrome__sidebar", {
-										"manually-resizing": manuallyDragging(),
-									})}
-									as="aside"
-									collapsible>
-									{/* <div>
+							return (
+								<>
+									<Resizable.Panel
+										ref={element => setSidebarElement(element)}
+										class={bemby("chrome__sidebar", {})}
+										as="aside"
+										collapsible>
+										{/* <div>
 										<Button
 											title="hide sidebar"
 											onClick={() => collapseSidebar()}
 											class="chrome__sidebar-control chrome__sidebar-control--collapse"></Button>
 									</div> */}
-									<Sidebar collapse={() => collapseSidebar()} />
-								</Resizable.Panel>
-								<Resizable.Handle
-									class="chrome__handle"
-									onHandleDragStart={() => {
-										setManuallyResizing(true)
-									}}
-									onHandleDragEnd={() => {
-										setManuallyResizing(false)
-										const current = currentSidebarSize()
-										if (typeof current == "number" && current > 0) {
-											setPreferredSidebarSize(current)
-										}
-									}}
-									onDblClick={() => {
-										if (sidebarIsCollapsed()) {
-											expandSidebar()
-										} else {
-											collapseSidebar()
-										}
-									}}
-								/>
-								<Resizable.Panel class="chrome__main">
-									<header class="chrome__header">
-										<div class="chrome__header-left">
-											<Show when={sidebarIsCollapsed()}>
-												<Button
-													onDragEnter={() => expandSidebar()}
-													title="show sidebar"
-													onClick={() => expandSidebar()}
-													class="chrome__sidebar-control chrome__sidebar-control--expand">
-													<svg
-														xmlns="http://www.w3.org/2000/svg"
-														width="24"
-														height="24"
-														viewBox="0 0 24 24">
-														<path
-															fill="none"
-															stroke="currentColor"
-															stroke-dasharray="12"
-															stroke-dashoffset="12"
-															stroke-linecap="round"
-															stroke-linejoin="round"
-															stroke-width="2"
-															d="M8 12l7 -7M8 12l7 7">
-															<animate
-																fill="freeze"
-																attributeName="stroke-dashoffset"
-																dur="0.3s"
-																values="12;0"
-															/>
-														</path>
-													</svg>
-												</Button>
-											</Show>
-										</div>
-										<div class="chrome__header-right">
-											<Show when={upstairs()}>
-												<Bar modifiers="desktop" />
-											</Show>
-										</div>
-									</header>
-									<div class="chrome__content">{props.children}</div>
-									<Show when={!upstairs()}>
-										<footer class="chrome__footer">
-											<section class="chrome__footer-left">
-												<Show when={canUndo()}>
+										<Sidebar collapse={() => collapseSidebar()} />
+									</Resizable.Panel>
+									<Resizable.Handle
+										class="chrome__handle"
+										onHandleDragStart={onHandleDragStart}
+										onHandleDragEnd={onHandleDragEnd}
+										onDblClick={() => {
+											if (sidebarIsCollapsed()) {
+												expandSidebar()
+											} else {
+												collapseSidebar()
+											}
+										}}
+									/>
+									<Resizable.Panel class="chrome__main">
+										<header class="chrome__header">
+											<div class="chrome__header-left">
+												<Show when={sidebarIsCollapsed()}>
 													<Button
-														class="button"
-														aria-label="Undo"
-														onClick={() => undo()}>
+														onDragEnter={() => expandSidebar()}
+														title="show sidebar"
+														onClick={() => expandSidebar()}
+														class="chrome__sidebar-control chrome__sidebar-control--expand">
 														<svg
 															xmlns="http://www.w3.org/2000/svg"
-															width="14"
-															height="14"
-															style={{"margin-right": "var(--space-2"}}
+															width="24"
+															height="24"
 															viewBox="0 0 24 24">
 															<path
-																fill="currentColor"
-																d="M7 19v-2h7.1q1.575 0 2.738-1T18 13.5T16.838 11T14.1 10H7.8l2.6 2.6L9 14L4 9l5-5l1.4 1.4L7.8 8h6.3q2.425 0 4.163 1.575T20 13.5t-1.737 3.925T14.1 19z"
-															/>
+																fill="none"
+																stroke="currentColor"
+																stroke-dasharray="12"
+																stroke-dashoffset="12"
+																stroke-linecap="round"
+																stroke-linejoin="round"
+																stroke-width="2"
+																d="M8 12l7 -7M8 12l7 7">
+																<animate
+																	fill="freeze"
+																	attributeName="stroke-dashoffset"
+																	dur="0.3s"
+																	values="12;0"
+																/>
+															</path>
 														</svg>
-														{/* ↩ */}
-														<span class="undo-redo__text">Undo</span>
 													</Button>
 												</Show>
-												<Show when={canRedo()}>
-													<Button
-														class="button"
-														aria-label="Redo"
-														onClick={() => redo()}>
-														<svg
-															xmlns="http://www.w3.org/2000/svg"
-															width="14"
-															height="14"
-															style={{"margin-right": "var(--space-2"}}
-															viewBox="0 0 24 24">
-															<path
-																fill="currentColor"
-																d="M9.9 19q-2.425 0-4.163-1.575T4 13.5t1.738-3.925T9.9 8h6.3l-2.6-2.6L15 4l5 5l-5 5l-1.4-1.4l2.6-2.6H9.9q-1.575 0-2.738 1T6 13.5T7.163 16T9.9 17H17v2z"
-															/>
-														</svg>
-														{/*↪*/}
-														<span class="undo-redo__text">Redo</span>
-													</Button>
+											</div>
+											<div class="chrome__header-right">
+												<Show when={upstairs()}>
+													<Bar modifiers="desktop" />
 												</Show>
-											</section>
+											</div>
+										</header>
+										<div class="chrome__content">{props.children}</div>
+										<Show when={!upstairs()}>
+											<footer class="chrome__footer">
+												<section class="chrome__footer-left">
+													<Show when={canUndo()}>
+														<Button
+															class="button"
+															aria-label="Undo"
+															onClick={() => undo()}>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																width="14"
+																height="14"
+																style={{"margin-right": "var(--space-2"}}
+																viewBox="0 0 24 24">
+																<path
+																	fill="currentColor"
+																	d="M7 19v-2h7.1q1.575 0 2.738-1T18 13.5T16.838 11T14.1 10H7.8l2.6 2.6L9 14L4 9l5-5l1.4 1.4L7.8 8h6.3q2.425 0 4.163 1.575T20 13.5t-1.737 3.925T14.1 19z"
+																/>
+															</svg>
+															{/* ↩ */}
+															<span class="undo-redo__text">Undo</span>
+														</Button>
+													</Show>
+													<Show when={canRedo()}>
+														<Button
+															class="button"
+															aria-label="Redo"
+															onClick={() => redo()}>
+															<svg
+																xmlns="http://www.w3.org/2000/svg"
+																width="14"
+																height="14"
+																style={{"margin-right": "var(--space-2"}}
+																viewBox="0 0 24 24">
+																<path
+																	fill="currentColor"
+																	d="M9.9 19q-2.425 0-4.163-1.575T4 13.5t1.738-3.925T9.9 8h6.3l-2.6-2.6L15 4l5 5l-5 5l-1.4-1.4l2.6-2.6H9.9q-1.575 0-2.738 1T6 13.5T7.163 16T9.9 17H17v2z"
+																/>
+															</svg>
+															{/*↪*/}
+															<span class="undo-redo__text">Redo</span>
+														</Button>
+													</Show>
+												</section>
 
-											<Bar modifiers="mobile" />
-										</footer>
-									</Show>
-								</Resizable.Panel>
-							</>
-						)
-					}}
-				</Resizable>
+												<Bar modifiers="mobile" />
+											</footer>
+										</Show>
+									</Resizable.Panel>
+								</>
+							)
+						}}
+					</Resizable>
+				</ErrorBoundary>
 			</CommandRegistryProvider>
 		</UserContext.Provider>
 	)

@@ -130,7 +130,7 @@ type GetDropTargetIndexArgs<T extends AnyParentType> = {
 	element: HTMLElement
 	items: Accessor<FlatChildURLsFor<T>[]>
 	dragged: DraggableContract<FlatChildTypesFor<T>>
-
+	itemsSelector?: string
 	input: Input
 }
 
@@ -237,6 +237,7 @@ export function getDropTargetInfo<T extends AnyParentType>({
 	input,
 	items,
 	dragged,
+	itemsSelector = "[draggable]",
 }: GetDropTargetIndexArgs<T>) {
 	const validElements = new Map<number, HTMLElement>()
 	const validRectangles = new Map<number, DOMRect>()
@@ -245,7 +246,16 @@ export function getDropTargetInfo<T extends AnyParentType>({
 	const elements = new Map<AnyChildURL, HTMLElement>()
 	const types = new Map<number, FlatChildTypesFor<T>>()
 
-	for (const [index, el] of element.querySelectorAll("[draggable]").entries()) {
+	const existingDropTargets = element.querySelectorAll("[data-droptarget]")
+	if (existingDropTargets.length) {
+		for (const el of existingDropTargets) {
+			if (!el.matches(itemsSelector)) {
+				return {}
+			}
+		}
+	}
+
+	for (const [index, el] of element.querySelectorAll(itemsSelector).entries()) {
 		if (el instanceof HTMLElement) {
 			delete el.dataset.droptarget
 			const url = items()[index]

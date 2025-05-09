@@ -79,7 +79,6 @@
 .sidebar-link__icon {
 	width: 1em;
 	height: 1em;
-	margin-right: var(--space-2);
 }
 
 .sidebar-link__title {

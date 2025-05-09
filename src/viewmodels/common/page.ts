@@ -24,6 +24,7 @@ import type {Area} from "::domain/useArea.ts"
 import {getType} from "::registries/type-registry.ts"
 import {useAction} from "::domain/useAction.ts"
 
+// todo fix this so you can pass the generic the retruned list type
 export function usePageContext<T extends AnyParentType>({
 	items,
 	selectableItemFilter,

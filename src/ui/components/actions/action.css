@@ -96,10 +96,6 @@
 	display: inline-block;
 	margin: 0;
 	font-size: 1rem;
-	.action--today &::before {
-		content: "✨";
-		margin-right: var(--space-1);
-	}
 	.action--expanded & {
 		width: 100%;
 		&::before {
