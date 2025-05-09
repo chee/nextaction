@@ -8,6 +8,7 @@
 	padding: var(--space-05) var(--space-2);
 	border-radius: 7px;
 	font-weight: 500;
+	font-size: var(--font-size-7);
 	[aria-expanded="true"] & {
 		display: none;
 	}

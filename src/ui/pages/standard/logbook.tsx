@@ -16,6 +16,7 @@ import {
 	createCompleteCommand,
 	createDeleteCommand,
 } from "::viewmodels/commands/standard.ts"
+import {icons} from "../../styles/themes/themes.ts"
 
 // todo create a LogbookItem
 export default function LogbookView() {
