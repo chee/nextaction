@@ -26,9 +26,7 @@ export default function Editor(props: {
 	if (!props.syncExtension) {
 		return null
 	}
-	if (!props.doc) {
-		console.log(props.doc)
-	}
+
 	const editor = (
 		<div
 			class={bemby(

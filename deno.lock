@@ -10,7 +10,6 @@
     "npm:@automerge/automerge-codemirror@^0.0.12": "0.0.12",
     "npm:@automerge/automerge-repo-network-websocket@^2.0.0-beta.5": "2.0.0-collectionsync-alpha.1_ws@8.18.2_@types+node@22.12.0_typescript@5.8.3",
     "npm:@automerge/automerge-repo-storage-indexeddb@^2.0.0-beta.5": "2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3",
-    "npm:@automerge/automerge-repo@2.0.0-alpha.26": "2.0.0-alpha.26",
     "npm:@automerge/automerge-repo@^2.0.0-beta.5": "2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3",
     "npm:@codemirror/commands@^6.8.1": "6.8.1",
     "npm:@codemirror/lang-markdown@^6.3.2": "6.3.2",
@@ -53,7 +52,7 @@
     "npm:jsdom@^26.1.0": "26.1.0",
     "npm:merge-descriptors@2": "2.0.0",
     "npm:radash@^12.1.0": "12.1.0",
-    "npm:solid-automerge@^1.0.0-beta.6": "1.0.0-beta.7_@automerge+automerge-repo@2.0.0-alpha.26_solid-js@1.9.6__seroval@1.3.0",
+    "npm:solid-automerge@^1.0.0-beta.8": "1.0.0-beta.8_@automerge+automerge-repo@2.0.0-collectionsync-alpha.1__@types+node@22.12.0__typescript@5.8.3_solid-js@1.9.6__seroval@1.3.0_@types+node@22.12.0_typescript@5.8.3",
     "npm:solid-click-outside@^0.0.1": "0.0.1_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-command-palette@1": "1.0.0_fuse.js@7.1.0_solid-js@1.9.6__seroval@1.3.0_solid-transition-group@0.3.0__solid-js@1.9.6___seroval@1.3.0_tinykeys@3.0.0",
     "npm:solid-dismissible@~0.1.1": "0.1.1_solid-js@1.9.6__seroval@1.3.0",
@@ -216,7 +215,7 @@
     "@automerge/automerge-repo-network-websocket@2.0.0-collectionsync-alpha.1_ws@8.18.2_@types+node@22.12.0_typescript@5.8.3": {
       "integrity": "sha512-AVsh5virUN+mIXPhCPhdVT+5A/WVSk4SBcR//kf4iR2doGKI7zsDXjTIzAHpJaWTe7wFQS/CmwAI7fPnIzdlOQ==",
       "dependencies": [
-        "@automerge/automerge-repo@2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3",
+        "@automerge/automerge-repo",
         "cbor-x",
         "debug",
         "eventemitter3",
@@ -227,20 +226,7 @@
     "@automerge/automerge-repo-storage-indexeddb@2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3": {
       "integrity": "sha512-eK9CJLutYGWg0BQGathQjE9bI/h3/HQsiR3OWLluloQkkPOcZHTPG2P9UUTZ2ub/eyVB2GdU8MpXB6iDSiqJUw==",
       "dependencies": [
-        "@automerge/automerge-repo@2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3"
-      ]
-    },
-    "@automerge/automerge-repo@2.0.0-alpha.26": {
-      "integrity": "sha512-2yXCTfpv3K2M6RJJiMGUFYEpePsCalo9NSioPwxqv85LgGDDBOsi68OOl0YkMk1SQ7UgNUht1fzwvU6uKFmcog==",
-      "dependencies": [
-        "@automerge/automerge@2.2.9",
-        "bs58check",
-        "cbor-x",
-        "debug",
-        "eventemitter3",
-        "fast-sha256",
-        "uuid",
-        "xstate"
+        "@automerge/automerge-repo"
       ]
     },
     "@automerge/automerge-repo@2.0.0-collectionsync-alpha.1_@types+node@22.12.0_typescript@5.8.3": {
@@ -4337,10 +4323,10 @@
     "smob@1.5.0": {
       "integrity": "sha512-g6T+p7QO8npa+/hNx9ohv1E5pVCmWrVCUzUXJyLdMmftX6ER0oiWY/w9knEonLpnOp6b6FenKnMfR8gqwWdwig=="
     },
-    "solid-automerge@1.0.0-beta.7_@automerge+automerge-repo@2.0.0-alpha.26_solid-js@1.9.6__seroval@1.3.0": {
-      "integrity": "sha512-yhwIy8i2oJZvis5F/0ZLw/JVPnECkH7ky29dbJ09cvalT8HvjUr4IFyhvdxaiaR3llHA8yqADC18ES88mFuxIw==",
+    "solid-automerge@1.0.0-beta.8_@automerge+automerge-repo@2.0.0-collectionsync-alpha.1__@types+node@22.12.0__typescript@5.8.3_solid-js@1.9.6__seroval@1.3.0_@types+node@22.12.0_typescript@5.8.3": {
+      "integrity": "sha512-uho6LdA04SZFXxEaugim/QOqcg/4p9LCp1QjG/j1YHiic+ceMALymrlBIlXj5QSs1FRBQcUGOlmNqVrldtsjfw==",
       "dependencies": [
-        "@automerge/automerge-repo@2.0.0-alpha.26",
+        "@automerge/automerge-repo",
         "@solid-primitives/utils",
         "cabbages",
         "solid-js"
@@ -5347,7 +5333,7 @@
       "npm:jsdom@^26.1.0",
       "npm:merge-descriptors@2",
       "npm:radash@^12.1.0",
-      "npm:solid-automerge@^1.0.0-beta.6",
+      "npm:solid-automerge@^1.0.0-beta.8",
       "npm:solid-click-outside@^0.0.1",
       "npm:solid-command-palette@1",
       "npm:solid-dismissible@~0.1.1",

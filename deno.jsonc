@@ -68,7 +68,7 @@
 		"jsdom": "npm:jsdom@^26.1.0",
 		"merge-descriptors": "npm:merge-descriptors@^2.0.0",
 		"radash": "npm:radash@^12.1.0",
-		"solid-automerge": "npm:solid-automerge@^1.0.0-beta.6",
+		"solid-automerge": "npm:solid-automerge@^1.0.0-beta.8",
 		"solid-click-outside": "npm:solid-click-outside@^0.0.1",
 		"solid-command-palette": "npm:solid-command-palette@^1.0.0",
 		"solid-dismissible": "npm:solid-dismissible@^0.1.1",
