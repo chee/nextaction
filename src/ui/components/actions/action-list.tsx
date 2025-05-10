@@ -18,37 +18,31 @@ export default function ActionList(props: {
 	toggleCompleted(url: Action, force?: boolean): void
 }) {
 	return (
-		<Suspense>
-			<div class={bemby("action-list", props.modifiers)} role="list">
-				<For each={props.actions}>
-					{action => (
-						<Suspense>
-							<ActionItem
-								collapse={() => props.collapse(action.url)}
-								expand={() => props.expand(action.url)}
-								selected={props.isSelected(action.url)}
-								expanded={props.isExpanded(action.url)}
-								select={() => props.selection.select(action.url)}
-								addSelected={() => props.selection.addSelected(action.url)}
-								removeSelected={() =>
-									props.selection.removeSelected(action.url)
-								}
-								addSelectedRange={() =>
-									props.selection.addSelectedRange(action.url)
-								}
-								{...action}
-								class={bemby("action-item")}
-								toggleCanceled={(force?: boolean) =>
-									props.toggleCanceled(action, force)
-								}
-								toggleCompleted={(force?: boolean) =>
-									props.toggleCompleted(action, force)
-								}
-							/>
-						</Suspense>
-					)}
-				</For>
-			</div>
-		</Suspense>
+		<div class={bemby("action-list", props.modifiers)} role="list">
+			<For each={props.actions}>
+				{action => (
+					<ActionItem
+						collapse={() => props.collapse(action.url)}
+						expand={() => props.expand(action.url)}
+						selected={props.isSelected(action.url)}
+						expanded={props.isExpanded(action.url)}
+						select={() => props.selection.select(action.url)}
+						addSelected={() => props.selection.addSelected(action.url)}
+						removeSelected={() => props.selection.removeSelected(action.url)}
+						addSelectedRange={() =>
+							props.selection.addSelectedRange(action.url)
+						}
+						{...action}
+						class={bemby("action-item")}
+						toggleCanceled={(force?: boolean) =>
+							props.toggleCanceled(action, force)
+						}
+						toggleCompleted={(force?: boolean) =>
+							props.toggleCompleted(action, force)
+						}
+					/>
+				)}
+			</For>
+		</div>
 	)
 }

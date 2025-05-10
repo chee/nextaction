@@ -200,13 +200,11 @@ export default function AreaView() {
 												/>
 											</Match>
 											<Match when={item.type == "project"}>
-												<Suspense>
-													<ProjectItem
-														modifiers="in-area"
-														{...(item as Project)}
-														{...getSelectionProps(selection, item.url)}
-													/>
-												</Suspense>
+												<ProjectItem
+													modifiers="in-area"
+													{...(item as Project)}
+													{...getSelectionProps(selection, item.url)}
+												/>
 											</Match>
 										</Switch>
 									</Show>

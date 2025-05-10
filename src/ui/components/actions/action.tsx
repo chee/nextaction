@@ -48,149 +48,147 @@ export default function ActionItem(
 	})
 
 	return (
-		<Suspense>
-			<article
-				tabIndex={0}
-				ref={element => {
-					setDismissible(element)
-					dnd.createDraggableListItem(element, () => props.url)
-					// todo
-					dropTargetForElements({element})
-					el = element
-				}}
-				class={clsx(
-					bemby(
-						"action",
-						{
-							current: props.selected,
-							expanded: props.expanded,
-							closed: ["canceled", "completed"].includes(props.state),
-							today: isToday(props),
-							dragged: dnd.active && props.selected,
-						},
-						props.state,
-						...((Array.isArray(props.modifiers)
-							? props.modifiers
-							: [props.modifiers]) as BembyModifiers)
-					),
-					props.class
-				)}
-				role="listitem"
-				aria-current={props.selected}
-				aria-expanded={props.expanded}
-				onKeyDown={event => {
-					if (event.key === "Enter") {
-						if (!props.expanded) {
-							props.expand()
-						}
-					}
-					if (event.key == "˚" && event.metaKey) {
-						event.preventDefault()
-						props.toggleCanceled()
-					}
-				}}
-				onClick={event => {
-					if (event.metaKey) {
-						if (props.selected) {
-							props.removeSelected()
-						} else {
-							props.addSelected()
-						}
-					} else if (event.shiftKey) {
-						props.addSelectedRange()
-					} else {
-						props.select()
-					}
-				}}
-				onDblClick={event => {
-					if (modshift(event)) return
+		<article
+			tabIndex={0}
+			ref={element => {
+				setDismissible(element)
+				dnd.createDraggableListItem(element, () => props.url)
+				// todo
+				dropTargetForElements({element})
+				el = element
+			}}
+			class={clsx(
+				bemby(
+					"action",
+					{
+						current: props.selected,
+						expanded: props.expanded,
+						closed: ["canceled", "completed"].includes(props.state),
+						today: isToday(props),
+						dragged: dnd.active && props.selected,
+					},
+					props.state,
+					...((Array.isArray(props.modifiers)
+						? props.modifiers
+						: [props.modifiers]) as BembyModifiers)
+				),
+				props.class
+			)}
+			role="listitem"
+			aria-current={props.selected}
+			aria-expanded={props.expanded}
+			onKeyDown={event => {
+				if (event.key === "Enter") {
 					if (!props.expanded) {
 						props.expand()
 					}
-				}}>
-				<Show when={log.enabled}>
-					<pre class="action__debug">{props.url}</pre>
-				</Show>
-				<header class="action__header">
-					<ActionCheckbox {...props} />
-					<time
-						class="state-changed state-changed--action"
-						dateTime={props.stateChanged?.toISOString()}>
-						{
-							/* todo today */
-							props.stateChanged?.toLocaleDateString(undefined, {
-								month: "short",
-								day: "numeric",
-							})
-						}
-					</time>
-					<h2 id={`${props.url}-title`} class="action__title">
-						<Switch>
-							<Match when={props.expanded}>
-								<TitleEditor
-									placeholder="New action"
-									doc={props.title}
-									blur={() => props.collapse()}
-									submit={() => {
-										props.collapse()
-									}}
-									// todo move to end of note when press tab
-									// todo move to start of note when press right at end
-									// todo move to note when press down
-									syncExtension={props.titleSyncExtension}
-									withView={view => {
-										view.focus()
-										view.dispatch({
-											selection: {
-												head: view.state.doc.length,
-												anchor: view.state.doc.length,
-											},
-										})
-										setTimeout(() => {
-											view.contentDOM.scrollIntoView({
-												behavior: "smooth",
-												block: "center",
-											})
-											view.focus()
-										}, 150)
-									}}
-								/>
-							</Match>
-							<Match when={!props.expanded}>
-								<InlineWhen when={props.when} />
-
-								{props.title}
-							</Match>
-						</Switch>
-					</h2>
-					{/* todo extract indicators to its own component */}
-					<Show when={!props.expanded}>
-						<div class="action-indicators">
-							<Show when={props.notes}>
-								<NotesIcon />
-							</Show>
-						</div>
-					</Show>
-				</header>
-				<section class="action__editor">
-					<article class="action__note">
-						<Show when={props.expanded}>
-							<NotesEditor
-								placeholder="Notes"
+				}
+				if (event.key == "˚" && event.metaKey) {
+					event.preventDefault()
+					props.toggleCanceled()
+				}
+			}}
+			onClick={event => {
+				if (event.metaKey) {
+					if (props.selected) {
+						props.removeSelected()
+					} else {
+						props.addSelected()
+					}
+				} else if (event.shiftKey) {
+					props.addSelectedRange()
+				} else {
+					props.select()
+				}
+			}}
+			onDblClick={event => {
+				if (modshift(event)) return
+				if (!props.expanded) {
+					props.expand()
+				}
+			}}>
+			<Show when={log.enabled}>
+				<pre class="action__debug">{props.url}</pre>
+			</Show>
+			<header class="action__header">
+				<ActionCheckbox {...props} />
+				<time
+					class="state-changed state-changed--action"
+					dateTime={props.stateChanged?.toISOString()}>
+					{
+						/* todo today */
+						props.stateChanged?.toLocaleDateString(undefined, {
+							month: "short",
+							day: "numeric",
+						})
+					}
+				</time>
+				<h2 id={`${props.url}-title`} class="action__title">
+					<Switch>
+						<Match when={props.expanded}>
+							<TitleEditor
+								placeholder="New action"
+								doc={props.title}
 								blur={() => props.collapse()}
-								doc={props.notes}
-								syncExtension={props.notesSyncExtension}
+								submit={() => {
+									props.collapse()
+								}}
+								// todo move to end of note when press tab
+								// todo move to start of note when press right at end
+								// todo move to note when press down
+								syncExtension={props.titleSyncExtension}
+								withView={view => {
+									view.focus()
+									view.dispatch({
+										selection: {
+											head: view.state.doc.length,
+											anchor: view.state.doc.length,
+										},
+									})
+									setTimeout(() => {
+										view.contentDOM.scrollIntoView({
+											behavior: "smooth",
+											block: "center",
+										})
+										view.focus()
+									}, 150)
+								}}
 							/>
+						</Match>
+						<Match when={!props.expanded}>
+							<InlineWhen when={props.when} />
+
+							{props.title}
+						</Match>
+					</Switch>
+				</h2>
+				{/* todo extract indicators to its own component */}
+				<Show when={!props.expanded}>
+					<div class="action-indicators">
+						<Show when={props.notes}>
+							<NotesIcon />
 						</Show>
-					</article>
+					</div>
+				</Show>
+			</header>
+			<section class="action__editor">
+				<article class="action__note">
 					<Show when={props.expanded}>
-						<footer class="action__expanded-footer">
-							<When {...props} />
-						</footer>
+						<NotesEditor
+							placeholder="Notes"
+							blur={() => props.collapse()}
+							doc={props.notes}
+							syncExtension={props.notesSyncExtension}
+						/>
 					</Show>
-				</section>
-				<footer class="action__collapsed-footer" />
-			</article>
-		</Suspense>
+				</article>
+				<Show when={props.expanded}>
+					<footer class="action__expanded-footer">
+						<When {...props} />
+					</footer>
+				</Show>
+			</section>
+			<footer class="action__collapsed-footer" />
+		</article>
 	)
 }

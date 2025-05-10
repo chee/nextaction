@@ -56,7 +56,7 @@ export default function SidebarFooter() {
 								</p>
 							</div>
 						</DropdownMenu.Item> */}
-						<DropdownMenu.Item
+						{/* <DropdownMenu.Item
 							class="popmenu__item"
 							onSelect={() => {
 								const string = self.prompt(
@@ -76,7 +76,7 @@ export default function SidebarFooter() {
 									Import a project or area from a friend
 								</p>
 							</div>
-						</DropdownMenu.Item>
+						</DropdownMenu.Item> */}
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu>

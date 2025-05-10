@@ -1,14 +1,14 @@
 import {useDocument} from "solid-automerge"
-import {createUserShape, type UserShape, type UserURL} from "::shapes/user.ts"
-import {type HomeURL, createHomeShape} from "::shapes/home.ts"
-import {createInboxShape} from "::shapes/inbox.ts"
+import {type UserShape, type UserURL} from "::shapes/user.ts"
+import {type HomeURL} from "::shapes/home.ts"
 import {useHome, type Home as Home} from "./useHome.ts"
 import {createContext} from "solid-js"
-import defaultRepo, {curl} from "::core/sync/automerge.ts"
+import defaultRepo from "::core/sync/automerge.ts"
 import {useUserId} from "::domain/identity/user-id.ts"
 
 export function useUser(repo = defaultRepo): User {
 	const [userId] = useUserId()
+	console.log("userId", userId())
 	const [user, handle] = useDocument<UserShape>(userId, {repo})
 	return {
 		type: "user" as const,
