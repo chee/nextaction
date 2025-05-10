@@ -25,7 +25,7 @@ export default function WidgetPage() {
 		<a class="widget" href="/today">
 			<h2>{icons.today} Today</h2>
 			<ul>
-				<For each={state() ? user.home.list.items : []}>
+				<For each={state() ? user.home.list.flat : []}>
 					{item => {
 						if (
 							isDoable(item) &&
