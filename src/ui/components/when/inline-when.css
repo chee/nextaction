@@ -9,13 +9,15 @@
 }
 
 .inline-when__label {
-	display: flex;
+	margin-right: var(--space-1);
+	display: inline;
+	white-space: nowrap;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
 	--color: color-mix(in oklab, var(--page-dark), var(--primary-dark) 5%);
 	background: color-mix(in oklab, var(--color), transparent 60%);
-	padding: var(--space-05) var(--space-2);
+	padding: 1px var(--space-2);
 	border-radius: 7px;
 	font-weight: 500;
 	font-size: var(--font-size-7);

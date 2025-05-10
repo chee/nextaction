@@ -29,6 +29,7 @@ import {
 import {on} from "solid-js"
 import {useArea} from "::domain/useArea.ts"
 import {ProjectItem} from "../../components/projects/project-item.tsx"
+import {Suspense} from "solid-js"
 
 const log = debug("nextaction:area")
 
@@ -199,11 +200,13 @@ export default function AreaView() {
 												/>
 											</Match>
 											<Match when={item.type == "project"}>
-												<ProjectItem
-													modifiers="in-area"
-													{...(item as Project)}
-													{...getSelectionProps(selection, item.url)}
-												/>
+												<Suspense>
+													<ProjectItem
+														modifiers="in-area"
+														{...(item as Project)}
+														{...getSelectionProps(selection, item.url)}
+													/>
+												</Suspense>
 											</Match>
 										</Switch>
 									</Show>

@@ -10,7 +10,7 @@ import type {AreaURL} from "::shapes/area.ts"
 import type {HeadingURL} from "::shapes/heading.ts"
 import {useArea, type Area} from "./useArea.ts"
 import {getType} from "::registries/type-registry.ts"
-import {useHome, useHomeContext} from "./useHome.ts"
+import {useHomeContext} from "./useHome.ts"
 
 function useDE<T extends ConceptName>(
 	ref: Reference<T> | Accessor<Reference<T>>

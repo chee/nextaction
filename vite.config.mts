@@ -29,6 +29,7 @@ export default defineConfig({
 	],
 	server: {port: 1232},
 	build: {
+		sourcemap: true,
 		target: ["esnext"],
 		outDir: "output",
 	},

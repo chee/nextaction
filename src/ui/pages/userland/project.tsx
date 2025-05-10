@@ -1,5 +1,12 @@
 import "./project.css"
-import {createEffect, createMemo, createSignal, For, Show} from "solid-js"
+import {
+	createEffect,
+	createMemo,
+	createSignal,
+	For,
+	Show,
+	Suspense,
+} from "solid-js"
 import {useLocation, useParams} from "@solidjs/router"
 import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
 import TitleEditor from "::ui/components/text-editor/editors/title-editor.tsx"
@@ -179,56 +186,58 @@ export default function ProjectView() {
 						<For each={project.items.filter(filter)}>
 							{item => {
 								return (
-									<Show when={item}>
-										<Switch>
-											<Match when={item.type == "action"}>
-												<ActionItem
-													expand={() => expander.expand(item.url)}
-													collapse={() => expander.collapse()}
-													expanded={expander.isExpanded(item.url)}
-													selected={selection.isSelected(item.url)}
-													select={() => selection.select(item.url)}
-													addSelected={() => selection.addSelected(item.url)}
-													removeSelected={() =>
-														selection.removeSelected(item.url)
-													}
-													addSelectedRange={() =>
-														selection.addSelectedRange(item.url)
-													}
-													{...(item as Action)}
-													toggleCanceled={(force?: boolean) =>
-														toggleCanceled(item as Action, force)
-													}
-													toggleCompleted={(force?: boolean) =>
-														toggleCompleted(item as Action, force)
-													}
-												/>
-											</Match>
-											<Match when={item.type == "heading"}>
-												<ProjectHeading
-													heading={item as Heading}
-													selection={selection}
-													expander={expander}
-													toggleCanceled={toggleCanceled}
-													toggleCompleted={toggleCompleted}
-													toggleArchived={toggleArchived}
-													filter={filter}
-													expand={() => expander.expand(item.url)}
-													collapse={() => expander.collapse()}
-													expanded={expander.isExpanded(item.url)}
-													selected={selection.isSelected(item.url)}
-													select={() => selection.select(item.url)}
-													addSelected={() => selection.addSelected(item.url)}
-													removeSelected={() =>
-														selection.removeSelected(item.url)
-													}
-													addSelectedRange={() =>
-														selection.addSelectedRange(item.url)
-													}
-												/>
-											</Match>
-										</Switch>
-									</Show>
+									<Suspense>
+										<Show when={item}>
+											<Switch>
+												<Match when={item.type == "action"}>
+													<ActionItem
+														expand={() => expander.expand(item.url)}
+														collapse={() => expander.collapse()}
+														expanded={expander.isExpanded(item.url)}
+														selected={selection.isSelected(item.url)}
+														select={() => selection.select(item.url)}
+														addSelected={() => selection.addSelected(item.url)}
+														removeSelected={() =>
+															selection.removeSelected(item.url)
+														}
+														addSelectedRange={() =>
+															selection.addSelectedRange(item.url)
+														}
+														{...(item as Action)}
+														toggleCanceled={(force?: boolean) =>
+															toggleCanceled(item as Action, force)
+														}
+														toggleCompleted={(force?: boolean) =>
+															toggleCompleted(item as Action, force)
+														}
+													/>
+												</Match>
+												<Match when={item.type == "heading"}>
+													<ProjectHeading
+														heading={item as Heading}
+														selection={selection}
+														expander={expander}
+														toggleCanceled={toggleCanceled}
+														toggleCompleted={toggleCompleted}
+														toggleArchived={toggleArchived}
+														filter={filter}
+														expand={() => expander.expand(item.url)}
+														collapse={() => expander.collapse()}
+														expanded={expander.isExpanded(item.url)}
+														selected={selection.isSelected(item.url)}
+														select={() => selection.select(item.url)}
+														addSelected={() => selection.addSelected(item.url)}
+														removeSelected={() =>
+															selection.removeSelected(item.url)
+														}
+														addSelectedRange={() =>
+															selection.addSelectedRange(item.url)
+														}
+													/>
+												</Match>
+											</Switch>
+										</Show>
+									</Suspense>
 								)
 							}}
 						</For>
@@ -304,50 +313,53 @@ function ProjectHeading(
 						<code>{props.heading.url}</code>
 					</h2>
 				</Show>
-				<h2 class="project-heading__title" onDblClick={() => props.expand()}>
-					<Show
-						when={props.expanded}
-						fallback={
-							<div class="project-heading__title-static">
-								{props.heading.title}
-							</div>
-						}>
-						<TitleEditor
-							doc={props.heading.title}
-							blur={() => props.collapse()}
-							placeholder="New heading..."
-							syncExtension={titleExtension()}
-							modifiers={["project-heading"]}
-							submit={() => props.collapse()}
-							readonly={() => !props.expanded}
-							withView={view => {
-								view.focus()
-								setTimeout(() => {
-									view.dom.scrollIntoView({
-										behavior: "smooth",
-										block: "center",
+				<Suspense>
+					<h2 class="project-heading__title" onDblClick={() => props.expand()}>
+						<Show
+							when={props.expanded}
+							fallback={
+								<div class="project-heading__title-static">
+									{props.heading.title}
+								</div>
+							}>
+							<TitleEditor
+								doc={props.heading.title}
+								blur={() => props.collapse()}
+								placeholder="New heading..."
+								syncExtension={titleExtension()}
+								modifiers={["project-heading"]}
+								submit={() => props.collapse()}
+								readonly={() => !props.expanded}
+								withView={view => {
+									view.focus()
+									setTimeout(() => {
+										view.dom.scrollIntoView({
+											behavior: "smooth",
+											block: "center",
+										})
+									}, 140)
+									createEffect(() => {
+										if (!props.expanded) {
+											view.dom.blur()
+										}
 									})
-								}, 140)
-								createEffect(() => {
-									if (!props.expanded) {
-										view.dom.blur()
-									}
-								})
-							}}
-						/>
-					</Show>
-				</h2>
+								}}
+							/>
+						</Show>
+					</h2>
+				</Suspense>
 			</div>
-
-			<ActionList
-				{...props.expander}
-				actions={props.heading.items.filter(props.filter)}
-				isSelected={props.selection.isSelected}
-				selection={props.selection}
-				modifiers="in-heading"
-				toggleCanceled={props.toggleCanceled}
-				toggleCompleted={props.toggleCompleted}
-			/>
+			<Suspense>
+				<ActionList
+					{...props.expander}
+					actions={props.heading.items.filter(props.filter)}
+					isSelected={props.selection.isSelected}
+					selection={props.selection}
+					modifiers="in-heading"
+					toggleCanceled={props.toggleCanceled}
+					toggleCompleted={props.toggleCompleted}
+				/>
+			</Suspense>
 		</div>
 	)
 }

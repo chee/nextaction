@@ -19,6 +19,7 @@ import {isToday} from "::shapes/mixins/doable.ts"
 import {modshift} from "../../hotkeys/useHotkeys.ts"
 import When from "../when/when.tsx"
 import InlineWhen from "../when/inline-when.tsx"
+import {Suspense} from "solid-js"
 
 export default function ActionItem(
 	props: {
@@ -47,7 +48,7 @@ export default function ActionItem(
 	})
 
 	return (
-		<>
+		<Suspense>
 			<article
 				tabIndex={0}
 				ref={element => {
@@ -112,7 +113,6 @@ export default function ActionItem(
 				</Show>
 				<header class="action__header">
 					<ActionCheckbox {...props} />
-					<InlineWhen when={props.when} />
 					<time
 						class="state-changed state-changed--action"
 						dateTime={props.stateChanged?.toISOString()}>
@@ -156,7 +156,11 @@ export default function ActionItem(
 									}}
 								/>
 							</Match>
-							<Match when={!props.expanded}>{props.title}</Match>
+							<Match when={!props.expanded}>
+								<InlineWhen when={props.when} />
+
+								{props.title}
+							</Match>
 						</Switch>
 					</h2>
 					{/* todo extract indicators to its own component */}
@@ -187,6 +191,6 @@ export default function ActionItem(
 				</section>
 				<footer class="action__collapsed-footer" />
 			</article>
-		</>
+		</Suspense>
 	)
 }

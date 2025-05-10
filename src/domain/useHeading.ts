@@ -11,7 +11,6 @@ import mix from "::core/util/mix.ts"
 import {useListMixin, type List} from "./mixins/list.ts"
 import type {Reference, ReferencePointer} from "::shapes/reference.ts"
 import defaultRepo from "::core/sync/automerge.ts"
-import {toggleCompleted} from "::shapes/mixins/doable.ts"
 
 export function useHeading(
 	url: Accessor<HeadingURL>,

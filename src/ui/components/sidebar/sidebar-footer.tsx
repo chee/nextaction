@@ -8,7 +8,6 @@ import {useNavigate} from "@solidjs/router"
 import {encodeJSON} from "::core/util/compress.ts"
 import {useUserId} from "::domain/identity/user-id.ts"
 import {useHomeContext} from "::domain/useHome.ts"
-import {createArea} from "::shapes/area.ts"
 
 export default function SidebarFooter() {
 	const home = useHomeContext()
@@ -57,7 +56,7 @@ export default function SidebarFooter() {
 								</p>
 							</div>
 						</DropdownMenu.Item> */}
-						<DropdownMenu.Item
+						{/* <DropdownMenu.Item
 							class="popmenu__item"
 							onSelect={() => {
 								const string = self.prompt(
@@ -77,7 +76,7 @@ export default function SidebarFooter() {
 									Import a project or area from a friend
 								</p>
 							</div>
-						</DropdownMenu.Item>
+						</DropdownMenu.Item> */}
 					</DropdownMenu.Content>
 				</DropdownMenu.Portal>
 			</DropdownMenu>

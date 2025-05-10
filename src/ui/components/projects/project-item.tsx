@@ -9,6 +9,7 @@ import type {Project} from "::domain/useProject.ts"
 import type {SelectableProps} from "::viewmodels/selection/useSelection.ts"
 import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
 import InlineWhen from "../when/inline-when.tsx"
+import {Suspense} from "solid-js"
 
 export function ProgressPie(props: {
 	progress: number
@@ -31,75 +32,78 @@ export function ProjectItem(
 	const nav = useNavigate()
 	const dnd = useDragAndDrop()
 	return (
-		<article
-			class={clsx(
-				bemby(
-					"project-item",
-					props.modifiers,
-					{
-						current: props.selected,
-						closed: isClosed(props),
-						today: isToday(props),
-						someday: props.when === "someday",
-					},
-					props.state
-				)
-			)}
-			ref={element => {
-				dnd.createDraggableListItem(element, () => props.url)
-			}}
-			role="listitem"
-			aria-current={props.selected}
-			onClick={event => {
-				if (event.metaKey) {
-					if (props.selected) {
-						props.removeSelected()
+		<Suspense>
+			<article
+				class={clsx(
+					bemby(
+						"project-item",
+						props.modifiers,
+						{
+							current: props.selected,
+							closed: isClosed(props),
+							today: isToday(props),
+							someday: props.when === "someday",
+						},
+						props.state
+					)
+				)}
+				ref={element => {
+					dnd.createDraggableListItem(element, () => props.url)
+				}}
+				role="listitem"
+				aria-current={props.selected}
+				onClick={event => {
+					if (event.metaKey) {
+						if (props.selected) {
+							props.removeSelected()
+						} else {
+							props.addSelected()
+						}
+					} else if (event.shiftKey) {
+						props.addSelectedRange()
 					} else {
-						props.addSelected()
+						props.select()
 					}
-				} else if (event.shiftKey) {
-					props.addSelectedRange()
-				} else {
-					props.select()
-				}
-			}}
-			onDblClick={() => {
-				nav(`/projects/${props.url}`)
-			}}>
-			<header class="project-item__header">
-				{/* todo debug & magic project checkbox */}
-				{/* <Checkbox {...props} /> */}
-				<span class="project-item__progress">
-					<ProgressPie
-						progress={props.progress}
-						modifiers={{
-							dashed: props.when == "someday",
-						}}
-					/>
-				</span>
-				<InlineWhen when={props.when} />
-				<h3 id={`${props.url}-title`} class="project-item__title">
-					<span class="project-item__title-icon">{props.icon}</span>
-					<Show
-						when={props.title}
-						fallback={
-							<span class="project-item__title-placeholder">New project</span>
-						}>
-						<span class="project-item__title-text">{props.title}</span>
-					</Show>
-				</h3>
-				<div class="project-item__indicators">
-					<span
-						class="project-item__count"
-						aria-label={`Number of open items: ${4}`}>
-						{4}
+				}}
+				onDblClick={() => {
+					nav(`/projects/${props.url}`)
+				}}>
+				<header class="project-item__header">
+					{/* todo debug & magic project checkbox */}
+					{/* <Checkbox {...props} /> */}
+					<span class="project-item__progress">
+						<ProgressPie
+							progress={props.progress}
+							modifiers={{
+								dashed: props.when == "someday",
+							}}
+						/>
 					</span>
-					<Show when={props.notes.trim()}>
-						<NotesIcon />
-					</Show>
-				</div>
-			</header>
-			<footer class="project-item__footer" />
-		</article>
+
+					<h3 id={`${props.url}-title`} class="project-item__title">
+						<InlineWhen when={props.when} />
+						<span class="project-item__title-icon">{props.icon}</span>
+						<Show
+							when={props.title}
+							fallback={
+								<span class="project-item__title-placeholder">New project</span>
+							}>
+							<span class="project-item__title-text">{props.title}</span>
+						</Show>
+					</h3>
+					<div class="project-item__indicators">
+						<span
+							class="project-item__count"
+							aria-label={`Number of open items: ${4}`}>
+							{4}
+						</span>
+						<Show when={props.notes.trim()}>
+							<NotesIcon />
+						</Show>
+					</div>
+				</header>
+				<footer class="project-item__footer" />
+			</article>
+		</Suspense>
 	)
 }

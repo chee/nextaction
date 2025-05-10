@@ -110,6 +110,15 @@
 	border: 1px solid var(--project-heading-container-line);
 	border-radius: 5px;
 	transition: border-color 0.2 ease-out;
+	.action[aria-expanded="true"] {
+		border-radius: 0;
+		border-inline: 0;
+		padding-bottom: 0;
+		margin-bottom: 0;
+		&:last-child {
+			border-bottom: 0;
+		}
+	}
 }
 
 .project-heading-container + .action {
