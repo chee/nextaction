@@ -39,7 +39,7 @@ export function useArea(url: Accessor<AreaURL>, repo = defaultRepo): Area {
 			})
 		},
 		get deleted() {
-			return area()?.deleted ?? false
+			return area() ? area()!.deleted ?? false : true
 		},
 		toString() {
 			return dedent`\

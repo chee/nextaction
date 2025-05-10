@@ -1,4 +1,4 @@
-import {type Accessor} from "solid-js"
+import {createEffect, type Accessor} from "solid-js"
 import {useDocument} from "solid-automerge"
 import {
 	DoableShape,
@@ -55,7 +55,7 @@ export function useDoableMixin(
 			})
 		},
 		get deleted() {
-			return item()?.deleted ?? false
+			return item() ? item()!.deleted ?? false : true
 		},
 		set deleted(value: boolean) {
 			handle()?.change(item => {

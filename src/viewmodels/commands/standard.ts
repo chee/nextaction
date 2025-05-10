@@ -33,16 +33,22 @@ export function createNewActionCommand(payload: {
 
 			let targetParentURL = payload.fallbackURL
 			if (bottom) {
-				if (bottomType == "heading") {
+				if (bottomType == "heading" && bottom) {
 					targetParentURL = bottom as HeadingURL
 				} else {
-					targetParentURL = getParentURL(bottom)
+					const target = getParentURL(bottom)
+					if (target) {
+						targetParentURL = target
+					}
 				}
 			}
 
 			const url = createAction(access(payload.template))
 
 			const parent = useModelAfterDark(targetParentURL)
+			if (!parent) {
+				console.error("Parent not found", targetParentURL, payload.fallbackURL)
+			}
 			parent.addItem(
 				"action",
 				url,
@@ -173,6 +179,7 @@ export function createDeleteCommand(payload: {
 
 				if (item) {
 					if (item.type == "action") {
+						console.log(item.deleted)
 						item.delete()
 					} else if (item.type == "heading") {
 						item.toggleArchived(true)
@@ -188,6 +195,7 @@ export function createDeleteCommand(payload: {
 				undo() {
 					for (const url of selected) {
 						const item = useModelAfterDark(url) as Action | Project | Heading
+
 						if (item) {
 							if (item.type == "action") {
 								item.undelete()

@@ -26,7 +26,7 @@ import {createSimpleDraggable} from "::viewmodels/dnd/dnd-context.ts"
 import {isHeading} from "::domain/useHeading.ts"
 import {isAction} from "::domain/useAction.ts"
 import {isArea, type Area} from "::domain/useArea.ts"
-import {icons} from "../../styles/themes/themes.js"
+import {icons} from "../../styles/themes/themes.ts"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol

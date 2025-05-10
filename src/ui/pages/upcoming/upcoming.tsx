@@ -95,7 +95,7 @@ export default function UpcomingView() {
 		})
 	)
 
-	const upcoming = usePageContext({
+	const upcoming = usePageContext<"area">({
 		items: sorted,
 		selectableItemFilter: selectableItemFilter as (
 			item: ChildEntitiesFor<"area">

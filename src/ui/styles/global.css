@@ -1,8 +1,2 @@
 @import url("./base/base.css");
 @import url("./components/components.css");
-
-@media (width: 600px) {
-	:root {
-		font-size: 22px;
-	}
-}

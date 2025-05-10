@@ -38,7 +38,7 @@ function useDE(
 		case "heading":
 			return useHeading(() => r.url as HeadingURL)
 		default:
-			throw new Error("Invalid reference type")
+			return undefined
 	}
 }
 

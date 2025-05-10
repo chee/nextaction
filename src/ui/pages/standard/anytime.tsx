@@ -17,6 +17,8 @@ import {
 	createNewActionCommand,
 } from "::viewmodels/commands/standard.ts"
 import {icons} from "../../styles/themes/themes.ts"
+import {createEffect} from "solid-js"
+import {on} from "solid-js"
 
 export default function AnytimeView() {
 	const home = useHomeContext()
@@ -35,16 +37,24 @@ export default function AnytimeView() {
 	}
 
 	const commandRegistry = useCommandRegistry()
-	commandRegistry.addCommand(
-		createNewActionCommand({
-			fallbackURL: home.inbox.url!,
-			selection: anytime.selection,
-			expander: anytime.expander,
-		})
+
+	createEffect(
+		on(
+			() => home.url,
+			homeURL => {
+				commandRegistry.addCommand(
+					createNewActionCommand({
+						fallbackURL: homeURL,
+						selection: anytime.selection,
+						expander: anytime.expander,
+					})
+				)
+				commandRegistry.addCommand(createDeleteCommand(anytime))
+				commandRegistry.addCommand(createCompleteCommand(anytime))
+				commandRegistry.addCommand(createCancelCommand(anytime))
+			}
+		)
 	)
-	commandRegistry.addCommand(createDeleteCommand(anytime))
-	commandRegistry.addCommand(createCompleteCommand(anytime))
-	commandRegistry.addCommand(createCancelCommand(anytime))
 
 	const {dnd, expander} = anytime
 
@@ -85,32 +95,37 @@ export default function AnytimeView() {
 									</Match>
 									<Match when={isArea(item)}>
 										<Show
-											when={(item as Area).items.filter(anytime.filter).length}>
-											<Switch>
-												<Match when={isProject(item)}>
-													<GroupedProject
-														project={item as Project}
-														selection={anytime.selection}
-														expander={expander}
-														filter={anytime.filter}
-														toggleActionCompleted={toggleCompleted}
-														toggleActionCanceled={toggleCanceled}
-													/>
-												</Match>
-												<Match when={isAction(item)}>
-													<TodayAction
-														action={item as Action}
-														selection={anytime.selection}
-														expander={expander}
-														toggleCompleted={() =>
-															toggleCompleted(item as Action)
-														}
-														toggleCanceled={() =>
-															toggleCanceled(item as Action)
-														}
-													/>
-												</Match>
-											</Switch>
+											when={(item as Area).flat.filter(anytime.filter).length}>
+											<For each={(item as Area).items}>
+												{item => (
+													<Switch>
+														<Match when={isProject(item)}>
+															<GroupedProject
+																project={item as Project}
+																selection={anytime.selection}
+																expander={expander}
+																filter={anytime.filter}
+																toggleActionCompleted={toggleCompleted}
+																toggleActionCanceled={toggleCanceled}
+															/>
+														</Match>
+														<Match
+															when={isAction(item) && anytime.filter(item)}>
+															<TodayAction
+																action={item as Action}
+																selection={anytime.selection}
+																expander={expander}
+																toggleCompleted={() =>
+																	toggleCompleted(item as Action)
+																}
+																toggleCanceled={() =>
+																	toggleCanceled(item as Action)
+																}
+															/>
+														</Match>
+													</Switch>
+												)}
+											</For>
 										</Show>
 									</Match>
 								</Switch>

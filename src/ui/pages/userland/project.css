@@ -112,11 +112,13 @@
 	transition: border-color 0.2 ease-out;
 	.action[aria-expanded="true"] {
 		border-radius: 0;
-		border-inline: 0;
+		margin-left: -4px;
+		width: calc(100% + 8px);
 		padding-bottom: 0;
 		margin-bottom: 0;
 		&:last-child {
-			border-bottom: 0;
+			border-bottom-left-radius: var(--project-heading-radius);
+			border-bottom-right-radius: var(--project-heading-radius);
 		}
 	}
 }

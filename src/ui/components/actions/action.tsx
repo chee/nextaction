@@ -19,7 +19,6 @@ import {isToday} from "::shapes/mixins/doable.ts"
 import {modshift} from "../../hotkeys/useHotkeys.ts"
 import When from "../when/when.tsx"
 import InlineWhen from "../when/inline-when.tsx"
-import {Suspense} from "solid-js"
 
 export default function ActionItem(
 	props: {

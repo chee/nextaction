@@ -37,6 +37,13 @@ export function useListMixin<
 	const [list, handle] = useDocument<{items: R[]}>(url, {repo})
 
 	createEffect(() => {
+		// console.log(handle())
+		if (handle()?.state == "unavailable") {
+			console.log("this happens?")
+		}
+	})
+
+	createEffect(() => {
 		const u = url()
 		if (u) {
 			registerType(u as keyof ConceptRegistry, type)

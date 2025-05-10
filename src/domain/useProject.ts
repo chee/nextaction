@@ -11,7 +11,7 @@ import {useTitleableMixin, type TitleableMixin} from "./mixins/titleable.ts"
 import {dedent} from "@qnighy/dedent"
 import {type Reference, type ReferencePointer} from "::shapes/reference.ts"
 import defaultRepo from "::core/sync/automerge.ts"
-import {createMemo} from "solid-js"
+import {createEffect, createMemo} from "solid-js"
 import {isClosed} from "::shapes/mixins/doable.ts"
 
 export function useProject(

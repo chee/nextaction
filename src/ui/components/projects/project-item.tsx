@@ -9,7 +9,6 @@ import type {Project} from "::domain/useProject.ts"
 import type {SelectableProps} from "::viewmodels/selection/useSelection.ts"
 import {useDragAndDrop} from "::viewmodels/dnd/dnd-context.ts"
 import InlineWhen from "../when/inline-when.tsx"
-import {Suspense} from "solid-js"
 
 export function ProgressPie(props: {
 	progress: number

@@ -1,12 +1,5 @@
 import "./project.css"
-import {
-	createEffect,
-	createMemo,
-	createSignal,
-	For,
-	Show,
-	Suspense,
-} from "solid-js"
+import {createEffect, createMemo, createSignal, For, Show} from "solid-js"
 import {useLocation, useParams} from "@solidjs/router"
 import NotesEditor from "::ui/components/text-editor/editors/notes-editor.tsx"
 import TitleEditor from "::ui/components/text-editor/editors/title-editor.tsx"

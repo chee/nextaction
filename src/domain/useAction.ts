@@ -27,7 +27,7 @@ export function useAction(
 			return handle()?.url as ActionURL
 		},
 		get deleted() {
-			return action()?.deleted ?? false
+			return action() ? action()?.deleted ?? false : true
 		},
 		undelete() {
 			handle()?.change(project => {

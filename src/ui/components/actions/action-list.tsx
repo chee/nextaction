@@ -1,6 +1,5 @@
 import "./action-list.css"
 import bemby, {type BembyModifier, type BembyModifiers} from "bemby"
-import {Suspense} from "solid-js"
 import {For} from "solid-js"
 import ActionItem from "::ui/components/actions/action.tsx"
 import type {Action} from "::domain/useAction.ts"

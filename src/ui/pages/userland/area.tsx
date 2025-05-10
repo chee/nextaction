@@ -29,7 +29,6 @@ import {
 import {on} from "solid-js"
 import {useArea} from "::domain/useArea.ts"
 import {ProjectItem} from "../../components/projects/project-item.tsx"
-import {Suspense} from "solid-js"
 
 const log = debug("nextaction:area")
 

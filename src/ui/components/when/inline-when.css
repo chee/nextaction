@@ -1,4 +1,5 @@
 .inline-when {
+	margin-right: var(--space-1);
 	[aria-expanded="true"] & {
 		display: none;
 	}
@@ -9,7 +10,6 @@
 }
 
 .inline-when__label {
-	margin-right: var(--space-1);
 	display: inline;
 	white-space: nowrap;
 	flex-direction: column;

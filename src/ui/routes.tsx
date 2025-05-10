@@ -12,6 +12,10 @@ import "./styles/themes/themes.ts"
 render(
 	() => (
 		<Router root={App}>
+			<Route
+				path="/widget"
+				component={lazy(() => import("./pages/widget.tsx"))}
+			/>
 			<Route path="/share" component={() => "not implemented"} />
 
 			<Route

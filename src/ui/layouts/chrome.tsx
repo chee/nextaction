@@ -22,7 +22,6 @@ import {createEventListener} from "@solid-primitives/event-listener"
 import {clsx} from "@nberlette/clsx"
 import {ReactiveSet} from "@solid-primitives/set"
 import {ErrorBoundary} from "solid-js"
-import {on} from "node:events"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
 
@@ -284,29 +283,5 @@ export default function Chrome(props: {children?: JSX.Element}) {
 				</ErrorBoundary>
 			</CommandRegistryProvider>
 		</UserContext.Provider>
-	)
-}
-
-function SidebarCollapseIcon() {
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 256 256"
-			fill="currentColor"
-			style={{height: "1rem", width: "1rem"}}>
-			<path d="M216,36H40A20,20,0,0,0,20,56V200a20,20,0,0,0,20,20H216a20,20,0,0,0,20-20V56A20,20,0,0,0,216,36ZM44,60H76V196H44ZM212,196H100V60H212Z" />
-		</svg>
-	)
-}
-
-function SidebarExpandIcon() {
-	return (
-		<svg
-			xmlns="http://www.w3.org/2000/svg"
-			viewBox="0 0 256 256"
-			fill="currentColor"
-			style={{height: "1rem", width: "1rem"}}>
-			<path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,160H88V56H216V200Z" />
-		</svg>
 	)
 }

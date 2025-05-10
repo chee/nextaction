@@ -48,7 +48,7 @@ export function isSomeday(thing: WhenableShape): boolean {
 }
 
 export function isAnytime(thing: WhenableShape & {type: ConceptName}): boolean {
-	return thing.type == "action" && (!thing.when || isToday(thing))
+	return isDoable(thing) && (!thing.when || isToday(thing))
 }
 
 function midnightify(date: Date): Date {

@@ -85,32 +85,43 @@ export default function Today() {
 
 									<Match when={isArea(item)}>
 										<Show
-											when={(item as Area).items.filter(today.filter).length}>
-											<Switch>
-												<Match when={isProject(item)}>
-													<TodayProject
-														project={item as Project}
-														selection={
-															today.selection as SelectionContext<ProjectURL>
-														}
-														expander={today.expander}
-														filter={today.filter}
-														toggleItemCompleted={today.toggleCompleted}
-														toggleItemCanceled={today.toggleCanceled}
-													/>
-												</Match>
-												<Match when={isAction(item)}>
-													<TodayAction
-														action={item as Action}
-														selection={
-															today.selection as SelectionContext<ActionURL>
-														}
-														expander={today.expander}
-														toggleCompleted={() => today.toggleCompleted(item)}
-														toggleCanceled={() => today.toggleCanceled(item)}
-													/>
-												</Match>
-											</Switch>
+											when={(item as Area).flat.filter(today.filter).length}>
+											<For each={(item as Area).items}>
+												{item => {
+													return (
+														<Switch>
+															<Match when={isProject(item)}>
+																<TodayProject
+																	project={item as Project}
+																	selection={
+																		today.selection as SelectionContext<ProjectURL>
+																	}
+																	expander={today.expander}
+																	filter={today.filter}
+																	toggleItemCompleted={today.toggleCompleted}
+																	toggleItemCanceled={today.toggleCanceled}
+																/>
+															</Match>
+															<Match
+																when={isAction(item) && today.filter(item)}>
+																<TodayAction
+																	action={item as Action}
+																	selection={
+																		today.selection as SelectionContext<ActionURL>
+																	}
+																	expander={today.expander}
+																	toggleCompleted={() =>
+																		today.toggleCompleted(item)
+																	}
+																	toggleCanceled={() =>
+																		today.toggleCanceled(item)
+																	}
+																/>
+															</Match>
+														</Switch>
+													)
+												}}
+											</For>
 										</Show>
 									</Match>
 								</Switch>
