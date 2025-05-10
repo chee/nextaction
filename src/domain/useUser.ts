@@ -8,7 +8,7 @@ import {useUserId} from "::domain/identity/user-id.ts"
 
 export function useUser(repo = defaultRepo): User {
 	const [userId] = useUserId()
-	console.log("userId", userId())
+
 	const [user, handle] = useDocument<UserShape>(userId, {repo})
 	return {
 		type: "user" as const,
