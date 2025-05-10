@@ -3,7 +3,7 @@ import "../components/checkbox/action-checkbox.css"
 import {useUser} from "::domain/useUser.ts"
 import {For} from "solid-js"
 import {icons} from "../styles/themes/themes.ts"
-import {isDoable, isToday} from "::shapes/mixins/doable.ts"
+import {isDoable, isOpen, isToday} from "::shapes/mixins/doable.ts"
 import bemby from "bemby"
 import {createSignal} from "solid-js"
 import {createEffect} from "solid-js"
@@ -27,7 +27,13 @@ export default function WidgetPage() {
 			<ul>
 				<For each={state() ? user.home.list.items : []}>
 					{item => {
-						if (isDoable(item) && isToday(item) && item.title) {
+						if (
+							isDoable(item) &&
+							isToday(item) &&
+							isOpen(item) &&
+							!item.deleted &&
+							item.title
+						) {
 							return (
 								<li>
 									<Show
