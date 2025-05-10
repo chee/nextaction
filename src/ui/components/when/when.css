@@ -85,7 +85,7 @@
 	background: var(--page-fill);
 	border: 1px solid transparent;
 	height: 1.5em;
-	padding-block: var(--space-1);
+	/* padding-block: var(--space-1); */
 	padding-inline: 0;
 	border-radius: 3px;
 	white-space: nowrap;
@@ -115,7 +115,7 @@
 	}
 
 	span {
-		padding-inline: var(--space-2);
+		padding-inline: var(--space-1);
 	}
 }
 

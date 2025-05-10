@@ -25,7 +25,8 @@ import type {
 } from ":concepts:"
 import defaultRepo from "::core/sync/automerge.ts"
 import {registerType, type ConceptRegistry} from "::registries/type-registry.ts"
-import {registerParent} from "::registries/parent-registry.ts"
+import {getParentURL, registerParent} from "::registries/parent-registry.ts"
+import {DocumentEventListener} from "@solid-primitives/event-listener"
 
 export function useListMixin<
 	T extends AnyParentType,
@@ -37,9 +38,18 @@ export function useListMixin<
 	const [list, handle] = useDocument<{items: R[]}>(url, {repo})
 
 	createEffect(() => {
-		// console.log(handle())
-		if (handle()?.state == "unavailable") {
-			console.log("this happens?")
+		if (url()) {
+			repo.find(url()!).catch(() => {
+				const parent = repo.find(getParentURL(url()!)).then(parent => {
+					parent.change(doc => {
+						const index = doc.items.findIndex(item => item.url == url())
+						if (index != -1) {
+							doc.items.splice(index, 1)
+						}
+						location.reload()
+					})
+				})
+			})
 		}
 	})
 
