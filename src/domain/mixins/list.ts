@@ -46,8 +46,8 @@ export function useListMixin<
 						if (index != -1) {
 							doc.items.splice(index, 1)
 						}
-						location.reload()
 					})
+					location.reload()
 				})
 			})
 		}

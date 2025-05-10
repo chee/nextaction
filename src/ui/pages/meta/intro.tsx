@@ -1,7 +1,7 @@
 import {Button} from "@kobalte/core/button"
 import "./intro.css"
 import {useNavigate} from "@solidjs/router"
-import {createEffect} from "solid-js"
+import {createEffect, createSignal} from "solid-js"
 import {toast} from "::ui/components/base/toast.tsx"
 import {decodeJSON} from "::core/util/compress.ts"
 import {useUserId} from "::domain/identity/user-id.ts"
@@ -21,6 +21,8 @@ export default function Intro() {
 			nav("/today")
 		}
 	}
+
+	const [txt, setTxt] = createSignal("")
 
 	return (
 		<article class="intro">
@@ -43,7 +45,7 @@ export default function Intro() {
 						onClick={() => {
 							const code = prompt(
 								"paste the share code you got from your other device"
-							)
+							)?.trim()
 							if (code) {
 								const result = decodeJSON<UserRef | unknown>(code)
 								if (isUserRef(result)) {
@@ -61,6 +63,30 @@ export default function Intro() {
 					</Button>
 				</div>
 			</div>
+			<form
+				style={{position: "fixed", bottom: 0}}
+				onSubmit={() => {
+					if (txt().trim()) {
+						const result = decodeJSON<UserRef | unknown>(txt().trim())
+						if (isUserRef(result)) {
+							setUserId(result.url)
+						} else {
+							toast.show({
+								title: "didn't work",
+								body: "sorry",
+								modifiers: "ohno",
+							})
+						}
+					}
+				}}>
+				<input
+					type="text"
+					value={txt()}
+					onInput={event => setTxt(event.target.value)}></input>
+				<button type="submit" style={{opacity: 0}}>
+					ok
+				</button>
+			</form>
 		</article>
 	)
 }

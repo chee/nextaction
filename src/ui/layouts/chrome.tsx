@@ -25,6 +25,10 @@ import {ErrorBoundary} from "solid-js"
 
 const isMobile = createMediaQuery("(max-width: 600px)")
 
+// todo and use in sidebar and use to close sidebar when Add To Sidebar butto
+// nis showing
+// export const SidebarContext = createContext()
+
 export default function Chrome(props: {children?: JSX.Element}) {
 	const user = useUser()
 	// eslint-disable-next-line solid/reactivity
