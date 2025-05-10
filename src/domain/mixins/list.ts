@@ -53,10 +53,7 @@ export function useListMixin<
 	})
 
 	const itemURLs = mapArray(
-		() =>
-			list()?.items.filter(
-				item => item.url != "automerge:Gv1WTGSGQ1kjdHoSgXMK6ixiAfM"
-			),
+		() => list()?.items,
 		ref => {
 			registerType(ref.url, ref.type)
 			registerParent(ref.url, url())
