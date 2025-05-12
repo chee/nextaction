@@ -2,10 +2,18 @@ import "./when.css"
 import Calendar from "@corvu/calendar"
 import Popover from "@corvu/popover"
 import {Index, Match, Show, Switch} from "solid-js"
-import {isToday, isTomorrow, isYesterday} from "::shapes/mixins/doable.ts"
+import {
+	isSomeday,
+	isToday,
+	isTomorrow,
+	isYesterday,
+} from "::shapes/mixins/doable.ts"
 import type {Action} from "::domain/useAction.ts"
 import bemby from "bemby"
 import {icons} from "../../styles/themes/themes.ts"
+import {Button} from "@kobalte/core/button"
+
+// todo do this as a Command
 
 export default function When(action: Action) {
 	const reset = (
@@ -42,9 +50,13 @@ export default function When(action: Action) {
 			<Popover
 				placement="bottom-start"
 				floatingOptions={{
+					inline: true,
 					offset: 5,
-					// flip: true,
-					autoPlacement: true,
+					flip: true,
+					autoPlacement: {
+						allowedPlacements: ["top", "bottom"],
+						padding: 5,
+					},
 				}}
 				// initialFocusEl={calendar.focusedDayRef ?? undefined}
 				trapFocus>
@@ -60,7 +72,8 @@ export default function When(action: Action) {
 						<>
 							<Popover.Trigger
 								class={bemby("when-button", {
-									placeholder: !(action.when instanceof Date),
+									placeholder:
+										action.when != "someday" && !(action.when instanceof Date),
 									active:
 										action.when instanceof Date || action.when == "someday",
 									someday: action.when == "someday",
@@ -129,6 +142,32 @@ export default function When(action: Action) {
 							<Popover.Portal>
 								{/* todo pull this part out */}
 								<Popover.Content class="popmenu">
+									<div class="when__choices">
+										<Button
+											onClick={() => action.setWhen("today")}
+											class={bemby("when__choice", {
+												active: isToday(action),
+											})}
+											aria-pressed={isToday(action)}>
+											{icons.today} Today
+										</Button>
+										<Button
+											onClick={() => action.setWhen("tomorrow")}
+											class={bemby("when__choice", {
+												active: isTomorrow(action),
+											})}
+											aria-pressed={isTomorrow(action)}>
+											{icons.upcoming} Tomorrow
+										</Button>
+										<Button
+											onClick={() => action.setWhen("someday")}
+											class={bemby("when__choice", {
+												active: isSomeday(action),
+											})}
+											aria-pressed={isSomeday(action)}>
+											{icons.someday} Someday
+										</Button>
+									</div>
 									<div class="when-calendar">
 										<nav class="when-calendar__nav">
 											<Calendar.Nav action="prev-month">⏮</Calendar.Nav>

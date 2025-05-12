@@ -3,6 +3,8 @@ import {EditorState, type Extension} from "@codemirror/state"
 import {Show} from "solid-js"
 import Editor from "::ui/components/text-editor/text-editor.tsx"
 import type {BembyModifiers, BembyModifier} from "bemby"
+import {HighlightStyle, syntaxHighlighting} from "@codemirror/language"
+import {tags} from "@lezer/highlight"
 
 export default function TitleEditor(props: {
 	doc: string
@@ -33,6 +35,7 @@ export default function TitleEditor(props: {
 					EditorState.transactionFilter.of(tr =>
 						tr.newDoc.lines > 1 ? [] : tr
 					),
+					syntaxHighlighting(plain),
 					...(props.extensions || []),
 				]}
 				syncExtension={props.syncExtension!}
@@ -61,3 +64,10 @@ export default function TitleEditor(props: {
 		</Show>
 	)
 }
+
+const plain = HighlightStyle.define([
+	{
+		tag: tags.content,
+		fontFamily: "var(--family-sans)",
+	},
+])

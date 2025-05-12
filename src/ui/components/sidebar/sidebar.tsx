@@ -12,7 +12,12 @@ import {useDoableMixin} from "::domain/mixins/doable.ts"
 import type {ActionRef, ActionURL} from "::shapes/action.ts"
 import {encodeJSON} from "::core/util/compress.ts"
 import {useModel, useModelAfterDark} from "::domain/useModel.ts"
-import type {AnyParentType, ChildURLsFor} from ":concepts:"
+import type {
+	AnyParent,
+	AnyParentShape,
+	AnyParentType,
+	ChildURLsFor,
+} from ":concepts:"
 import {useHomeContext} from "::domain/useHome.ts"
 import {getParentURL} from "::registries/parent-registry.ts"
 import {getType} from "::registries/type-registry.ts"
@@ -359,7 +364,10 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 					<ContextMenu.Item
 						class="popmenu__item popmenu__item--danger"
 						onSelect={() => {
-							home.list.removeItemByRef(props.project)
+							const parentURL = getParentURL(props.project.url)
+							;(useModelAfterDark(parentURL) as AnyParent).removeItemByRef([
+								props.project,
+							])
 						}}>
 						Remove from Sidebar
 					</ContextMenu.Item>

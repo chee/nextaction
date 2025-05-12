@@ -4,6 +4,8 @@
 }
 
 .text-editor--readonly {
+	font-family: var(--family-sans);
+
 	cursor: default !important;
 	user-select: none !important;
 	&,
@@ -18,5 +20,20 @@
 		background: transparent;
 		display: none;
 		user-select: none;
+	}
+}
+
+.text-editor {
+	.cm-line {
+		font-family: var(--family-sans);
+	}
+	.cm-bullet {
+		font-size: 3rem;
+		line-height: 1rem;
+		vertical-align: middle;
+		overflow: hidden;
+		display: inline-block;
+		height: 1rem;
+		width: 1rem;
 	}
 }

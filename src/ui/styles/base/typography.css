@@ -1,6 +1,7 @@
 :root {
 	--family-sans: "Jost*", "Jost", sans-serif;
-	--family-mono: "JetBrains Mono", "Courier New", Courier, monospace;
+	--family-mono: "Iosevka Rabbits", "JetBrains Mono", "Consolas", "Fira Code",
+		"Monaco", "Courier New", monospace;
 
 	--font-size: 1rem;
 	--font-size-1: calc(var(--font-size) * 3);

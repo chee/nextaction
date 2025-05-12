@@ -125,3 +125,33 @@
 		opacity: 1;
 	}
 }
+
+.when__choices {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-evenly;
+	margin-bottom: var(--space-3);
+}
+
+.when__choice {
+	font-weight: 600;
+	border: 1px solid transparent;
+	border-radius: 3px;
+	&:hover {
+		background: var(--primary-dark);
+	}
+	white-space: nowrap;
+	overflow: hidden;
+	text-align: left;
+}
+
+.when__choice[aria-pressed="true"] {
+	&::after {
+		content: "✔︎";
+		margin-left: var(--space-1);
+		color: var(--primary-dark);
+	}
+	&:hover::after {
+		color: var(--primary-light);
+	}
+}

@@ -129,11 +129,6 @@ export default function Editor(props: {
 
 // todo make theme be based on the css props
 export const theme = {
-	"*": {
-		"font-family": "var(--family-sans)",
-		"font-size": "inherit",
-		color: "var(--text-editor-text-color)",
-	},
 	".cm-placeholder": {
 		color: "var(--text-editor-placeholder-color)",
 	},
@@ -143,6 +138,9 @@ export const theme = {
 	"&.cm-editor .cm-cursor": {
 		"border-left-color": `var(--caret-color)`,
 		"border-left-width": "2px",
+		"font-family": "var(--family-sans)",
+		"font-size": "inherit",
+		color: "var(--text-editor-text-color)",
 	},
 	"&.cm-editor": {
 		width: "100%",

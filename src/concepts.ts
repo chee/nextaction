@@ -113,12 +113,12 @@ export type TypeFromURL<U> = U extends HomeURL
 	: never
 export type AnyRef = ConceptReferenceMap[keyof ConceptReferenceMap]
 export type AnyConceptURL = ConceptURLMap[keyof ConceptURLMap]
-export type AnyConceptModel = ConceptShapeMap[keyof ConceptShapeMap]
+export type AnyConceptShape = ConceptShapeMap[keyof ConceptShapeMap]
 export type AnyConcept = ConceptModelMap[keyof ConceptModelMap]
 
 export type AnyParentType = "home" | "inbox" | "area" | "project" | "heading"
 export type AnyParentURL = ConceptURLMap[AnyParentType]
-export type AnyParentModel = ConceptShapeMap[AnyParentType]
+export type AnyParentShape = ConceptShapeMap[AnyParentType]
 export type AnyParent = ConceptModelMap[AnyParentType]
 export type AnyParentRef = ConceptReferenceMap[AnyParentType]
 export type AnyChildType = "area" | "project" | "heading" | "action"
