@@ -28,7 +28,8 @@ export function createNewActionCommand(payload: {
 		label: "New Action",
 		shortcut: "space",
 		exe() {
-			const bottom = payload.selection.lastSelected()
+			const bottom =
+				payload.selection.lastSelected() ?? payload.expander.expanded()
 			const bottomType = getType(bottom)
 
 			let targetParentURL = payload.fallbackURL
