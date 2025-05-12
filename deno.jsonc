@@ -71,6 +71,7 @@
 		"solid-automerge": "npm:solid-automerge@^1.0.0-beta.8",
 		"solid-click-outside": "npm:solid-click-outside@^0.0.1",
 		"solid-command-palette": "npm:solid-command-palette@^1.0.0",
+		"solid-devtools": "npm:solid-devtools@^0.34.0",
 		"solid-dismissible": "npm:solid-dismissible@^0.1.1",
 		"solid-focus-trap": "npm:solid-focus-trap@^0.1.9",
 		"solid-js": "npm:solid-js@^1.9.6",

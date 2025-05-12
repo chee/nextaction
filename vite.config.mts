@@ -4,10 +4,15 @@ import wasm from "vite-plugin-wasm"
 import {VitePWA} from "vite-plugin-pwa"
 import autoprefixer from "autoprefixer"
 import deno from "@deno/vite-plugin"
+import devtools from "solid-devtools/vite"
 
 export default defineConfig({
 	plugins: [
 		deno(),
+		devtools({
+			autoname: true,
+			locator: true,
+		}),
 		solid(),
 		// @ts-expect-error this is actually a real vite plugin
 		wasm(),

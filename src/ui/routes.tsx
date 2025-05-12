@@ -5,6 +5,7 @@ import {render} from "solid-js/web"
 import {Route, Router} from "@solidjs/router"
 import App from "./layouts/app.tsx"
 import "./styles/themes/themes.ts"
+import "solid-devtools"
 
 // todo
 // https://developer.mozilla.org/en-US/docs/Web/API/Web_Periodic_Background_Synchronization_API#browser_compatibility

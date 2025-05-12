@@ -54,6 +54,7 @@
     "npm:solid-automerge@^1.0.0-beta.8": "1.0.0-beta.8_@automerge+automerge-repo@2.0.0-beta.5_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-click-outside@^0.0.1": "0.0.1_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-command-palette@1": "1.0.0_fuse.js@7.1.0_solid-js@1.9.6__seroval@1.3.0_solid-transition-group@0.3.0__solid-js@1.9.6___seroval@1.3.0_tinykeys@3.0.0",
+    "npm:solid-devtools@0.34": "0.34.0_solid-js@1.9.6__seroval@1.3.0_vite@6.3.5__picomatch@4.0.2_@babel+core@7.27.1",
     "npm:solid-dismissible@~0.1.1": "0.1.1_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-focus-trap@~0.1.9": "0.1.9_solid-js@1.9.6__seroval@1.3.0",
     "npm:solid-js@^1.9.6": "1.9.6_seroval@1.3.0",
@@ -492,6 +493,13 @@
     },
     "@babel/plugin-syntax-jsx@7.27.1_@babel+core@7.27.1": {
       "integrity": "sha512-y8YTNIeKoyhGd9O0Jiyzyyqk8gdjnumGTQPsz0xOZOQ2RmkVJeZ1vmmfIvFEKqucBG6axJGBZDE/7iI5suUI/w==",
+      "dependencies": [
+        "@babel/core",
+        "@babel/helper-plugin-utils"
+      ]
+    },
+    "@babel/plugin-syntax-typescript@7.25.9_@babel+core@7.27.1": {
+      "integrity": "sha512-hjMgRy5hb8uJJjUcdWunWVcoi9bGpJp8p5Ol1229PoN6aytsLwNMgmdftO23wnCLMfVmTwZDWMPNq/D1SY60JQ==",
       "dependencies": [
         "@babel/core",
         "@babel/helper-plugin-utils"
@@ -1603,6 +1611,9 @@
         "fastq"
       ]
     },
+    "@nothing-but/utils@0.17.0": {
+      "integrity": "sha512-TuCHcHLOqDL0SnaAxACfuRHBNRgNJcNn9X0GiH5H3YSDBVquCr3qEIG3FOQAuMyZCbu9w8nk2CHhOsn7IvhIwQ=="
+    },
     "@rollup/plugin-babel@5.3.1_@babel+core@7.27.1_rollup@2.79.2": {
       "integrity": "sha512-WFfdLWU/xVWKeRQnKmIAQULUI7Il0gZnBIH/ZFO069wYIfPu+8zrfp/KMW0atmELoRDq8FbiP3VCss9MhCut7Q==",
       "dependencies": [
@@ -1767,6 +1778,47 @@
       "os": ["win32"],
       "cpu": ["x64"]
     },
+    "@solid-devtools/debugger@0.27.0_solid-js@1.9.6__seroval@1.3.0": {
+      "integrity": "sha512-z0mqbjKmPUZ3x3mlEVTSbMmlMP+DTHjrk4P2L1Bk6352Oy7CkgAL6UNWuxVGlWGueK+9pL60n53045A0ofoEFQ==",
+      "dependencies": [
+        "@nothing-but/utils",
+        "@solid-devtools/shared",
+        "@solid-primitives/bounds",
+        "@solid-primitives/event-listener",
+        "@solid-primitives/keyboard",
+        "@solid-primitives/platform",
+        "@solid-primitives/rootless",
+        "@solid-primitives/scheduled",
+        "@solid-primitives/static-store",
+        "@solid-primitives/utils",
+        "solid-js"
+      ]
+    },
+    "@solid-devtools/shared@0.19.1_solid-js@1.9.6__seroval@1.3.0": {
+      "integrity": "sha512-bkPrp3dlDveEHqeOyO4v6XqikKCla0A4bGQ3uoYiilPv54LcDUKqrEvQjeSfw26oO8QbGSChetY8OUpT727yug==",
+      "dependencies": [
+        "@nothing-but/utils",
+        "@solid-primitives/event-listener",
+        "@solid-primitives/media",
+        "@solid-primitives/refs",
+        "@solid-primitives/rootless",
+        "@solid-primitives/scheduled",
+        "@solid-primitives/static-store",
+        "@solid-primitives/styles",
+        "@solid-primitives/utils",
+        "solid-js"
+      ]
+    },
+    "@solid-primitives/bounds@0.1.0_solid-js@1.9.6__seroval@1.3.0": {
+      "integrity": "sha512-mPci7ji6cvQIjexYaWgy75mLkip1YxlUijFa8B1PkuYfL13FtGrl1AzPvA2vq8fV5LNysuq3ghwgUFFwaqAR6w==",
+      "dependencies": [
+        "@solid-primitives/event-listener",
+        "@solid-primitives/resize-observer",
+        "@solid-primitives/static-store",
+        "@solid-primitives/utils",
+        "solid-js"
+      ]
+    },
     "@solid-primitives/clipboard@1.6.1_solid-js@1.9.6__seroval@1.3.0": {
       "integrity": "sha512-fsf4pdOahaQbUWQYx3ev3Jy13PqCj6h/d/BoZNf2H8UnIbf7J+4DpJ92K4kmrfGb9J6+FH7oYvEBGM9IAcNjlw==",
       "dependencies": [
@@ -1844,6 +1896,12 @@
         "solid-js"
       ]
     },
+    "@solid-primitives/platform@0.2.0_solid-js@1.9.6__seroval@1.3.0": {
+      "integrity": "sha512-x5Tmed85MxRYMNy7LKV88JBjR7ju7Vd8a56Q7CcyMN0i2sPY8/VB82uT/SFD4ncWDxYWOs5zmwBPQBDPHUNOsw==",
+      "dependencies": [
+        "solid-js"
+      ]
+    },
     "@solid-primitives/props@3.2.1_solid-js@1.9.6__seroval@1.3.0": {
       "integrity": "sha512-SuTuCctLLZbUL1QyWamQGWSWPIgoc/gXt5kL8P2yLhb51f9Dj+WHxU0shXBjzx7z+hDc5KtheQgM4NnJqQJi2A==",
       "dependencies": [
@@ -1898,6 +1956,14 @@
     "@solid-primitives/storage@4.3.2_solid-js@1.9.6__seroval@1.3.0": {
       "integrity": "sha512-Vkuk/AqgUOjz6k7Mo5yDFQBQg8KMQcZfaac/bxLApaza3e5c/iNllNvxZWPM9Vf+Gf4m5SgRbvgsm6dSLJ27Jw==",
       "dependencies": [
+        "@solid-primitives/utils",
+        "solid-js"
+      ]
+    },
+    "@solid-primitives/styles@0.1.0_solid-js@1.9.6__seroval@1.3.0": {
+      "integrity": "sha512-e+JquRLrplp17yObMBosPEltzexyvY/FDFovbRuWVUX4IYk4DvG4jUmvz6uW8nwwA817DEUYIYruj4ocMFWunQ==",
+      "dependencies": [
+        "@solid-primitives/rootless",
         "@solid-primitives/utils",
         "solid-js"
       ]
@@ -4271,6 +4337,21 @@
         "tinykeys"
       ]
     },
+    "solid-devtools@0.34.0_solid-js@1.9.6__seroval@1.3.0_vite@6.3.5__picomatch@4.0.2_@babel+core@7.27.1": {
+      "integrity": "sha512-TpMZMCoxVOe5rkWQoHzly8FTIdfnLu63lls+OfQCu8+EF+11SnkuzVJ7MxsezfXXRxZqtPMwaD20CK79Xvd5hg==",
+      "dependencies": [
+        "@babel/core",
+        "@babel/plugin-syntax-typescript",
+        "@babel/types",
+        "@solid-devtools/debugger",
+        "@solid-devtools/shared",
+        "solid-js",
+        "vite"
+      ],
+      "optionalPeers": [
+        "vite"
+      ]
+    },
     "solid-dismissible@0.1.1_solid-js@1.9.6__seroval@1.3.0": {
       "integrity": "sha512-9kcKBJIMdS+586cA1g63HYWxKh3h89leeNHbPZ1csYjuni+NvPBtNr11l0iEX2AKKEt6FHk6qNhc/gjoYAW1pA==",
       "dependencies": [
@@ -5123,6 +5204,7 @@
       "npm:solid-automerge@^1.0.0-beta.8",
       "npm:solid-click-outside@^0.0.1",
       "npm:solid-command-palette@1",
+      "npm:solid-devtools@0.34",
       "npm:solid-dismissible@~0.1.1",
       "npm:solid-focus-trap@~0.1.9",
       "npm:solid-js@^1.9.6",
