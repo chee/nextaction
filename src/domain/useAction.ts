@@ -15,54 +15,57 @@ import defaultRepo, {curl} from "::core/sync/automerge.ts"
 export function useAction(
 	url: Accessor<ActionURL>,
 	repo = defaultRepo
-): Action {
+): () => Action {
 	const [action, handle] = useDocument<ActionShape>(url, {repo})
 	const notable = useNotableMixin(action, handle)
 	const titleable = useTitleableMixin(action, handle)
 	const doable = useDoableMixin(url)
 
-	const vm = mix(doable, notable, titleable, {
-		type: "action" as const,
-		get url() {
-			return handle()?.url as ActionURL
-		},
-		get deleted() {
-			return action() ? action()?.deleted ?? false : true
-		},
-		undelete() {
-			handle()?.change(project => {
-				project.deleted = false
-			})
-		},
-		delete() {
-			handle()?.change(action => {
-				action.deleted = true
-			})
-		},
-		get checklist() {
-			return action()?.checklist ?? []
-		},
-		toString() {
-			const string = `- [${doable.closed ? "x" : " "}] ${action()?.title ?? ""}`
-			if (notable.notes?.trim()) {
-				return `${string}\n\t${notable.notes}`.trim()
-			}
-			return string.trim()
-		},
-		asReference(): Reference<"action"> {
-			return {
-				type: "action" as const,
-				url: handle()?.url as ActionURL,
-			}
-		},
-		asPointer(above?: boolean): ReferencePointer<"action"> {
-			return {
-				type: "action" as const,
-				url: handle()?.url as ActionURL,
-				above,
-			}
-		},
-	})
+	const vm = () =>
+		mix(doable, notable, titleable, {
+			type: "action" as const,
+			get url() {
+				return handle()?.url as ActionURL
+			},
+			get deleted() {
+				return action() ? action()?.deleted ?? false : true
+			},
+			undelete() {
+				handle()?.change(project => {
+					project.deleted = false
+				})
+			},
+			delete() {
+				handle()?.change(action => {
+					action.deleted = true
+				})
+			},
+			get checklist() {
+				return action()?.checklist ?? []
+			},
+			toString() {
+				const string = `- [${doable.closed ? "x" : " "}] ${
+					action()?.title ?? ""
+				}`
+				if (notable.notes?.trim()) {
+					return `${string}\n\t${notable.notes}`.trim()
+				}
+				return string.trim()
+			},
+			asReference(): Reference<"action"> {
+				return {
+					type: "action" as const,
+					url: handle()?.url as ActionURL,
+				}
+			},
+			asPointer(above?: boolean): ReferencePointer<"action"> {
+				return {
+					type: "action" as const,
+					url: handle()?.url as ActionURL,
+					above,
+				}
+			},
+		})
 
 	return vm
 }

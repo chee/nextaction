@@ -11,20 +11,24 @@ import {useTitleableMixin, type TitleableMixin} from "./mixins/titleable.ts"
 import {dedent} from "@qnighy/dedent"
 import {type Reference, type ReferencePointer} from "::shapes/reference.ts"
 import defaultRepo from "::core/sync/automerge.ts"
-import {createEffect, createMemo} from "solid-js"
+import {createMemo} from "solid-js"
 import {isClosed} from "::shapes/mixins/doable.ts"
+import * as cache from "./cache.ts"
 
 export function useProject(
 	url: Accessor<ProjectURL>,
 	repo = defaultRepo
-): Project {
+): () => Project {
+	if (url() && cache.has(url())) {
+		return cache.get(url()) as () => Project
+	}
 	const [project, handle] = useDocument<ProjectShape>(url, {repo: repo})
 
 	const notable = useNotableMixin(project, handle)
 	const titleable = useTitleableMixin(project, handle)
 
 	const doable = useDoableMixin(url)
-	const list = useListMixin(url, "project")
+	const list = useListMixin(handle)
 
 	const actions = createMemo(
 		() => list.flat.filter(item => isAction(item) && !item.deleted) as Action[]
@@ -32,57 +36,62 @@ export function useProject(
 
 	const progress = calculateProgress(actions)
 
-	const vm = mix(doable, list, notable, titleable, {
-		type: "project" as const,
-		get url() {
-			return url()
-		},
-		get icon() {
-			return project()?.icon ?? ""
-		},
-		delete() {
-			handle()?.change(project => {
-				project.deleted = true
-			})
-		},
-		undelete() {
-			handle()?.change(project => {
-				project.deleted = false
-			})
-		},
-		// todo move to domain
-		set icon(icon: string) {
-			const single = [...new Intl.Segmenter().segment(icon)]?.[0]?.segment
-			handle()?.change(project => {
-				project.icon = single ?? " "
-			})
-		},
-		toString() {
-			return dedent`\
+	const vm = () =>
+		mix(doable, list, notable, titleable, {
+			type: "project" as const,
+			get url() {
+				return url()
+			},
+			get icon() {
+				return project()?.icon ?? ""
+			},
+			delete() {
+				handle()?.change(project => {
+					project.deleted = true
+				})
+			},
+			undelete() {
+				handle()?.change(project => {
+					project.deleted = false
+				})
+			},
+			// todo move to domain
+			set icon(icon: string) {
+				const single = [...new Intl.Segmenter().segment(icon)]?.[0]?.segment
+				handle()?.change(project => {
+					project.icon = single ?? " "
+				})
+			},
+			toString() {
+				return dedent`\
 				## ${project()?.icon} ${titleable.title}
 
 				${notable.notes?.trim() ?? ""}
 
 				${list.items.map(item => item.toString()).join("\n")}
 			`.trim()
-		},
-		asReference(): Reference<"project"> {
-			return {
-				type: "project" as const,
-				url: handle()?.url as ProjectURL,
-			}
-		},
-		asPointer(above?: boolean): ReferencePointer<"project"> {
-			return {
-				type: "project" as const,
-				url: handle()?.url as ProjectURL,
-				above,
-			}
-		},
-		get progress() {
-			return progress()
-		},
-	})
+			},
+			asReference(): Reference<"project"> {
+				return {
+					type: "project" as const,
+					url: handle()?.url as ProjectURL,
+				}
+			},
+			asPointer(above?: boolean): ReferencePointer<"project"> {
+				return {
+					type: "project" as const,
+					url: handle()?.url as ProjectURL,
+					above,
+				}
+			},
+			get progress() {
+				return progress()
+			},
+		})
+
+	if (url()) {
+		cache.set(url(), vm)
+	}
 
 	return vm
 }

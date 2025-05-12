@@ -1,4 +1,4 @@
-import {useDocument} from "solid-automerge"
+import {createDocumentProjection, useDocument} from "solid-automerge"
 import {type Accessor, mapArray} from "solid-js"
 import {
 	addReference,
@@ -22,21 +22,28 @@ import type {
 	ChildRefsFor,
 	ChildEntitiesFor,
 	ConceptModelMap,
+	ConceptShapeMap,
+	AnyParentURL,
+	AnyParentModel,
 } from ":concepts:"
-import defaultRepo from "::core/sync/automerge.ts"
 import {registerType, type ConceptRegistry} from "::registries/type-registry.ts"
-import {getParentURL, registerParent} from "::registries/parent-registry.ts"
-import {DocumentEventListener} from "@solid-primitives/event-listener"
+import {registerParent} from "::registries/parent-registry.ts"
+import {DocHandle} from "@automerge/automerge-repo"
 
-export function useListMixin<
-	T extends AnyParentType,
-	U extends ConceptURLMap[T]
->(url: Accessor<U | undefined>, type: T, repo = defaultRepo): List<T, U> {
+const listCache = new WeakMap<DocHandle<AnyParentModel>, List<AnyParentType>>()
+
+export function useListMixin<T extends AnyParentType>(
+	handle: Accessor<DocHandle<ConceptShapeMap[T]> | undefined>
+): List<T> {
+	if (handle() && listCache.has(handle()!)) {
+		console.log("cache hit", handle()!.url)
+		return listCache.get(handle()!) as List<T>
+	}
 	type Item = ChildEntitiesFor<T>
 	type R = ChildRefsFor<T>
+	const list = createDocumentProjection(handle)
 
-	const [list, handle] = useDocument<{items: R[]}>(url, {repo})
-
+	/*
 	createEffect(() => {
 		if (url()) {
 			repo.find(url()!).catch(() => {
@@ -51,37 +58,33 @@ export function useListMixin<
 				})
 			})
 		}
-	})
+	}) */
 
 	createEffect(() => {
-		const u = url()
-		if (u) {
-			registerType(u as keyof ConceptRegistry, type)
+		const u = handle()?.url
+		if (u && list()) {
+			registerType(u as keyof ConceptRegistry, list()!.type)
 		}
 	})
 
 	createEffect(() => {
-		if (list()?.items) {
+		if (handle() && list()?.items) {
 			for (const item of list()!.items) {
 				registerType(item.url, item.type)
-				registerParent(item.url, url())
+				registerParent(item.url, handle()!.url as AnyParentURL)
 			}
 		}
 	})
 
 	const itemURLs = mapArray(
-		() => list()?.items,
-		ref => {
-			registerType(ref.url, ref.type)
-			registerParent(ref.url, url())
-			return ref.url
-		}
+		() => list()?.items as Item[],
+		ref => ref.url
 	)
 
 	const items = mapArray(
-		() => list()?.items,
+		() => list()?.items as Item[],
 		ref => useModel(ref)
-	) as Accessor<Item[]>
+	) as Accessor<Accessor<Item>[]>
 
 	// todo ? https://primitives.solidjs.community/package/keyed/
 	type KeyedEntities = {
@@ -90,23 +93,26 @@ export function useListMixin<
 	const flat = createMemo(() => flattenTree(items()))
 	const keyed = createMemo(() => {
 		return flat().reduce((acc, item) => {
-			acc[item.url] = item
+			acc[item().url] = item
 			return acc
 		}, {} as KeyedEntities)
 	}) as Accessor<KeyedEntities>
 
-	return {
+	const fflat = mapArray(flat, i => i())
+	const iitems = mapArray(items, i => i())
+
+	const model = {
 		get url() {
-			return url()
+			return handle()?.url as ConceptURLMap[T]
 		},
 		get items() {
-			return items()
+			return iitems()
 		},
 		get itemURLs() {
 			return itemURLs()
 		},
 		get flat() {
-			return flat()
+			return fflat()
 		},
 		get keyed() {
 			return keyed()
@@ -116,20 +122,24 @@ export function useListMixin<
 			urls: ConceptURLMap[I] | ConceptURLMap[I][],
 			index?: number | ReferencePointer<ChildTypesFor<T>>
 		) {
-			handle()?.change(doc => addReference(doc.items, type, urls, index))
+			handle()?.change(doc =>
+				addReference(doc.items as Item[], type, urls, index)
+			)
 		},
 		addItemByRef(ref: R | R[], index?: number | ReferencePointer<R["type"]>) {
-			handle()?.change(doc => addReferenceByRef(doc.items, ref, index))
+			handle()?.change(doc =>
+				addReferenceByRef(doc.items as Item[], ref, index)
+			)
 		},
 		removeItem<I extends ChildTypesFor<T>>(
 			type: I,
 			urls: ConceptURLMap[I] | ConceptURLMap[I][]
 		) {
-			handle()?.change(doc => removeReference(doc.items, type, urls))
+			handle()?.change(doc => removeReference(doc.items as Item[], type, urls))
 		},
 		removeItemByRef(ref: R | R[]) {
 			handle()?.change(doc => {
-				removeReferenceByRef(doc.items, ref)
+				removeReferenceByRef(doc.items as Item[], ref)
 			})
 		},
 		hasItem(type: R["type"], url: R["url"]) {
@@ -143,14 +153,18 @@ export function useListMixin<
 			)
 		},
 		moveItem(type: R["type"], urls: R["url"] | R["url"][], index: number) {
-			handle()?.change(doc => moveReference(doc.items, type, urls, index))
+			handle()?.change(doc =>
+				moveReference(doc.items as Item[], type, urls, index)
+			)
 		},
 		moveItemAfter(
 			type: R["type"],
 			urls: R["url"] | R["url"][],
 			target: R["url"]
 		) {
-			handle()?.change(doc => moveReferenceAfter(doc.items, type, urls, target))
+			handle()?.change(doc =>
+				moveReferenceAfter(doc.items as Item[], type, urls, target)
+			)
 		},
 		moveItemBefore(
 			type: R["type"],
@@ -158,14 +172,14 @@ export function useListMixin<
 			target: R["url"]
 		) {
 			handle()?.change(doc =>
-				moveReferenceBefore(doc.items, type, urls, target)
+				moveReferenceBefore(doc.items as Item[], type, urls, target)
 			)
 		},
 		insertItemBefore(type: R["type"], url: R["url"], target: R["url"]) {
 			handle()?.change(doc => {
 				const index = doc.items.findIndex(item => item.url == target)
 				addReference(
-					doc.items,
+					doc.items as Item[],
 					type,
 					url,
 					index == -1 ? doc.items.length - 1 : index
@@ -173,13 +187,16 @@ export function useListMixin<
 			})
 		},
 	}
+
+	if (handle()) {
+		listCache.set(handle()!, model)
+	}
+
+	return model
 }
 
-export interface List<
-	T extends AnyParentType,
-	U extends ConceptURLMap[T] = ConceptURLMap[T]
-> {
-	readonly url: U | undefined
+export interface List<T extends AnyParentType> {
+	readonly url: ConceptURLMap[T] | undefined
 	readonly items: ChildEntitiesFor<T>[]
 	readonly itemURLs: ChildRefsFor<T>["url"][]
 	readonly flat: ChildEntitiesFor<T>[]

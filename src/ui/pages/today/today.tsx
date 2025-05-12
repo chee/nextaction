@@ -24,7 +24,7 @@ export default function Today() {
 
 	createEffect(
 		on(
-			() => home.url,
+			() => home().url,
 			url => {
 				commandRegistry.addCommand(
 					createNewActionCommand({

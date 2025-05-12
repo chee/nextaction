@@ -44,7 +44,7 @@ export interface User {
 	readonly type: "user"
 	readonly url: UserURL
 	readonly homeURL?: HomeURL
-	readonly home: Home
+	home(): Home
 	image: Uint8Array | undefined
 	name: string
 }

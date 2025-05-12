@@ -22,65 +22,69 @@ declare global {
 	}
 }
 
-export function useHome(repo = defaultRepo): Home {
+export function useHome(repo = defaultRepo): () => Home {
 	const user = useUser()
 
-	const [home, handle] = useDocument<HomeShape>(() => user.homeURL, {repo})
-	self.home = handle
-
-	const list = useListMixin(() => user.homeURL, "home")
-
-	const inbox = useListMixin(() => home()?.inbox, "inbox")
-
-	const vm = mix({
-		type: "home" as const,
-		list,
-		get keyed() {
-			return list.keyed
-		},
-		get flat() {
-			return list.flat
-		},
-		get url() {
-			return handle()?.url as HomeURL
-		},
-		get inbox() {
-			return inbox
-		},
-		createProject(project?: ProjectShape) {
-			const url = curl<ProjectURL>(createProjectShape(project))
-			list.addItem("project", url)
-			return url
-		},
-		importProject(string: string) {
-			const json = decodeJSON(string)
-			if (isProjectRef(json)) {
-				list.addItem("project", json.url)
-			} else {
-				toast.show({
-					title: "Invalid project",
-					body: "maybe ask your friend to send it again??",
-					modifiers: ["error"],
-				})
-			}
-		},
-		adoptActionFromInbox(ref: ActionRef) {
-			if (inbox.hasItemByRef(ref)) {
-				inbox.removeItemByRef(ref)
-			}
-			if (!list.hasItemByRef(ref)) {
-				list.addItemByRef(ref, list.items.length)
-			}
-		},
-		giveActionToInbox(ref: ActionRef) {
-			if (list.hasItemByRef(ref)) {
-				list.removeItemByRef(ref)
-			}
-			if (!inbox.hasItemByRef(ref)) {
-				inbox.addItemByRef(ref, inbox.items.length)
-			}
-		},
+	const [home, homeHandle] = useDocument<HomeShape>(() => user.homeURL, {repo})
+	const [_inbox, inboxHandle] = useDocument<HomeShape>(() => home()?.inbox, {
+		repo,
 	})
+	self.home = homeHandle
+
+	const homeList = useListMixin(homeHandle)
+
+	const inboxList = useListMixin(inboxHandle)
+
+	const vm = () =>
+		mix({
+			type: "home" as const,
+			list: homeList,
+			get keyed() {
+				return homeList.keyed
+			},
+			get flat() {
+				return homeList.flat
+			},
+			get url() {
+				return homeHandle()?.url as HomeURL
+			},
+			get inbox() {
+				return inboxList
+			},
+			createProject(project?: ProjectShape) {
+				const url = curl<ProjectURL>(createProjectShape(project))
+				homeList.addItem("project", url)
+				return url
+			},
+			importProject(string: string) {
+				const json = decodeJSON(string)
+				if (isProjectRef(json)) {
+					homeList.addItem("project", json.url)
+				} else {
+					toast.show({
+						title: "Invalid project",
+						body: "maybe ask your friend to send it again??",
+						modifiers: ["error"],
+					})
+				}
+			},
+			adoptActionFromInbox(ref: ActionRef) {
+				if (inboxList.hasItemByRef(ref)) {
+					inboxList.removeItemByRef(ref)
+				}
+				if (!homeList.hasItemByRef(ref)) {
+					homeList.addItemByRef(ref, homeList.items.length)
+				}
+			},
+			giveActionToInbox(ref: ActionRef) {
+				if (homeList.hasItemByRef(ref)) {
+					homeList.removeItemByRef(ref)
+				}
+				if (!inboxList.hasItemByRef(ref)) {
+					inboxList.addItemByRef(ref, inboxList.items.length)
+				}
+			},
+		})
 
 	return vm
 }

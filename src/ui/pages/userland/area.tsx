@@ -37,8 +37,8 @@ export default function AreaView() {
 	const params = useParams<{areaId: AreaURL}>()
 	const [viewingSomeday, setViewingSomeday] = createSignal(false)
 	const area = useArea(() => params.areaId)
-	const {selection, expander, stage, dnd, filter} = usePageContext({
-		items: () => area.items,
+	const page = usePageContext({
+		items: () => area().items,
 		selectableItemFilter: item => {
 			if (!item) return false
 			if (isProject(item)) {
@@ -58,6 +58,8 @@ export default function AreaView() {
 			return false
 		},
 	})
+
+	const {selection, expander, stage, dnd, filter} = page
 
 	const commandRegistry = useCommandRegistry()
 
@@ -86,12 +88,12 @@ export default function AreaView() {
 		)
 	)
 
-	const titleExtension = () => area.titleSyncExtension
-	const notesExtension = () => area.notesSyncExtension
+	const titleExtension = () => area().titleSyncExtension
+	const notesExtension = () => area().notesSyncExtension
 
 	const inHome = createMemo(() => {
 		// return home.list.itemURLs.includes(project.url)
-		return !!home.keyed[area.url]
+		return !!home().keyed[area().url]
 	})
 
 	// todo this should issue a command
@@ -120,19 +122,19 @@ export default function AreaView() {
 				<div class="page">
 					<Show when={log.enabled}>
 						<h1 class="page-title">
-							<code>{area.url}</code>
+							<code>{area().url}</code>
 						</h1>
 					</Show>
 
 					<h1 class="page-title">
 						<EmojiPicker
-							icon={area.icon}
+							icon={area().icon}
 							modifiers={["area-title", "page-title"]}
-							onEmoji={emoji => (area.icon = emoji)}
+							onEmoji={emoji => (area().icon = emoji)}
 						/>
 
 						<TitleEditor
-							doc={area.title}
+							doc={area().title}
 							blur={() => {}}
 							placeholder="project"
 							syncExtension={titleExtension()}
@@ -149,13 +151,13 @@ export default function AreaView() {
 						<Show when={!inHome()}>
 							<Button
 								class="button page-title__add-to-sidebar"
-								onClick={() => home.list.addItem("area", area.url)}>
+								onClick={() => home().list.addItem("area", area().url)}>
 								Add to sidebar
 							</Button>
 						</Show>
 
-						<Show when={area.deleted}>
-							<Button class="button" onClick={() => (area.deleted = false)}>
+						<Show when={area().deleted}>
+							<Button class="button" onClick={() => (area().deleted = false)}>
 								Undelete
 							</Button>
 						</Show>
@@ -163,14 +165,14 @@ export default function AreaView() {
 
 					<main class="page-content">
 						<NotesEditor
-							doc={area.notes}
+							doc={area().notes}
 							blur={() => {}}
 							placeholder="Notes"
 							syncExtension={notesExtension()}
 							modifiers="project"
 						/>
 
-						<For each={area.items.filter(filter)}>
+						<For each={area().items.filter(filter)}>
 							{item => {
 								return (
 									<Show when={item}>

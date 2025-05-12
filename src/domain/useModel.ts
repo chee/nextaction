@@ -25,7 +25,7 @@ function useDE(
 ): Heading
 function useDE(
 	ref: Reference<ConceptName> | Accessor<Reference<ConceptName>>
-): ConceptModelMap[ConceptName] {
+): () => ConceptModelMap[ConceptName] | undefined {
 	const r = typeof ref === "function" ? ref() : ref
 
 	switch (r.type) {
@@ -38,20 +38,20 @@ function useDE(
 		case "heading":
 			return useHeading(() => r.url as HeadingURL)
 		default:
-			return undefined
+			return () => undefined
 	}
 }
 
 export function useModel<T extends ConceptName>(
 	ref: Reference<T> | Accessor<Reference<T>>
-): ConceptModelMap[T] {
+): () => ConceptModelMap[T] {
 	return useDE(ref) as ConceptModelMap[T]
 }
 
 // don't use this in a viewmodel, or in home, or during startup
 export function useModelAfterDark<T extends ConceptName>(
 	url: ConceptURLMap[T]
-): ConceptModelMap[T] {
+): () => ConceptModelMap[T] {
 	const type = getType(url)
 	if (type == "home") {
 		return useHomeContext().list as ConceptModelMap[T]

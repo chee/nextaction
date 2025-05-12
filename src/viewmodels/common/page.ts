@@ -75,17 +75,17 @@ export function usePageContext<T extends AnyParentType>({
 					if (parentURL) {
 						const parentType = getType(parentURL)
 						if (parentType == "inbox") {
-							useHomeContext().inbox.removeItem("action", expanded)
+							useHomeContext()().inbox.removeItem("action", expanded)
 						} else if (parentType == "home") {
-							useHomeContext().list.removeItem("action", expanded)
+							useHomeContext()().list.removeItem("action", expanded)
 						} else {
 							const parent = useModelAfterDark(parentURL) as
-								| Heading
-								| Project
-								| Area
+								| Accessor<Heading>
+								| Accessor<Project>
+								| Accessor<Area>
 
-							if (parent) {
-								parent.removeItem("action", expanded)
+							if (parent()) {
+								parent().removeItem("action", expanded)
 							}
 						}
 					}
@@ -110,7 +110,7 @@ function isEmptyAction(
 	const type = getType(url)
 	if (type != "action") return false
 	const action = useAction(() => url as ActionURL)
-	if (action.title.trim() || action.when || action.notes.trim()) {
+	if (action().title.trim() || action().when || action().notes.trim()) {
 		return false
 	}
 	return true

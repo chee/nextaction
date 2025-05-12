@@ -15,64 +15,65 @@ import defaultRepo from "::core/sync/automerge.ts"
 export function useHeading(
 	url: Accessor<HeadingURL>,
 	repo = defaultRepo
-): Heading {
+): () => Heading {
 	const [heading, handle] = useDocument<HeadingShape>(url, {repo: repo})
 	const titleable = useTitleableMixin(heading, handle)
-	const list = useListMixin(url, "heading")
+	const list = useListMixin(handle)
 
-	const vm = mix(titleable, list, {
-		type: "heading" as const,
-		get url() {
-			return handle()?.url as HeadingURL
-		},
-		get archived() {
-			return heading()?.archived ?? false
-		},
-		toggleArchived(force?: boolean) {
-			handle()?.change(heading => {
-				toggleArchived(heading, force)
-			})
-		},
-		toString() {
-			return `### ${titleable.title}\n\n`
-		},
-		asReference(): Reference<"heading"> {
-			return {
-				type: "heading" as const,
-				url: handle()?.url as HeadingURL,
-			}
-		},
-		delete() {
-			this.toggleArchived(true)
-		},
-		asPointer(above?: boolean): ReferencePointer<"heading"> {
-			return {
-				type: "heading" as const,
-				url: handle()?.url as HeadingURL,
-				above,
-			}
-		},
-		get completed() {
-			return list.items.every(item => isAction(item) && item.completed)
-		},
-		toggleCompleted(force?: boolean) {
-			list.items.forEach(item => {
-				if (isAction(item)) {
-					item.toggleCompleted(force)
+	const vm = () =>
+		mix(titleable, list, {
+			type: "heading" as const,
+			get url() {
+				return handle()?.url as HeadingURL
+			},
+			get archived() {
+				return heading()?.archived ?? false
+			},
+			toggleArchived(force?: boolean) {
+				handle()?.change(heading => {
+					toggleArchived(heading, force)
+				})
+			},
+			toString() {
+				return `### ${titleable.title}\n\n`
+			},
+			asReference(): Reference<"heading"> {
+				return {
+					type: "heading" as const,
+					url: handle()?.url as HeadingURL,
 				}
-			})
-		},
-		get canceled() {
-			return list.items.some(item => isAction(item) && item.canceled)
-		},
-		toggleCanceled(force?: boolean) {
-			list.items.forEach(item => {
-				if (isAction(item)) {
-					item.toggleCanceled(force)
+			},
+			delete() {
+				this.toggleArchived(true)
+			},
+			asPointer(above?: boolean): ReferencePointer<"heading"> {
+				return {
+					type: "heading" as const,
+					url: handle()?.url as HeadingURL,
+					above,
 				}
-			})
-		},
-	})
+			},
+			get completed() {
+				return list.items.every(item => isAction(item) && item.completed)
+			},
+			toggleCompleted(force?: boolean) {
+				list.items.forEach(item => {
+					if (isAction(item)) {
+						item.toggleCompleted(force)
+					}
+				})
+			},
+			get canceled() {
+				return list.items.some(item => isAction(item) && item.canceled)
+			},
+			toggleCanceled(force?: boolean) {
+				list.items.forEach(item => {
+					if (isAction(item)) {
+						item.toggleCanceled(force)
+					}
+				})
+			},
+		})
 
 	return vm
 }

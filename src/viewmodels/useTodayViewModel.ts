@@ -1,4 +1,4 @@
-import {useHomeContext} from "::domain/useHome.ts"
+import {useHomeContext, type Home} from "::domain/useHome.ts"
 import {isProject, type Project} from "::domain/useProject.ts"
 import {isAction, type Action} from "::domain/useAction.ts"
 import {usePageContext} from "./common/page.ts"
@@ -7,11 +7,11 @@ import mix from "::core/util/mix.ts"
 
 export function useTodayViewModel() {
 	const home = useHomeContext()
-	const items = () => home.list.items
+	const items = () => home().list.items
 
 	const page = usePageContext({
 		items,
-		selectableItemFilter(item: (typeof home.list.items)[number]) {
+		selectableItemFilter(item: Home["list"]["items"][number]) {
 			return (
 				(isProject(item) || isAction(item)) &&
 				isToday(item) &&

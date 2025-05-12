@@ -16,7 +16,7 @@ export default function InboxView() {
 	const home = useHomeContext()
 
 	const page = usePageContext({
-		items: () => home.inbox.items,
+		items: () => home().inbox.items,
 		selectableItemFilter: item =>
 			(!("deleted" in item) || !item.deleted) &&
 			(!("state" in item) || !isClosed(item)),
@@ -25,7 +25,7 @@ export default function InboxView() {
 	const commandRegistry = useCommandRegistry()
 	commandRegistry.addCommand(
 		createNewActionCommand({
-			fallbackURL: home.inbox.url!,
+			fallbackURL: home().inbox.url!,
 			selection: page.selection,
 			expander: page.expander,
 		})
@@ -51,7 +51,7 @@ export default function InboxView() {
 							selection={page.selection}
 							{...page.expander}
 							isSelected={page.selection.isSelected}
-							actions={home.inbox.items.filter(page.filter)}
+							actions={home().inbox.items.filter(page.filter)}
 							toggleCanceled={(item, force) =>
 								page.stage(() => item.toggleCanceled(force), item.url)
 							}

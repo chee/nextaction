@@ -68,7 +68,7 @@ export default function UpcomingView() {
 
 	const items = createMemo(
 		() =>
-			home.list.flat.filter(item => upcomingItemsFilter(item)) as (
+			home().list.flat.filter(item => upcomingItemsFilter(item)) as (
 				| Action
 				| Project
 			)[]
@@ -105,7 +105,7 @@ export default function UpcomingView() {
 	const commandRegistry = useCommandRegistry()
 	commandRegistry.addCommand(
 		createNewActionCommand({
-			fallbackURL: home.inbox.url!,
+			fallbackURL: home().inbox.url!,
 			selection: upcoming.selection,
 			expander: upcoming.expander,
 			template() {
@@ -255,10 +255,14 @@ function UpcomingDay(props: {
 							if (!payload) return
 							for (const item of payload.items) {
 								if (item.type == "action") {
-									useAction(() => item.url as ActionURL)?.setWhen(props.date)
+									useAction(() => item.url as ActionURL)?.()?.setWhen(
+										props.date
+									)
 								}
 								if (item.type == "project") {
-									useProject(() => item.url as ProjectURL)?.setWhen(props.date)
+									useProject(() => item.url as ProjectURL)?.()?.setWhen(
+										props.date
+									)
 								}
 							}
 						},

@@ -87,7 +87,7 @@ export function createNewProjectInAreaCommand(payload: {
 			const url = createProject(access(payload.template))
 
 			const area = useArea(() => payload.areaURL)
-			area.addItem(
+			area().addItem(
 				"project",
 				url,
 				bottom == null ? 0 : useModelAfterDark(bottom).asReference()
@@ -97,11 +97,11 @@ export function createNewProjectInAreaCommand(payload: {
 			return {
 				undo() {
 					const project = useProject(() => url)
-					area.removeItemByRef(project.asReference())
+					area().removeItemByRef(project().asReference())
 				},
 				redo() {
 					const project = useProject(() => url)
-					area.addItemByRef(project.asReference(), index)
+					area().addItemByRef(project().asReference(), index)
 				},
 			}
 		},
@@ -137,7 +137,7 @@ export function createNewHeadingCommand(payload: {
 
 			const url = createHeading(access(payload.template))
 
-			parent.addItem(
+			parent().addItem(
 				"heading",
 				url,
 				sel == null ? 0 : useModelAfterDark(sel).asReference()
@@ -147,11 +147,11 @@ export function createNewHeadingCommand(payload: {
 			return {
 				undo() {
 					const action = useAction(() => url)
-					parent.removeItemByRef(action.asReference())
+					parent().removeItemByRef(action.asReference())
 				},
 				redo() {
 					const action = useAction(() => url)
-					parent.addItemByRef(action.asReference(), targetIndex)
+					parent().addItemByRef(action.asReference(), targetIndex)
 				},
 			}
 		},

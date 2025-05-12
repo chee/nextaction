@@ -50,8 +50,8 @@ export default function ProjectView() {
 	const home = useHomeContext()
 	const params = useParams<{projectId: ProjectURL}>()
 	const project = useProject(() => params.projectId)
-	const {selection, expander, stage, dnd, filter} = usePageContext({
-		items: () => project.items,
+	const page = usePageContext({
+		items: () => project().items,
 		selectableItemFilter: item => {
 			if (!item) return false
 			if (isHeadingShape(item)) {
@@ -63,6 +63,7 @@ export default function ProjectView() {
 			return false
 		},
 	})
+	const {selection, expander, stage, dnd, filter} = page
 
 	const commandRegistry = useCommandRegistry()
 
@@ -91,12 +92,12 @@ export default function ProjectView() {
 		)
 	)
 
-	const titleExtension = () => project.titleSyncExtension
-	const notesExtension = () => project.notesSyncExtension
+	const titleExtension = () => project().titleSyncExtension
+	const notesExtension = () => project().notesSyncExtension
 
 	const inHome = createMemo(() => {
-		// return home.list.itemURLs.includes(project.url)
-		return !!home.keyed[project.url]
+		// return home.list.itemURLs.includes(project().url)
+		return !!home().keyed[project().url]
 	})
 
 	const toggleCompleted = (item: Action, force?: boolean) => {
@@ -128,19 +129,19 @@ export default function ProjectView() {
 				<div class="page">
 					<Show when={log.enabled}>
 						<h1 class="page-title">
-							<code>{project.url}</code>
+							<code>{project().url}</code>
 						</h1>
 					</Show>
 
 					<h1 class="page-title">
 						<EmojiPicker
-							icon={project.icon}
+							icon={project().icon}
 							modifiers={["project-title", "page-title"]}
-							onEmoji={emoji => (project.icon = emoji)}
+							onEmoji={emoji => (project().icon = emoji)}
 						/>
 
 						<TitleEditor
-							doc={project.title}
+							doc={project().title}
 							blur={() => {}}
 							placeholder="project"
 							syncExtension={titleExtension()}
@@ -155,13 +156,15 @@ export default function ProjectView() {
 						<Show when={!inHome()}>
 							<Button
 								class="button page-title__add-to-sidebar"
-								onClick={() => home.list.addItem("project", project.url)}>
+								onClick={() => home.list.addItem("project", project().url)}>
 								Add to sidebar
 							</Button>
 						</Show>
 
-						<Show when={project.deleted}>
-							<Button class="button" onClick={() => (project.deleted = false)}>
+						<Show when={project().deleted}>
+							<Button
+								class="button"
+								onClick={() => (project().deleted = false)}>
 								Undelete
 							</Button>
 						</Show>
@@ -169,14 +172,14 @@ export default function ProjectView() {
 
 					<main class="page-content">
 						<NotesEditor
-							doc={project.notes}
+							doc={project().notes}
 							blur={() => {}}
 							placeholder="Notes"
 							syncExtension={notesExtension()}
 							modifiers="project"
 						/>
 
-						<For each={project.items.filter(filter)}>
+						<For each={project().items.filter(filter)}>
 							{item => {
 								return (
 									<Show when={item}>
@@ -412,7 +415,7 @@ function ProjectHeading(
 					if (item.type == "heading") {
 						const headingURL = curl<HeadingURL>(newHeading({title: item.title}))
 						currentTarget = useHeading(() => headingURL)
-						project.addItem("heading", headingURL)
+						project().addItem("heading", headingURL)
 					} else if (item.type == "action") {
 						const actionURL = curl<ActionURL>(
 							newAction({title: item.title, state: item.state})

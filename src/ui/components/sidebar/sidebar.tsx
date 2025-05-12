@@ -60,7 +60,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const doable = useDoableMixin(
 										() => item.url as ChildURLsFor<"area">
@@ -86,7 +86,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const doable = useDoableMixin(
 										() => item.url as ChildURLsFor<"area">
@@ -112,7 +112,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const doable = useDoableMixin(() => item.url as ActionURL)
 									doable.setWhen(undefined)
@@ -136,7 +136,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const doable = useDoableMixin(() => item.url as ActionURL)
 									doable.setWhen("someday")
@@ -162,7 +162,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url as ActionURL)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const doable = useDoableMixin(() => item.url as ActionURL)
 									doable.toggleCompleted(true)
@@ -177,19 +177,19 @@ export default function Sidebar(props: {collapse: () => void}) {
 						onDblClick={event => {
 							if (event.altKey) {
 								console.log("empty trash")
-								for (const item of home.flat) {
+								for (const item of home().flat) {
 									if (item.deleted || item.archives) {
 										const parent = getParentURL(item.url as ActionURL)
 										const parentType = getType(parent)
 										if (parentType === "inbox") {
-											home.inbox.hasItem(item.type, item.url)
-											home.inbox.removeItem(item.type, item.url)
+											home().inbox.hasItem(item.type, item.url)
+											home().inbox.removeItem(item.type, item.url)
 										} else if (parentType == "home") {
-											home.list.removeItem(item.type, item.url)
+											home().list.removeItem(item.type, item.url)
 										} else {
 											const model = useModelAfterDark(parent)
 											console.log(model)
-											model.removeItem(item.type, item.url)
+											model().removeItem(item.type, item.url)
 										}
 									}
 								}
@@ -211,13 +211,13 @@ export default function Sidebar(props: {collapse: () => void}) {
 									const parent = getParentURL(item.url as ActionURL)
 									const parentType = getType(parent)
 									if (parentType === "inbox") {
-										home.adoptActionFromInbox(item as ActionRef)
+										home().adoptActionFromInbox(item as ActionRef)
 									}
 									const model = useModel(() => ({
 										type: item.type,
 										url: item.url,
 									}))
-									model.delete()
+									model().delete()
 								}
 							},
 						}}>
@@ -228,7 +228,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 				<nav class="sidebar__section sidebar__section--projects">
 					<For
 						each={
-							home.list.items.filter(
+							home().list.items.filter(
 								project => isProject(project) && !project.deleted
 							) as Project[]
 						}>
@@ -237,7 +237,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 				</nav>
 
 				<For
-					each={home.list.items.filter(
+					each={home().list.items.filter(
 						area => isArea(area) /*&& !area.deleted*/
 					)}>
 					{area => (
@@ -359,7 +359,7 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 					<ContextMenu.Item
 						class="popmenu__item popmenu__item--danger"
 						onSelect={() => {
-							home.list.removeItemByRef(props.project)
+							home().list.removeItemByRef(props.project)
 						}}>
 						Remove from Sidebar
 					</ContextMenu.Item>
@@ -384,7 +384,7 @@ function SidebarArea(props: {area: Area}) {
 						<ContextMenu.Item
 							class="popmenu__item popmenu__item--danger"
 							onSelect={() => {
-								home.list.removeItemByRef(props.area)
+								home().list.removeItemByRef(props.area)
 							}}>
 							Remove from Sidebar
 						</ContextMenu.Item>

@@ -113,23 +113,23 @@ export type TypeFromURL<U> = U extends HomeURL
 	: never
 export type AnyRef = ConceptReferenceMap[keyof ConceptReferenceMap]
 export type AnyConceptURL = ConceptURLMap[keyof ConceptURLMap]
-export type AnyConceptModel = ConceptShapeMap[keyof ConceptShapeMap]
+export type AnyConceptShape = ConceptShapeMap[keyof ConceptShapeMap]
 export type AnyConcept = ConceptModelMap[keyof ConceptModelMap]
 
 export type AnyParentType = "home" | "inbox" | "area" | "project" | "heading"
 export type AnyParentURL = ConceptURLMap[AnyParentType]
-export type AnyParentModel = ConceptShapeMap[AnyParentType]
-export type AnyParent = ConceptModelMap[AnyParentType]
+export type AnyParentShape = ConceptShapeMap[AnyParentType]
+export type AnyParentModel = ConceptModelMap[AnyParentType]
 export type AnyParentRef = ConceptReferenceMap[AnyParentType]
 export type AnyChildType = "area" | "project" | "heading" | "action"
 export type AnyChildURL = ConceptURLMap[AnyChildType]
-export type AnyChildModel = ConceptShapeMap[AnyChildType]
-export type AnyChild = ConceptModelMap[AnyChildType]
+export type AnyChildShape = ConceptShapeMap[AnyChildType]
+export type AnyChildModel = ConceptModelMap[AnyChildType]
 export type AnyChildRef = ConceptReferenceMap[AnyChildType]
 export type AnyDoableType = "action" | "project"
 export type AnyDoableURL = ConceptURLMap[AnyDoableType]
-export type AnyDoableModel = ConceptShapeMap[AnyDoableType]
-export type AnyDoable = ConceptModelMap[AnyDoableType]
+export type AnyDoableShape = ConceptShapeMap[AnyDoableType]
+export type AnyDoableModel = ConceptModelMap[AnyDoableType]
 export type AnyDoableRef = ConceptReferenceMap[AnyDoableType]
 
 export type ChildTypesFor<T extends keyof ParentConceptChildrenMap> =

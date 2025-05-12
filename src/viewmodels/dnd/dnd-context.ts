@@ -14,7 +14,7 @@ import {
 	type DraggableContract,
 } from "./contract.ts"
 import type {
-	AnyChild,
+	AnyChildModel,
 	AnyChildType,
 	AnyParentType,
 	FlatChildURLsFor,
@@ -156,7 +156,7 @@ export function createDragAndDropContext<P extends AnyParentType>(
 									}
 								})
 								.filter(item => {
-									let currentParent: Reference<AnyChild> | null = {
+									let currentParent: Reference<AnyChildModel> | null = {
 										type: item.parentType,
 										url: item.parentURL,
 									}
