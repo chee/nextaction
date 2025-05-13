@@ -343,7 +343,7 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 			</ContextMenu.Trigger>
 			<ContextMenu.Portal>
 				<ContextMenu.Content class="popmenu popmenu--sidebar">
-					<ContextMenu.Item
+					{/* <ContextMenu.Item
 						class="popmenu__item"
 						onSelect={() => {
 							const code = encodeJSON({
@@ -360,7 +360,7 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 							})
 						}}>
 						Copy Share Code
-					</ContextMenu.Item>
+					</ContextMenu.Item> */}
 					<ContextMenu.Item
 						class="popmenu__item popmenu__item--danger"
 						onSelect={() => {
