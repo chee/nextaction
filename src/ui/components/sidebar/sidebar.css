@@ -109,10 +109,20 @@
 	border-radius: 4px;
 }
 
-.sidebar-area__title {
+.sidebar-link--area.sidebar-link--area {
 	font-weight: 600;
 	color: var(--sidebar-section-line);
 	display: flex;
 	align-items: center;
 	gap: var(--space-2);
+	border-bottom-left-radius: 0;
+	border-bottom-right-radius: 0;
+	background: var(--sidebar-section-line);
+	color: var(--sidebar-section-fill);
+	border: 2px solid var(--sidebar-section-line);
+	&[aria-current] {
+		background: var(--selected-fill);
+		color: var(--sidebar-section-line);
+		border: 2px solid var(--sidebar-section-line);
+	}
 }

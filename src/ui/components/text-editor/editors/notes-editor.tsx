@@ -8,20 +8,14 @@ import {
 	type ViewUpdate,
 } from "@codemirror/view"
 import Editor from "::ui/components/text-editor/text-editor.tsx"
-import {
-	EditorState,
-	RangeSetBuilder,
-	type Extension,
-	type RangeSet,
-	type RangeValue,
-} from "@codemirror/state"
+import {EditorState, RangeSetBuilder, type Extension} from "@codemirror/state"
 import {Show} from "solid-js"
 
 import {markdown, markdownLanguage} from "@codemirror/lang-markdown"
 import type {BembyModifier, BembyModifiers} from "bemby"
 import {indentWithTab} from "@codemirror/commands"
 import {HighlightStyle, syntaxHighlighting} from "@codemirror/language"
-import {tags, Tag, styleTags} from "@lezer/highlight"
+import {tags} from "@lezer/highlight"
 import {syntaxTree} from "@codemirror/language"
 
 export default function NotesEditor(props: {
@@ -154,7 +148,6 @@ const bulletPlugin = ViewPlugin.fromClass(
 			}
 		}
 		private build(): DecorationSet {
-			console.log("building decorations")
 			const builder = new RangeSetBuilder<Decoration>()
 			const doc = this.view.state.doc
 			syntaxTree(this.view.state).iterate({

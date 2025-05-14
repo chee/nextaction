@@ -1,5 +1,5 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import {createInbox, createInboxShape, type InboxURL} from "./inbox.ts"
+import {createInbox, type InboxURL} from "./inbox.ts"
 import type {ProjectRef} from "./project.ts"
 import type {DropboxURL} from "./dropbox.ts"
 import type {AreaRef} from "./area.ts"
@@ -20,7 +20,7 @@ export type HomeShape = {
 	// shouldn't get your REAL inbox url!
 	dropboxes: DropboxURL[]
 	sources: DropboxURL[]
-	tags: Tag[]
+	tags: Record<string, Tag>
 }
 
 export function createHomeShape(
@@ -31,7 +31,7 @@ export function createHomeShape(
 		dropboxes: [],
 		sources: [],
 		items: [],
-		tags: [],
+		tags: {},
 		...home,
 	}
 }

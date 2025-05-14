@@ -383,7 +383,10 @@ function SidebarArea(props: {area: Area}) {
 		<div class="sidebar-area">
 			<ContextMenu>
 				<ContextMenu.Trigger>
-					<Sidelink href={`/areas/${props.area.url}`} icon={props.area.icon}>
+					<Sidelink
+						href={`/areas/${props.area.url}`}
+						icon={props.area.icon}
+						modifiers="area">
 						<h3 class="sidebar-area__title">{props.area.title}</h3>
 					</Sidelink>
 				</ContextMenu.Trigger>

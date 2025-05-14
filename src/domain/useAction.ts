@@ -1,16 +1,12 @@
 import type {Accessor} from "solid-js"
-import {
-	ActionShape,
-	createActionShape,
-	type ActionURL,
-} from "::shapes/action.ts"
+import {ActionShape, type ActionURL} from "::shapes/action.ts"
 import {useDocument} from "solid-automerge"
 import {useDoableMixin, type Doable} from "./mixins/doable.ts"
 import mix from "::core/util/mix.ts"
 import {useNotableMixin, type NotableMixin} from "./mixins/notable.ts"
 import {useTitleableMixin, type TitleableMixin} from "./mixins/titleable.ts"
 import type {Reference, ReferencePointer} from "::shapes/reference.ts"
-import defaultRepo, {curl} from "::core/sync/automerge.ts"
+import defaultRepo from "::core/sync/automerge.ts"
 
 export function useAction(
 	url: Accessor<ActionURL>,
@@ -65,10 +61,6 @@ export function useAction(
 	})
 
 	return vm
-}
-
-useAction.new = (action?: Partial<ActionShape>) => {
-	return curl<ActionURL>(createActionShape(action))
 }
 
 export interface Action extends Doable, NotableMixin, TitleableMixin {

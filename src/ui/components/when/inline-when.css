@@ -1,5 +1,7 @@
 .inline-when {
-	margin-right: var(--space-1);
+	&:not(:empty) {
+		margin-right: var(--space-1);
+	}
 	[aria-expanded="true"] & {
 		display: none;
 	}
@@ -10,14 +12,15 @@
 }
 
 .inline-when__label {
-	display: inline;
+	--color: color-mix(in oklab, var(--page-dark), var(--primary-dark) 5%);
+	display: inline-block;
 	white-space: nowrap;
 	flex-direction: column;
 	justify-content: flex-start;
 	align-items: center;
-	--color: color-mix(in oklab, var(--page-dark), var(--primary-dark) 5%);
 	background: color-mix(in oklab, var(--color), transparent 60%);
-	padding: 1px var(--space-2);
+	padding: var(--space-05) var(--space-2);
+	margin-bottom: 2px;
 	border-radius: 7px;
 	font-weight: 500;
 	font-size: var(--font-size-7);

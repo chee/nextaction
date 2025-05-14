@@ -9,12 +9,19 @@ import {
 	type ProjectShape,
 } from "::shapes/project.ts"
 import {useListMixin, type List} from "./mixins/list.ts"
-import type {DocHandle} from "@automerge/automerge-repo"
+import type {AutomergeUrl, DocHandle} from "@automerge/automerge-repo"
 import {decodeJSON} from "::core/util/compress.ts"
 import {toast} from "::ui/components/base/toast.tsx"
 import mix from "::core/util/mix.ts"
 import {useContext} from "solid-js"
 import defaultRepo, {curl} from "::core/sync/automerge.ts"
+import {createEffect} from "solid-js"
+import {
+	associateTag,
+	associateTags,
+	tagRegistry,
+} from "::registries/tag-registry.ts"
+import type {AnyDoableURL} from ":concepts:"
 
 declare global {
 	interface Window {
@@ -28,11 +35,20 @@ export function useHome(repo = defaultRepo): Home {
 	const [home, handle] = useDocument<HomeShape>(() => user.homeURL, {repo})
 	self.home = handle
 
+	// todo loses reactivity?
 	const list = useListMixin(() => user.homeURL, "home")
 
 	const inbox = useListMixin(() => home()?.inbox, "inbox")
 
-	const vm = mix({
+	createEffect(() => {
+		for (const tag of Object.values(home()?.tags ?? {})) {
+			for (const item of Object.keys(tag.items)) {
+				associateTag(item as AnyDoableURL, tag.title)
+			}
+		}
+	})
+
+	const model = mix({
 		type: "home" as const,
 		list,
 		get keyed() {
@@ -46,6 +62,13 @@ export function useHome(repo = defaultRepo): Home {
 		},
 		get inbox() {
 			return inbox
+		},
+		// todo tags should be its own model
+		get tags() {
+			return home()?.tags ?? {}
+		},
+		get tagTitles() {
+			return Object.values(home()?.tags || {}).map(tag => tag.title)
 		},
 		createProject(project?: ProjectShape) {
 			const url = curl<ProjectURL>(createProjectShape(project))
@@ -82,7 +105,7 @@ export function useHome(repo = defaultRepo): Home {
 		},
 	})
 
-	return vm
+	return model
 }
 
 export interface Home {

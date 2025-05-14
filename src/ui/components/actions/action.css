@@ -95,7 +95,7 @@
 }
 
 .action .item-title:empty:before {
-	content: "New action...";
+	content: "New action... ";
 	color: var(--color-line-empty);
 }
 
@@ -107,6 +107,7 @@
 	display: inline-block;
 	margin: 0;
 	font-size: 1rem;
+
 	.action--expanded & {
 		width: 100%;
 		&::before {

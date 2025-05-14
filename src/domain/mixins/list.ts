@@ -26,7 +26,6 @@ import type {
 import defaultRepo from "::core/sync/automerge.ts"
 import {registerType, type ConceptRegistry} from "::registries/type-registry.ts"
 import {getParentURL, registerParent} from "::registries/parent-registry.ts"
-import {DocumentEventListener} from "@solid-primitives/event-listener"
 
 export function useListMixin<
 	T extends AnyParentType,

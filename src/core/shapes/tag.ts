@@ -1,12 +1,11 @@
 import type {AutomergeUrl} from "@automerge/automerge-repo"
-import {curl} from "../sync/automerge.ts"
 
 export type TagURL = AutomergeUrl & {type: "tag"}
 export type Tag = {
 	type: "tag"
 	title: string
 	items: {
-		[key: AutomergeUrl]: boolean
+		[key: AutomergeUrl]: true
 	}
 }
 
