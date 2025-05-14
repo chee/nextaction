@@ -22,6 +22,7 @@ import {
 	tagRegistry,
 } from "::registries/tag-registry.ts"
 import type {AnyDoableURL} from ":concepts:"
+import {tagItem} from "::shapes/tag.ts"
 
 declare global {
 	interface Window {
@@ -70,6 +71,16 @@ export function useHome(repo = defaultRepo): Home {
 		get tagTitles() {
 			return Object.values(home()?.tags || {}).map(tag => tag.title)
 		},
+		setTagsFor(url: AnyDoableURL, tags: string[]) {
+			handle()?.change(doc => {
+				for (const tag of tags) {
+					if (!doc.tags[tag]) {
+						doc.tags[tag] = {type: "tag", title: tag, items: {}}
+					}
+					tagItem(doc.tags[tag], url)
+				}
+			})
+		},
 		createProject(project?: ProjectShape) {
 			const url = curl<ProjectURL>(createProjectShape(project))
 			list.addItem("project", url)
@@ -115,6 +126,8 @@ export interface Home {
 	inbox: List<"inbox">
 	keyed: List<"home">["keyed"]
 	flat: List<"home">["flat"]
+	tags: Record<string, {title: string; items: Record<string, true>}>
+	tagTitles: string[]
 
 	createProject(project?: ProjectShape): ProjectURL
 	importProject(string: string): void
