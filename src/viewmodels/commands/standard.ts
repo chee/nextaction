@@ -123,12 +123,13 @@ export function createNewHeadingCommand(payload: {
 		exe() {
 			const sel = payload.selection.lastSelected()
 			let targetIndex =
-				sel &&
-				(referAfterDark(sel) as
-					| ReferencePointer<"heading">
-					| ReferencePointer<"action">)
+				(sel &&
+					(referAfterDark(sel) as
+						| ReferencePointer<"heading">
+						| ReferencePointer<"action">)) ??
+				0
 			if (
-				targetIndex.type == "action" &&
+				targetIndex?.type == "action" &&
 				getType(getParentURL(sel)) == "heading"
 			) {
 				targetIndex = referAfterDark(getParentURL(sel) as HeadingURL) as
@@ -180,7 +181,6 @@ export function createDeleteCommand(payload: {
 
 				if (item) {
 					if (item.type == "action") {
-						console.log(item.deleted)
 						item.delete()
 					} else if (item.type == "heading") {
 						item.toggleArchived(true)

@@ -1,4 +1,4 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 import type {Reference} from "::shapes/reference.ts"
 import type {ActionRef} from "./action.ts"
 import {curl} from "../sync/automerge.ts"

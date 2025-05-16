@@ -2,7 +2,7 @@ import type {DocHandle} from "@automerge/vanillajs"
 import {useCodemirrorAutomerge} from "::domain/editor/useCodemirrorAutomerge.ts"
 import type {Extension} from "@codemirror/state"
 
-export function useTitleableMixin(
+export function withTitleable(
 	doc: () => {title: string} | undefined,
 	handle: () => DocHandle<{title: string}> | undefined
 ) {

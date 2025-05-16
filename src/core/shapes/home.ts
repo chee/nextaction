@@ -1,4 +1,4 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 import {createInbox, type InboxURL} from "./inbox.ts"
 import type {ProjectRef} from "./project.ts"
 import type {DropboxURL} from "./dropbox.ts"

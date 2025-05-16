@@ -1,7 +1,9 @@
 /* @refresh reload */
-import {Repo} from "@automerge/automerge-repo"
-import {IndexedDBStorageAdapter} from "@automerge/automerge-repo-storage-indexeddb"
-import {BrowserWebSocketClientAdapter} from "@automerge/automerge-repo-network-websocket"
+import {
+	IndexedDBStorageAdapter,
+	WebSocketClientAdapter,
+	Repo,
+} from "@automerge/vanillajs"
 import type {AnyConceptURL} from ":concepts:"
 import type {UserURL} from "::shapes/user.ts"
 
@@ -10,7 +12,7 @@ const defaultRepo = new Repo({
 	network: [
 		// new BrowserWebSocketClientAdapter("wss://sync.automerge.org"),
 
-		new BrowserWebSocketClientAdapter("wss://galaxy.observer"),
+		new WebSocketClientAdapter("wss://galaxy.observer"),
 	],
 	enableRemoteHeadsGossiping: true,
 })

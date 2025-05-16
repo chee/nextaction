@@ -1,4 +1,4 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 
 export type TagURL = AutomergeUrl & {type: "tag"}
 export type Tag = {

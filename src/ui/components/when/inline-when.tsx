@@ -1,5 +1,5 @@
 import "./inline-when.css"
-import type {Doable} from "::domain/mixins/doable.ts"
+import type {Doable} from "::domain/mixins/withDoable.ts"
 import {Show} from "solid-js"
 import * as dates from "date-fns"
 import {icons} from "../../styles/themes/themes.ts"

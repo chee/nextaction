@@ -1,4 +1,4 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 import {parseIncomingWhen, type DoableShape} from "::shapes/mixins/doable.ts"
 import {type Reference} from "::shapes/reference.ts"
 import {curl} from "../sync/automerge.ts"

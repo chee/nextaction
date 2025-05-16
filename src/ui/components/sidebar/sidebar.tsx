@@ -6,18 +6,12 @@ import type {JSX} from "solid-js"
 import bemby, {type BembyModifier} from "bemby"
 import SidebarFooter from "./sidebar-footer.tsx"
 import {ContextMenu} from "@kobalte/core/context-menu"
-import {toast} from "../base/toast.tsx"
+import {Collapsible} from "@kobalte/core/collapsible"
 import {createMediaQuery} from "@solid-primitives/media"
 import {useDoableMixin} from "::domain/mixins/doable.ts"
 import type {ActionRef, ActionURL} from "::shapes/action.ts"
-import {encodeJSON} from "::core/util/compress.ts"
 import {useModel, useModelAfterDark} from "::domain/useModel.ts"
-import type {
-	AnyParent,
-	AnyParentShape,
-	AnyParentType,
-	ChildURLsFor,
-} from ":concepts:"
+import type {AnyParent, AnyParentType, ChildURLsFor} from ":concepts:"
 import {useHomeContext} from "::domain/useHome.ts"
 import {getParentURL} from "::registries/parent-registry.ts"
 import {getType} from "::registries/type-registry.ts"
@@ -193,7 +187,7 @@ export default function Sidebar(props: {collapse: () => void}) {
 											home.list.removeItem(item.type, item.url)
 										} else {
 											const model = useModelAfterDark(parent)
-											console.log(model)
+
 											model.removeItem(item.type, item.url)
 										}
 									}
@@ -380,14 +374,24 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 function SidebarArea(props: {area: Area}) {
 	const home = useHomeContext()
 	return (
-		<div class="sidebar-area">
+		<Collapsible class="sidebar-area">
 			<ContextMenu>
-				<ContextMenu.Trigger>
+				<ContextMenu.Trigger class="sidebar-area__header">
 					<Sidelink
 						href={`/areas/${props.area.url}`}
 						icon={props.area.icon}
 						modifiers="area">
 						<h3 class="sidebar-area__title">{props.area.title}</h3>
+						<Collapsible.Trigger class="sidebar-area__expand">
+							<svg width="24" height="24" viewBox="0 0 24 24">
+								<path
+									d="M7 10l5 5 5-5"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								/>
+							</svg>
+						</Collapsible.Trigger>
 					</Sidelink>
 				</ContextMenu.Trigger>
 				<ContextMenu.Portal>
@@ -402,14 +406,16 @@ function SidebarArea(props: {area: Area}) {
 					</ContextMenu.Content>
 				</ContextMenu.Portal>
 			</ContextMenu>
-			<For
-				each={
-					props.area.items.filter(
-						project => isProject(project) && !project.deleted
-					) as Project[]
-				}>
-				{project => <SidebarProject project={project} modifiers="in-area" />}
-			</For>
-		</div>
+			<Collapsible.Content class="sidebar-area__projects">
+				<For
+					each={
+						props.area.items.filter(
+							project => isProject(project) && !project.deleted
+						) as Project[]
+					}>
+					{project => <SidebarProject project={project} modifiers="in-area" />}
+				</For>
+			</Collapsible.Content>
+		</Collapsible>
 	)
 }

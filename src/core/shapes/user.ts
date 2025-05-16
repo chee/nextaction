@@ -1,4 +1,4 @@
-import {isValidAutomergeUrl, type AutomergeUrl} from "@automerge/automerge-repo"
+import {isValidAutomergeUrl, type AutomergeUrl} from "@automerge/vanillajs"
 import {createHome, type HomeURL} from "./home.ts"
 import {curl} from "../sync/automerge.ts"
 

@@ -16,7 +16,6 @@
 	flex-direction: column;
 	padding-block: var(--space-2);
 	padding-inline: var(--space-2);
-	min-height: 1em;
 	border-radius: 8px;
 	transition-property: min-height, max-height, height, margin, border-radius,
 		padding, transform, opacity;

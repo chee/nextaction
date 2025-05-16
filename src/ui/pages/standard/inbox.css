@@ -1,0 +1,6 @@
+.list-empty--inbox {
+	font-size: 8rem;
+	padding-top: 2rem;
+	filter: saturate(0) contrast(0.5);
+	opacity: 0.4;
+}

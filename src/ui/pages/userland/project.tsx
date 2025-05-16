@@ -50,19 +50,21 @@ export default function ProjectView() {
 	const home = useHomeContext()
 	const params = useParams<{projectId: ProjectURL}>()
 	const project = useProject(() => params.projectId)
-	const {selection, expander, stage, dnd, filter} = usePageContext({
-		items: () => project.items,
-		selectableItemFilter: item => {
-			if (!item) return false
-			if (isHeadingShape(item)) {
-				return !item.archived
-			}
-			if (isAction(item)) {
-				return !item.deleted && !isClosed(item)
-			}
-			return false
-		},
-	})
+	const page = () =>
+		usePageContext({
+			items: () => project.items,
+			selectableItemFilter: item => {
+				if (!item) return false
+				if (isHeadingShape(item)) {
+					return !item.archived
+				}
+				if (isAction(item)) {
+					return !item.deleted && !isClosed(item)
+				}
+				return false
+			},
+		})
+	const {selection, expander, stage, dnd, filter} = page()
 
 	const commandRegistry = useCommandRegistry()
 
@@ -110,6 +112,10 @@ export default function ProjectView() {
 	const toggleArchived = (item: Heading, force?: boolean) => {
 		stage(() => item.toggleArchived(force), item.url)
 	}
+
+	const visibleItems = createMemo(() => {
+		return project.items.filter(filter)
+	})
 
 	return (
 		<DragAndDropProvider value={dnd}>
@@ -176,62 +182,68 @@ export default function ProjectView() {
 							modifiers="project"
 						/>
 
-						<For each={project.items.filter(filter)}>
-							{item => {
-								return (
-									<Show when={item}>
-										<Switch>
-											<Match when={item.type == "action"}>
-												<ActionItem
-													expand={() => expander.expand(item.url)}
-													collapse={() => expander.collapse()}
-													expanded={expander.isExpanded(item.url)}
-													selected={selection.isSelected(item.url)}
-													select={() => selection.select(item.url)}
-													addSelected={() => selection.addSelected(item.url)}
-													removeSelected={() =>
-														selection.removeSelected(item.url)
-													}
-													addSelectedRange={() =>
-														selection.addSelectedRange(item.url)
-													}
-													{...(item as Action)}
-													toggleCanceled={(force?: boolean) =>
-														toggleCanceled(item as Action, force)
-													}
-													toggleCompleted={(force?: boolean) =>
-														toggleCompleted(item as Action, force)
-													}
-												/>
-											</Match>
-											<Match when={item.type == "heading"}>
-												<ProjectHeading
-													heading={item as Heading}
-													selection={selection}
-													expander={expander}
-													toggleCanceled={toggleCanceled}
-													toggleCompleted={toggleCompleted}
-													toggleArchived={toggleArchived}
-													filter={filter}
-													expand={() => expander.expand(item.url)}
-													collapse={() => expander.collapse()}
-													expanded={expander.isExpanded(item.url)}
-													selected={selection.isSelected(item.url)}
-													select={() => selection.select(item.url)}
-													addSelected={() => selection.addSelected(item.url)}
-													removeSelected={() =>
-														selection.removeSelected(item.url)
-													}
-													addSelectedRange={() =>
-														selection.addSelectedRange(item.url)
-													}
-												/>
-											</Match>
-										</Switch>
-									</Show>
-								)
-							}}
-						</For>
+						<Show
+							when={visibleItems().length}
+							fallback={
+								<div class="list-empty">Press ⌃⌘N to create a new action.</div>
+							}>
+							<For each={visibleItems()}>
+								{item => {
+									return (
+										<Show when={item}>
+											<Switch>
+												<Match when={item.type == "action"}>
+													<ActionItem
+														expand={() => expander.expand(item.url)}
+														collapse={() => expander.collapse()}
+														expanded={expander.isExpanded(item.url)}
+														selected={selection.isSelected(item.url)}
+														select={() => selection.select(item.url)}
+														addSelected={() => selection.addSelected(item.url)}
+														removeSelected={() =>
+															selection.removeSelected(item.url)
+														}
+														addSelectedRange={() =>
+															selection.addSelectedRange(item.url)
+														}
+														{...(item as Action)}
+														toggleCanceled={(force?: boolean) =>
+															toggleCanceled(item as Action, force)
+														}
+														toggleCompleted={(force?: boolean) =>
+															toggleCompleted(item as Action, force)
+														}
+													/>
+												</Match>
+												<Match when={item.type == "heading"}>
+													<ProjectHeading
+														heading={item as Heading}
+														selection={selection}
+														expander={expander}
+														toggleCanceled={toggleCanceled}
+														toggleCompleted={toggleCompleted}
+														toggleArchived={toggleArchived}
+														filter={filter}
+														expand={() => expander.expand(item.url)}
+														collapse={() => expander.collapse()}
+														expanded={expander.isExpanded(item.url)}
+														selected={selection.isSelected(item.url)}
+														select={() => selection.select(item.url)}
+														addSelected={() => selection.addSelected(item.url)}
+														removeSelected={() =>
+															selection.removeSelected(item.url)
+														}
+														addSelectedRange={() =>
+															selection.addSelectedRange(item.url)
+														}
+													/>
+												</Match>
+											</Switch>
+										</Show>
+									)
+								}}
+							</For>
+						</Show>
 					</main>
 				</div>
 			</div>

@@ -2,7 +2,7 @@ import type {DocHandle} from "@automerge/vanillajs"
 import {useCodemirrorAutomerge} from "::domain/editor/useCodemirrorAutomerge.ts"
 import type {Extension} from "@codemirror/state"
 
-export function useNotableMixin(
+export function withNotable(
 	doc: () => {notes: string} | undefined,
 	handle: () => DocHandle<{notes: string}> | undefined
 ) {

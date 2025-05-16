@@ -1,5 +1,5 @@
 import {createAsync, useLocation} from "@solidjs/router"
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 import "::domain/entities/useHome.ts"
 import {RepoContext} from "solid-automerge"
 import {For} from "solid-js"

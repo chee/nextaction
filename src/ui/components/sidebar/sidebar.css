@@ -107,6 +107,43 @@
 
 .sidebar-area {
 	border-radius: 4px;
+	&[data-closed] {
+		.sidebar-area__expand {
+			rotate: -90deg;
+		}
+	}
+	&[data-expanded] {
+		.sidebar-area__expand {
+			rotate: 0deg;
+		}
+	}
+}
+
+.sidebar-area__expand {
+	justify-content: center;
+	align-items: center;
+	will-change: transform, rotate;
+	transition: rotate 0.2s linear;
+}
+
+.sidebar-area__header {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+}
+
+.sidebar-link__title {
+	display: flex;
+	justify-content: space-between;
+	width: 100%;
+	align-items: center;
+}
+
+.sidebar-link--area {
+	width: 100%;
+}
+
+.sidebar-area__projects {
 }
 
 .sidebar-link--area.sidebar-link--area {
@@ -117,12 +154,9 @@
 	gap: var(--space-2);
 	border-bottom-left-radius: 0;
 	border-bottom-right-radius: 0;
-	background: var(--sidebar-section-line);
-	color: var(--sidebar-section-fill);
-	border: 2px solid var(--sidebar-section-line);
+
 	&[aria-current] {
 		background: var(--selected-fill);
 		color: var(--sidebar-section-line);
-		border: 2px solid var(--sidebar-section-line);
 	}
 }

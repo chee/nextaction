@@ -1,3 +1,4 @@
+import "./inbox.css"
 import ActionList from "::ui/components/actions/action-list.tsx"
 import {isClosed} from "::shapes/mixins/doable.ts"
 import {useHomeContext} from "::domain/useHome.ts"
@@ -10,6 +11,7 @@ import {
 	createDeleteCommand,
 	createNewActionCommand,
 } from "::viewmodels/commands/standard.ts"
+import {Show} from "solid-js"
 
 // inbox is special because it has its own list
 export default function InboxView() {
@@ -33,7 +35,6 @@ export default function InboxView() {
 	commandRegistry.addCommand(createDeleteCommand(page))
 	commandRegistry.addCommand(createCompleteCommand(page))
 	commandRegistry.addCommand(createCancelCommand(page))
-
 	return (
 		<DragAndDropProvider value={page.dnd}>
 			<div
@@ -47,18 +48,22 @@ export default function InboxView() {
 						<span class="page-title__title">Inbox</span>
 					</h1>
 					<main class="page-content">
-						<ActionList
-							selection={page.selection}
-							{...page.expander}
-							isSelected={page.selection.isSelected}
-							actions={home.inbox.items.filter(page.filter)}
-							toggleCanceled={(item, force) =>
-								page.stage(() => item.toggleCanceled(force), item.url)
-							}
-							toggleCompleted={(i, f) =>
-								page.stage(() => i.toggleCompleted(f), i.url)
-							}
-						/>
+						<Show
+							when={home.inbox.items.filter(page.filter).length}
+							fallback={<div class="list-empty list-empty--inbox">📥</div>}>
+							<ActionList
+								selection={page.selection}
+								{...page.expander}
+								isSelected={page.selection.isSelected}
+								actions={home.inbox.items.filter(page.filter)}
+								toggleCanceled={(item, force) =>
+									page.stage(() => item.toggleCanceled(force), item.url)
+								}
+								toggleCompleted={(i, f) =>
+									page.stage(() => i.toggleCompleted(f), i.url)
+								}
+							/>
+						</Show>
 					</main>
 				</div>
 			</div>

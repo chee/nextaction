@@ -1,5 +1,5 @@
 import type {Accessor} from "solid-js"
-import type {DocHandle} from "@automerge/automerge-repo"
+import type {DocHandle} from "@automerge/vanillajs"
 import {createMemo} from "solid-js"
 import {automergeSyncPlugin} from "@automerge/automerge-codemirror"
 

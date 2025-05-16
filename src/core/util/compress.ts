@@ -1,5 +1,4 @@
-// todo consider cbor
-import {cbor} from "@automerge/automerge-repo"
+import {cbor} from "@automerge/vanillajs"
 
 export async function compressString(
 	string: string,

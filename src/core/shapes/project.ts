@@ -1,4 +1,4 @@
-import type {AutomergeUrl} from "@automerge/automerge-repo"
+import type {AutomergeUrl} from "@automerge/vanillajs"
 import type {DoableShape} from "./mixins/doable.ts"
 import type {Reference} from "./reference.ts"
 import type {HeadingRef} from "./heading.ts"

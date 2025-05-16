@@ -9,7 +9,7 @@ import {
 	type ProjectShape,
 } from "::shapes/project.ts"
 import {useListMixin, type List} from "./mixins/list.ts"
-import type {AutomergeUrl, DocHandle} from "@automerge/automerge-repo"
+import type {AutomergeUrl, DocHandle} from "@automerge/vanillajs"
 import {decodeJSON} from "::core/util/compress.ts"
 import {toast} from "::ui/components/base/toast.tsx"
 import mix from "::core/util/mix.ts"

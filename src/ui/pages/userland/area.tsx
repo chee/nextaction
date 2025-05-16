@@ -37,7 +37,7 @@ export default function AreaView() {
 	const params = useParams<{areaId: AreaURL}>()
 	const [viewingSomeday, setViewingSomeday] = createSignal(false)
 	const area = useArea(() => params.areaId)
-	const {selection, expander, stage, dnd, filter} = usePageContext({
+	const page = usePageContext({
 		items: () => area.items,
 		selectableItemFilter: item => {
 			if (!item) return false
@@ -58,6 +58,7 @@ export default function AreaView() {
 			return false
 		},
 	})
+	const {selection, expander, stage, dnd, filter} = page
 
 	const commandRegistry = useCommandRegistry()
 
@@ -102,6 +103,8 @@ export default function AreaView() {
 	const toggleCanceled = (item: Action | Project, force?: boolean) => {
 		stage(() => item.toggleCanceled(force), item.url)
 	}
+
+	const visibleItems = createMemo(() => area.items.filter(filter))
 
 	return (
 		<DragAndDropProvider value={dnd}>
@@ -170,46 +173,52 @@ export default function AreaView() {
 							modifiers="project"
 						/>
 
-						<For each={area.items.filter(filter)}>
-							{item => {
-								return (
-									<Show when={item}>
-										<Switch>
-											<Match when={item.type == "action"}>
-												<ActionItem
-													expand={() => expander.expand(item.url)}
-													collapse={() => expander.collapse()}
-													expanded={expander.isExpanded(item.url)}
-													selected={selection.isSelected(item.url)}
-													select={() => selection.select(item.url)}
-													addSelected={() => selection.addSelected(item.url)}
-													removeSelected={() =>
-														selection.removeSelected(item.url)
-													}
-													addSelectedRange={() =>
-														selection.addSelectedRange(item.url)
-													}
-													{...(item as Action)}
-													toggleCanceled={(force?: boolean) =>
-														toggleCanceled(item as Action, force)
-													}
-													toggleCompleted={(force?: boolean) =>
-														toggleCompleted(item as Action, force)
-													}
-												/>
-											</Match>
-											<Match when={item.type == "project"}>
-												<ProjectItem
-													modifiers="in-area"
-													{...(item as Project)}
-													{...getSelectionProps(selection, item.url)}
-												/>
-											</Match>
-										</Switch>
-									</Show>
-								)
-							}}
-						</For>
+						<Show
+							when={visibleItems().length}
+							fallback={
+								<div class="list-empty">Press ⌃⌘N to create a new action.</div>
+							}>
+							<For each={visibleItems()}>
+								{item => {
+									return (
+										<Show when={item}>
+											<Switch>
+												<Match when={item.type == "action"}>
+													<ActionItem
+														expand={() => expander.expand(item.url)}
+														collapse={() => expander.collapse()}
+														expanded={expander.isExpanded(item.url)}
+														selected={selection.isSelected(item.url)}
+														select={() => selection.select(item.url)}
+														addSelected={() => selection.addSelected(item.url)}
+														removeSelected={() =>
+															selection.removeSelected(item.url)
+														}
+														addSelectedRange={() =>
+															selection.addSelectedRange(item.url)
+														}
+														{...(item as Action)}
+														toggleCanceled={(force?: boolean) =>
+															toggleCanceled(item as Action, force)
+														}
+														toggleCompleted={(force?: boolean) =>
+															toggleCompleted(item as Action, force)
+														}
+													/>
+												</Match>
+												<Match when={item.type == "project"}>
+													<ProjectItem
+														modifiers="in-area"
+														{...(item as Project)}
+														{...getSelectionProps(selection, item.url)}
+													/>
+												</Match>
+											</Switch>
+										</Show>
+									)
+								}}
+							</For>
+						</Show>
 					</main>
 				</div>
 			</div>
