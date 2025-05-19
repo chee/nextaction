@@ -24,8 +24,9 @@ import {isProject, type Project} from "::domain/useProject.ts"
 import {createSimpleDraggable} from "::viewmodels/dnd/dnd-context.ts"
 import {isHeading} from "::domain/useHeading.ts"
 import {isAction} from "::domain/useAction.ts"
-import {isArea, type Area} from "::domain/useArea.ts"
+import {isArea, useArea, type Area} from "::domain/useArea.ts"
 import {icons} from "../../styles/themes/themes.ts"
+import type {AreaURL} from "::shapes/area.ts"
 
 // todo SavedSearches
 // todo sidebar obviously needs a viewmodel lol
@@ -359,9 +360,13 @@ function SidebarProject(props: {project: Project; modifiers?: BembyModifier}) {
 						class="popmenu__item popmenu__item--danger"
 						onSelect={() => {
 							const parentURL = getParentURL(props.project.url)
-							;(useModelAfterDark(parentURL) as AnyParent).removeItemByRef([
-								props.project,
-							])
+							const parentType = getType(parentURL)
+							if (parentType == "home") {
+								home.list.removeItemByRef(props.project)
+							} else if (parentType == "area") {
+								const area = useArea(() => parentURL as AreaURL)
+								area.removeItemByRef(props.project)
+							}
 						}}>
 						Remove from Sidebar
 					</ContextMenu.Item>
