@@ -39,7 +39,6 @@
 }
 
 .action[aria-expanded="true"] {
-	min-height: 8em;
 	background: var(--page-fill);
 	border: 1px solid var(--primary-dark);
 	border-radius: 3px;

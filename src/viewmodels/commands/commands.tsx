@@ -77,7 +77,7 @@ export function redo() {
 	history.push(entry)
 }
 
-type CommandMap = Record<string, Command<any>>
+type CommandMap = Record<string, Command<unknown>>
 type CommandContext = {
 	commands: CommandMap
 	setCommands(map: CommandMap): void
@@ -163,3 +163,4 @@ export function registerCommand<T>(cmd: Command<T>) {
 		[cmd.id]: cmd,
 	})
 }
+

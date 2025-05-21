@@ -27,12 +27,12 @@ export function createHomeShape(
 	home: Partial<HomeShape> & {inbox: HomeShape["inbox"]}
 ): HomeShape {
 	return {
-		type: "home",
 		dropboxes: [],
 		sources: [],
 		items: [],
 		tags: {},
 		...home,
+		type: "home",
 	}
 }
 
